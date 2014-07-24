@@ -12,15 +12,14 @@ Attn: Contracts Dept
 Redlands, California, USA 92373
 email: contracts@esri.com
 """
-#Note: This raster function requires the prefer max to be larger than 1.
-#This function reads depth value from input raster's corresponding StdZ field
+
 import numpy as np
 
 
-class FishHabitatSuitabilityDepth():
+class FishHabitatSuitability():
     def __init__(self):
-        self.name = "FishHabitatSuitabilityDepth Function"
-        self.description = "FishHabitatSuitabilityDepth Function"
+        self.name = "FishHabitatSuitability Function"
+        self.description = "Computes fish habitat suitability by depth"
         self.depthval = "0"
 
         #Define function parameters
@@ -46,14 +45,10 @@ class FishHabitatSuitabilityDepth():
                 "required": True
             }]
 
-        #writeToLog("init: the StdZ value is: {0}\n".format(self.depthval))
-
     def getconfiguration(self, **scalars):
-        configuration = {
-          "referenceproperties": (4, 8)
+        return {
+            "referenceproperties": 2 | 4
         }
-
-        return configuration
 
     def bind(self, **kwargs):
         kwargs["output_rasterinfo"]["bandcount"] = 1
@@ -61,7 +56,6 @@ class FishHabitatSuitabilityDepth():
         kwargs["output_rasterinfo"]["statistics"] = ({"minimum": 0.0, "maximum": 1.0},)
         self.depthval = abs(float(kwargs["depth"]))
 
-        #writeToLog("bind: the StdZ value is: {0}\n".format(self.depthval))
         return kwargs
 
     def read(self, **kwargs):
@@ -93,8 +87,8 @@ class FishHabitatSuitabilityDepth():
         np.putmask(s_pb, (s_pb > sminp) & (s_pb < smaxp), 1)
         np.putmask(s_pb, s_pb < 0, 0)
 
-        #writeToLog("read: the StdZ value is: {0}\n".format(self.depthval))
         suitd = 0
+
         #Depth (meter)
         dmina = 0
         dminp = 2
@@ -121,20 +115,11 @@ class FishHabitatSuitabilityDepth():
 
     def getproperty(self, name, defaultvalue, **kwargs):
         if name.lower == "variable":
-            return "FishHabitatSuitabilityDepth"
+            return "FishHabitatSuitability"
         else:
             return defaultvalue
 
     def getallproperties(self, **args):
-        args["variable"] = "FishHabitatSuitabilityDepth"
+        args["variable"] = "FishHabitatSuitability"
         return args
 
-# def writeToLog(message):
-#     logpath = r"C:\temp\PAF\pafdebug.log"
-#     try:
-#         fileobj = open(logpath, "a")
-#         fileobj.writelines(message)
-#         fileobj.flush()
-#         fileobj.close()
-#     except Exception:
-#         return
