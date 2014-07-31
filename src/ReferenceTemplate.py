@@ -114,7 +114,7 @@ class ReferenceTemplate():
 
         np.seterr(divide="ignore")
 
-        outblock = np.multiply(np.divide((ir - red), (ir + red, 100.0) + 100.0        # scale and offset the NDVI value (ir-red)/(ir+red).
+        outblock = np.multiply(np.divide(ir - red, ir + red), 100.0) + 100.0            # scale and offset the NDVI value (ir-red)/(ir+red).
         np.copyto(kwargs["output_pixelblock"], outblock, casting="unsafe")              # copy local array to output pixel block.
         return kwargs
 
