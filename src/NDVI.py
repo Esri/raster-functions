@@ -56,6 +56,7 @@ class NDVI():
         kwargs["output_rasterinfo"]["bandcount"] = 1            # output is a single band raster
         kwargs["output_rasterinfo"]["pixeltype"] = "32_BIT_FLOAT"   # ... with floating-point pixel values.
         kwargs["output_rasterinfo"]["statistics"] = ({"minimum": 0.0, "maximum": 200.0}, )  # we know a little about the stats of the outgoing raster (scaled NDVI). 
+        kwargs["output_rasterinfo"]["histogram"] = ()           # we know a nothing about the stats of the outgoing raster (scaled NDVI). 
         return kwargs
 
     def read(self, **kwargs):
