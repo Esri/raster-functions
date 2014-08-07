@@ -25,21 +25,24 @@ class KeyMetadata():
                 "datatype": 2,                  # raster
                 "value": "",
                 "displayname": "Raster",
-                "required": True
+                "required": True,
+                "description": "The primary raster input."
             },
             {
                 "name": "property",
                 "datatype": 1,                  # string
                 "value": "",
                 "displayname": "Property",
-                "required": False
+                "required": False,
+                "description": "The name of the optional key metadata to override."
             },
             {
                 "name": "value",
                 "datatype": 1,                  # string
                 "value": "",
                 "displayname": "Value",
-                "required": False
+                "required": False,
+                "description": "The overriding new value of the key metadata."
             }
         ]
 
@@ -49,7 +52,7 @@ class KeyMetadata():
         }
 
     def bind(self, **kwargs):
-        self.propertyName = kwargs["property"]
+        self.propertyName = kwargs["property"]  # remember these user-specified scalar inputs
         self.propertyValue = kwargs["value"]
         return kwargs
 
