@@ -20,7 +20,7 @@ class FishHabitatSuitability():
     def __init__(self):
         self.name = "FishHabitatSuitability Function"
         self.description = "Computes fish habitat suitability by depth"
-        self.depthval = "0"
+        self.depthval = 0
 
         #Define function parameters
         self.argumentinfo = [{
