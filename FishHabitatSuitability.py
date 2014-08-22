@@ -53,7 +53,8 @@ class FishHabitatSuitability():
     def bind(self, **kwargs):
         kwargs["output_rasterinfo"]["bandcount"] = 1
         kwargs["output_rasterinfo"]["pixeltype"] = "32_BIT_FLOAT"
-        kwargs["output_rasterinfo"]["statistics"] = ({"minimum": 0.0, "maximum": 1.0},)
+        kwargs["output_rasterinfo"]["statistics"] = ({"minimum": 0.0, "maximum": 1.0}, )
+        kwargs["output_rasterinfo"]["histogram"] = ()
         self.depthval = abs(float(kwargs["depth"]))
 
         return kwargs
