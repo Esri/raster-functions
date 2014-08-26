@@ -49,7 +49,7 @@ class NDVI():
             {
                 "name": "method",
                 "dataType": 1,                  # string
-                "value": "RGB",
+                "value": "Colormap",
                 "displayName": "Output Image Type",
                 "domain": ("Raw", "Grayscale", "Colormap"),
                 "required": False
@@ -67,7 +67,7 @@ class NDVI():
     def updateRasterInfo(self, **kwargs):
         if kwargs.has_key("method"):
             method = kwargs["method"].lower()
-            self.applyColormap = method == "rgb"
+            self.applyColormap = method == "colormap"
             self.applyScaling = self.applyColormap or method == "grayscale"
               
         maximumValue = 1.0
@@ -87,7 +87,7 @@ class NDVI():
         kwargs["output_rasterInfo"]["statistics"] = ({"minimum": 0.0, "maximum": maximumValue}, )  # we know something about the stats of the outgoing NDVI raster. 
         kwargs["output_rasterInfo"]["histogram"] = ()           # we know a nothing about the histogram of the outgoing raster.
         kwargs["output_rasterInfo"]["pixelType"] = pixelType    # bit-depth of the outgoing NDVI raster based on user-specified parameters
-        kwargs["output_rasterInfo"]["colormap"] = colormap      # optional color-map if requesting for an RGB image
+        kwargs["output_rasterInfo"]["colormap"] = colormap      # optional colormap if requesting for an color image
   
         return kwargs
 
