@@ -30,7 +30,7 @@
       </AnyType>
       <AnyType xsi:type="xs:double">3</AnyType>
       <AnyType xsi:type="xs:double">4</AnyType>
-      <AnyType xsi:type="xs:string">Raw</AnyType>
+      <AnyType xsi:type="xs:string">Colormap</AnyType>
     </Values>
   </Arguments>
   <Help></Help>
