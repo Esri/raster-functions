@@ -18,74 +18,63 @@ class KeyMetadata():
     def __init__(self):
         self.name = "Key Metadata"
         self.description = "Override key metadata in a function chain."
+        self.propertyName = ""
+        self.propertyValue = None
+        self.bandNames = []
 
-        self.argumentinfo = [
+    def getParameterInfo(self):
+        return [
             {
                 "name": "raster",
-                "datatype": 2,                  # raster
+                "dataType": 2,                  # raster
                 "value": "",
-                "displayname": "Raster",
+                "displayName": "Raster",
                 "required": True,
                 "description": "The primary raster input."
             },
             {
                 "name": "property",
-                "datatype": 1,                  # string
-                "value": "",
-                "displayname": "Property",
+                "dataType": 1,                  # string
+                "value": self.propertyName,
+                "displayName": "Property Name",
                 "required": False,
                 "description": "The name of the optional key metadata to override."
             },
             {
                 "name": "value",
-                "datatype": 1,                  # string
-                "value": "",
-                "displayname": "Value",
+                "dataType": 1,                  # string
+                "value": self.propertyValue,
+                "displayName": "Property Value",
                 "required": False,
                 "description": "The overriding new value of the key metadata."
+            },
+            {
+                "name": "bands",
+                "dataType": 1,                  # string
+                "value": "",
+                "displayName": "Band Names",
+                "required": False,
+                "description": "A comma-separated string representing updated band names."
             }
         ]
 
-    def getconfiguration(self, **scalars):
+    def getConfiguration(self, **scalars):
         return { 
-            "referenceproperties": 8            # reset any key properties held by the parent function raster dataset
+            "invalidatedProperties": 8          # reset any key properties held by the parent function raster dataset
         }
 
-    def bind(self, **kwargs):
+    def updateRasterInfo(self, **kwargs):
         self.propertyName = kwargs["property"]  # remember these user-specified scalar inputs
         self.propertyValue = kwargs["value"]
+        self.bandNames = kwargs["bands"].split(",")
+       
         return kwargs
 
-    def getproperty(self, name, defaultvalue, **kwargs):
-        s = name.lower()
-        if s == self.propertyName:              # return user-specified value associated with this user-specified key property
-            return self.propertyValue
-        elif s == "datatype":                   # overriding a specific key property
-            return "Processed"
-        elif s == "cloudcover":
-            return 0.0
-        else:
-            return defaultvalue
+    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
+        if bandIndex == -1:
+           if len(self.propertyName) > 0:
+                keyMetadata[self.propertyName] = self.propertyValue
+        elif bandIndex < len(self.bandNames):
+            keyMetadata["bandname"] = self.bandNames[bandIndex]
 
-    def getallproperties(self, **kwargs):       # overriding applicable key properties when requested in bulk
-        kwargs["datatype"] = "Processed"
-        kwargs["cloudcover"] = 50.0
-        if len(self.propertyName) > 0:
-            kwargs[self.propertyName] = self.propertyValue
-        return kwargs
-
-    def getbandproperty(self, name, bandindex, defaultvalue, **kwargs): # overriding band-specific key property
-        s = name.lower()
-        if bandindex == 0:
-            if s == "wavelengthmin":
-                return 400
-            elif s == "wavelengthmax":
-                return 600
-        return defaultvalue
-
-    def getallbandproperties(self, bandindex, **kwargs):    # overriding band-specific key properties when requested in bulk
-        s = name.lower()
-        if bandindex == 0:
-            kwargs["wavelengthmin"] = 400
-            kwargs["wavelengthmax"] = 600
-        return kwargs
+        return keyMetadata
