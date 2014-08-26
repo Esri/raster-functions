@@ -28,7 +28,7 @@ class NDVI():
             {
                 "name": "raster",
                 "dataType": 2,                  # raster
-                "value": "",
+                "value": None,
                 "displayName": "Raster",
                 "required": True
             },
@@ -65,13 +65,13 @@ class NDVI():
         }
 
     def updateRasterInfo(self, **kwargs):
-        if kwargs.has_key("method"):
+        if kwargs.has_key("method"):                            # update flags based on user input
             method = kwargs["method"].lower()
             self.applyColormap = method == "colormap"
             self.applyScaling = self.applyColormap or method == "grayscale"
               
         maximumValue = 1.0
-        if self.applyScaling:
+        if self.applyScaling:                                   # maximum output value depends on whether we are scaling
             maximumValue = 200.0
 
         colormap = ()
@@ -92,16 +92,16 @@ class NDVI():
         return kwargs
 
     def updatePixels(self, **pixelBlocks):
-        inblock = pixelBlocks["raster_pixelBlock"]              # get the input raster pixel block.
+        inblock = pixelBlocks["raster_pixelBlock"]              # get the input raster pixel block
         red = np.array(inblock[0], dtype="float")               # extractbandids ensures first band is Red.
-        ir = np.array(inblock[1], dtype="float")                # extractbandids ensures second band is Infrared.
+        ir = np.array(inblock[1], dtype="float")                # extractbandids ensures second band is Infrared
 
         np.seterr(divide="ignore")
         outblock = (ir - red) / (ir + red)                      # compute NDVI
         if self.applyScaling:
-            outblock = (outblock * 100.0) + 100.0               # apply a scale and offset to the the NDVI
+            outblock = (outblock * 100.0) + 100.0               # apply a scale and offset to the the NDVI, if needed.
 
-        np.copyto(pixelBlocks["output_pixelBlock"], outblock, casting="unsafe")      # copy local array to output pixel block.
+        np.copyto(pixelBlocks["output_pixelBlock"], outblock, casting="unsafe")      # copy local array to output pixel block
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
