@@ -43,20 +43,20 @@ class HeatIndex():
 
     def getConfiguration(self, **scalars):
         return {
-          "referenceProperties": 2 | 4 | 8,                     # 
-          "invalidatedProperties": 2 | 4 | 8                    # reset any statistics or histogram that might be held by the parent dataset (because this function modifies pixel values). 
+          "inheritProperties": 2 | 4 | 8,                       # inherit all but the pixel type from the input raster
+          "invalidatedProperties": 2 | 4 | 8                    # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
         }
 
     def updateRasterInfo(self, **kwargs):
-        kwargs["output_rasterInfo"]["bandCount"] = 1            # output is a single band raster
-        kwargs["output_rasterInfo"]["statistics"] = ({"minimum": 0.0, "maximum": 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
-        kwargs["output_rasterInfo"]["histogram"] = ()           # we know a nothing about the histogram of the outgoing raster.
-        kwargs["output_rasterInfo"]["pixelType"] = "32_BIT_FLOAT"   # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
+        kwargs["output_info"]["bandCount"] = 1                  # output is a single band raster
+        kwargs["output_info"]["statistics"] = ({"minimum": 0.0, "maximum": 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
+        kwargs["output_info"]["histogram"] = ()                 # we know a nothing about the histogram of the outgoing raster.
+        kwargs["output_info"]["pixelType"] = "32_BIT_FLOAT"     # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
         return kwargs
 
     def updatePixels(self, **pixelBlocks):
-        t = np.array(pixelBlocks["temperature_pixelBlock"], dtype="float")
-        r = np.array(pixelBlocks["rh_pixelBlock"], dtype="float")
+        t = np.array(pixelBlocks["temperature_pixels"], dtype="float")
+        r = np.array(pixelBlocks["rh_pixels"], dtype="float")
 
         tr = t * r
         rr = r * r
@@ -66,7 +66,7 @@ class HeatIndex():
         ttrr = ttr * r
 
         output = -42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) + (0.00085282 * trr) - (0.00000199 * ttrr)
-        np.copyto(pixelBlocks["output_pixelBlock"], output, casting="unsafe")
+        np.copyto(pixelBlocks["output_pixels"], output, casting="unsafe")
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
