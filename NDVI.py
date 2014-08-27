@@ -83,25 +83,25 @@ class NDVI():
                         np.array([0, 0, 0, 0, 20, 24, 29, 31, 33, 33, 37, 41, 41, 41, 45, 45, 47, 49, 49, 54, 54, 56, 58, 58, 62, 62, 62, 67, 67, 67, 69, 71, 71, 75, 75, 78, 79, 79, 79, 81, 83, 83, 87, 87, 90, 92, 93, 93, 97, 97, 97, 97, 101, 101, 101, 101, 105, 105, 107, 109, 109, 113, 118, 119, 121, 126, 132, 133, 135, 141, 144, 150, 152, 153, 159, 163, 165, 168, 174, 176, 181, 183, 186, 191, 197, 201, 203, 205, 209, 214, 216, 218, 224, 228, 234, 236, 238, 243, 248, 252, 252, 252, 250, 247, 246, 245, 240, 237, 235, 233, 230, 227, 224, 222, 220, 217, 214, 212, 210, 207, 204, 201, 199, 197, 194, 191, 189, 186, 184, 181, 179, 176, 174, 173, 168, 166, 163, 160, 158, 156, 153, 153, 153, 150, 150, 150, 150, 148, 148, 148, 145, 145, 145, 145, 143, 143, 143, 143, 140, 140, 140, 140, 138, 138, 138, 138, 135, 135, 135, 135, 133, 133, 133, 130, 130, 130, 130, 130, 130, 128, 128, 128, 125, 125, 125, 125, 122, 122, 122, 122, 120, 120, 120, 120, 120, 117, 117, 117, 117, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115], dtype="uint8"),
                         np.array([255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 20, 23, 25, 33, 38, 40, 43, 48, 54, 59, 61, 64, 69, 77, 79, 82, 87, 92, 97, 99, 102, 107, 115, 120, 123, 125, 130, 138, 141, 143, 150, 156, 163, 165, 168, 173, 181, 186, 186, 187, 180, 176, 173, 169, 163, 157, 150, 146, 142, 136, 132, 126, 123, 119, 114, 108, 105, 101, 96, 93, 88, 84, 81, 77, 70, 68, 64, 60, 55, 49, 47, 45, 37, 33, 28, 24, 21, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype="uint8"))
 
-        kwargs["output_rasterInfo"]["bandCount"] = 1            # output is a single band raster
-        kwargs["output_rasterInfo"]["statistics"] = ({"minimum": 0.0, "maximum": maximumValue}, )  # we know something about the stats of the outgoing NDVI raster. 
-        kwargs["output_rasterInfo"]["histogram"] = ()           # we know a nothing about the histogram of the outgoing raster.
-        kwargs["output_rasterInfo"]["pixelType"] = pixelType    # bit-depth of the outgoing NDVI raster based on user-specified parameters
-        kwargs["output_rasterInfo"]["colormap"] = colormap      # optional colormap if requesting for an color image
+        kwargs["output_info"]["bandCount"] = 1            # output is a single band raster
+        kwargs["output_info"]["statistics"] = ({"minimum": 0.0, "maximum": maximumValue}, )  # we know something about the stats of the outgoing NDVI raster. 
+        kwargs["output_info"]["histogram"] = ()           # we know a nothing about the histogram of the outgoing raster.
+        kwargs["output_info"]["pixelType"] = pixelType    # bit-depth of the outgoing NDVI raster based on user-specified parameters
+        kwargs["output_info"]["colormap"] = colormap      # optional colormap if requesting for an color image
   
         return kwargs
 
     def updatePixels(self, **pixelBlocks):
-        inblock = pixelBlocks["raster_pixelBlock"]              # get the input raster pixel block
-        red = np.array(inblock[0], dtype="float")               # extractbandids ensures first band is Red.
-        ir = np.array(inblock[1], dtype="float")                # extractbandids ensures second band is Infrared
+        inBlock = pixelBlocks["raster_pixels"]                  # get the input raster pixel block
+        red = np.array(inBlock[0], dtype="float")               # extractbandids ensures first band is Red.
+        ir = np.array(inBlock[1], dtype="float")                # extractbandids ensures second band is Infrared
 
         np.seterr(divide="ignore")
-        outblock = (ir - red) / (ir + red)                      # compute NDVI
+        outBlock = (ir - red) / (ir + red)                      # compute NDVI
         if self.applyScaling:
-            outblock = (outblock * 100.0) + 100.0               # apply a scale and offset to the the NDVI, if needed.
+            outBlock = (outBlock * 100.0) + 100.0               # apply a scale and offset to the the NDVI, if needed.
 
-        np.copyto(pixelBlocks["output_pixelBlock"], outblock, casting="unsafe")      # copy local array to output pixel block
+        np.copyto(pixelBlocks["output_pixels"], outBlock, casting="unsafe")      # copy local array to output pixel block
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
