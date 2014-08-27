@@ -27,22 +27,25 @@ class FishHabitatSuitability():
                 'name': 'temperature',
                 'datatype': 2,
                 'value': None,
-                'displayname': 'Surface Temperature Raster',
-                'required': True
+                'required': True,
+                'displayname': "Surface Temperature Raster",
+                'description': "",
             },
             {
                 'name': 'salinity',
                 'datatype': 2,
                 'value': None,
-                'displayname': 'Surface Salinty Raster',
-                'required': True
+                'required': True,
+                'displayname': "Surface Salinty Raster",
+                'description': "",
             },
             {
                 'name': 'depth',
                 'datatype': 0,
                 'value': self.depth,
-                'displayname': 'Ocean Depth',
-                'required': True
+                'required': True,
+                'displayname': "Ocean Depth",
+                'description': "",
             }]
 
     def getConfiguration(self, **scalars):
