@@ -29,34 +29,34 @@ class NDVI():
                 'name': 'raster',
                 'dataType': 2,                  # raster
                 'value': None,
-                'required': True
+                'required': True,
                 'displayName': "Raster",
-                'description': "The primary multi-band input raster containing red and infrared bands.",
+                'description': "The primary multi-band input raster containing red and infrared bands."
             },
             {
                 'name': 'red',
                 'dataType': 0,                  # numeric
                 'value': 1,
-                'required': True
+                'required': True,
                 'displayName': "Red Band Index",
-                'description': "The zero-based index of the red band.",
+                'description': "The zero-based index of the red band."
             },
             {
                 'name': 'ir',
                 'dataType': 0,                  # numeric
                 'value': 2,
-                'required': True
+                'required': True,
                 'displayName': "Infrared Band Index",
-                'description': "The zero-based index of the infrared band.",
+                'description': "The zero-based index of the infrared band."
             },
             {
                 'name': 'method',
                 'dataType': 1,                  # string
                 'value': 'Colormap',
-                'required': False
+                'required': False,
                 'domain': ('Raw', 'Grayscale', 'Colormap'),
                 'displayName': "Output Image Type",
-                'description': "The type of output expected from this function. Specify Raw for scientific analysis. Pick Grayscale or Colomap for visualization.",
+                'description': "The type of output expected from this function. Specify Raw for scientific analysis. Pick Grayscale or Colomap for visualization."
             },
         ]
 
