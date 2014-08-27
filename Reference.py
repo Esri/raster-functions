@@ -5,7 +5,7 @@ import numpy as np
 ### Feel free to use this template a starting point for your implementation or as a cheat-sheet. 
 
 class Reference():
-    ## Class name defaults to module name unless specified in the Python Adapter function property page
+    ## Class name defaults to module name unless specified in the Python Adapter function's property page.
 
     def __init__(self):     # Initialize your class' attributes here.
         self.name = "Reference Function"                # a short name for the function. Traditionally named "<something> Function".
@@ -24,7 +24,7 @@ class Reference():
         #   domain :      Indicates the set of allowed values for this parameter. 
         #                 If specified, the property page shows a drop-down list pre-populated with these values. 
         #                 This attribute is applicable only to string parameters (dataType: 1).
-        #   description : A detailed description of this parameter primarily displayed as tooltip in Python Adapter function's property page.
+        #   description : Details on this parameter that's displayed as tooltip in Python Adapter function's property page.
         
         return [
             {
@@ -54,24 +54,27 @@ class Reference():
         # Use scalar['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
 
         # These are the recognized configuration attributes:
-        # . extractBands : Tuple(ints) representing the bands of the input raster that need to be extracted
-        # . compositeRasters : Boolean indicating whether all input rasters are composited as a single multi-band raster. 
-        # . referenceProperties : Bitwise-OR'd integer that indicates the set of input raster properties that are inherited by the output raster.
-        #       1 : Pixel type
-        #       2 : NoData
-        #       4 : Dimensions (spatial reference, extent, and cellsize)
-        #       8 : Resampling type
-        #       16: Band ID
+        # . extractBands :         Tuple(ints) representing the bands of the input raster that need to be extracted.
+        #                          If unspecified, all bands of the input raster are available in .updatePixels()
+        # . compositeRasters :     Boolean indicating whether all input rasters are composited as a single multi-band raster. Defaults to False. 
+        #                          If set to True, a raster by the name 'compositeraster' is available in .updateRasterInfo() and .updatePixels().
+        # . inheritProperties :    Bitwise-OR'd integer that indicates the set of input raster properties that are inherited by the output raster.
+        #                          If unspecified, all properties are inherited. These are the recognized values:
+        #                          . 1 : Pixel type
+        #                          . 2 : NoData
+        #                          . 4 : Dimensions (spatial reference, extent, and cell-size)
+        #                          . 8 : Resampling type
         # . invalidateProperties : Bitwise-OR'd integer that indicates the set of properties of the parent dataset that needs to be invalidated. 
-        #       1 : XForm stored by the function raster dataset.
-        #       2 : Statistics stored by the function raster dataset.
-        #       4 : Histogram stored by the function raster dataset.
-        #       8 : The key properties stored by the function raster dataset.
+        #                          If unspecified, no property get invalidated.  These are the recognized values:
+        #                          . 1 : XForm stored by the function raster dataset.
+        #                          . 2 : Statistics stored by the function raster dataset.
+        #                          . 4 : Histogram stored by the function raster dataset.
+        #                          . 8 : The key properties stored by the function raster dataset.
 
         return {
           'extractBands': (0, 2),       # we only need the first (red) and third (blue) band.
           'compositeRasters': False,
-          'referenceProperties': 2 | 4 | 8, # inherit everything but the pixel type (1) and band IDs (16) 
+          'inheritProperties': 2 | 4 | 8, # inherit everything but the pixel type (1) and band IDs (16) 
           'invalidateProperties': 2 | 4 | 8 # invalidate these aspects because we are modifying pixel values and updating key properties.
         }
 
@@ -130,10 +133,10 @@ class Reference():
         # . The tuple in extent, nativeExtent and origin attributes can be used to construct an arcpy.Extent object.
         # . The epsg code in nativeSpatialReference and spatialReference attributes can be used to construct an arcpy.SpatialReference() object.
 
-        kwargs['output_info']['bandCount'] = 1                # output is a single band raster
-        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'   # ... with floating-point pixel values.
-        kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 200.0}, )   
-        kwargs['output_info']['histogram'] = ()   
+        kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
+        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'     # ... with floating-point pixel values.
+        kwargs['output_info']['statistics'] = ()                # invalidate any statistics
+        kwargs['output_info']['histogram'] = ()                 # invalidate any histogram
         return kwargs
 
     def updatePixels(self, **pixelBlocks):      # This method can provide output pixels based on pixel blocks associated with all input rasters.
