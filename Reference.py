@@ -7,7 +7,7 @@ import numpy as np
 class Reference():
     ## Class name defaults to module name unless specified in the Python Adapter function property page
 
-    def __init__(self):     # Intialize your class' attributes here.
+    def __init__(self):     # Initialize your class' attributes here.
         self.name = "Reference Function"                # a short name for the function. Traditionally named "<something> Function".
         self.description = "Story of the function..."   # a detailed description of what this function does. 
 
@@ -48,37 +48,32 @@ class Reference():
             # ... add dictionaries here for additional parameters
         ]
 
-    def getConfiguration(self, **scalars):      # This method can override aspects of parent dataset based on all scalar (non-raster) user inputs.
-        # This method, if defined, gets called after .getParameterInfo() but before .updateRasterInfo(). 
+    def getConfiguration(self, **scalars):      # This method can manage how the output raster is pre-constructed gets.
+        # This method, if defined, controls aspects of parent dataset based on all scalar (non-raster) user inputs.
+        # It's invoked after .getParameterInfo() but before .updateRasterInfo(). 
         # Use scalar['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
+
         # These are the recognized configuration attributes:
-        #   extractBands : xxx
-        #   compositeRasters :
-        #   referenceProperties :
-        #   invalidateProperties :
+        # . extractBands : Tuple(ints) representing the bands of the input raster that need to be extracted
+        # . compositeRasters : Boolean indicating whether all input rasters are composited as a single multi-band raster. 
+        # . referenceProperties : Bitwise-OR'd integer that indicates the set of input raster properties that are inherited by the output raster.
+        #       1 : Pixel type
+        #       2 : NoData
+        #       4 : Dimensions (spatial reference, extent, and cellsize)
+        #       8 : Resampling type
+        #       16: Band ID
+        # . invalidateProperties : Bitwise-OR'd integer that indicates the set of properties of the parent dataset that needs to be invalidated. 
+        #       1 : XForm stored by the function raster dataset.
+        #       2 : Statistics stored by the function raster dataset.
+        #       4 : Histogram stored by the function raster dataset.
+        #       8 : The key properties stored by the function raster dataset.
 
         return {
-          'extractBands': (),
+          'extractBands': (0, 2),       # we only need the first (red) and third (blue) band.
           'compositeRasters': False,
-          'referenceProperties': 1 | 2 | 4 | 8 | 16,
-          'invalidateProperties': 2 | 4
+          'referenceProperties': 2 | 4 | 8, # inherit everything but the pixel type (1) and band IDs (16) 
+          'invalidateProperties': 2 | 4 | 8 # invalidate these aspects because we are modifying pixel values and updating key properties.
         }
-
-#  esriRasterPixelType      = 1,
-#  esriRasterNoData         = 2,
-#    helpstring("The spatial reference, extent, and cellsize.")
-#  esriRasterDimension      = 4,
-#  esriRasterResamplingType = 8,
-#  esriRasterBandID         = 16,
-
-#      helpstring("XForm stored by the function raster dataset.")
-#esriFunctionRasterDatasetPropertyGeodataXform   = 1,
-#    helpstring("Statistics stored by the function raster dataset.")
-#  esriFunctionRasterDatasetPropertyStatistics     = 2,
-#    helpstring("Histogram stored by the function raster dataset.")
-#  esriFunctionRasterDatasetPropertyHistograms     = 4,
-#    helpstring("The key properties stored by the function raster dataset.")
-#  esriFunctionRasterDatasetPropertyKeyProperties  = 8,
 
     def updateRasterInfo(self, **kwargs):       # This method can update the output raster's information
         # This method, if defined, gets called after .getConfiguration().
@@ -105,10 +100,10 @@ class Reference():
         #   noData :                Float.
         #   cellSize :              Tuple(2 x floats) representing x- and y-cell-size values.
         #   nativeExtent :          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
-        #   nativeSpatialReference: Int repersenting the EPSG code of the native image coordinate system.
+        #   nativeSpatialReference: Int representing the EPSG code of the native image coordinate system.
         #   geodataXform :          XML-string representation of the associated XForm between native image and map coordinate systems.
         #   extent :                Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the map coordinates.
-        #   spatialReference :      Int repersenting the EPSG code of the raster's map coordinate system.
+        #   spatialReference :      Int representing the EPSG code of the raster's map coordinate system.
         #   colormap:               Tuple(ndarray(int32), 3 x ndarray(uint8)) A tuple of four arrays where the first array contains 32-bit integers 
         #                           corresponding to pixel values in the indexed raster. The subsequent three arrays contain unsigned 8-bit integers 
         #                           corresponding to the Red, Green, and Blue components of the mapped color. The sizes of all arrays 
@@ -155,16 +150,16 @@ class Reference():
           raise Exception("No input raster was provided.")
 
         inputBlock = pixelBlocks['raster_pixels']           # get pixels of an raster
-        red  = np.array(inputBlock[0], dtype='float')       # assuming red's the first band
-        blue = np.array(inputBlock[2], dtype='float')       # assuming blue's the third band
-        outBlock = (red + blue) / 2.0
+        red  = np.array(inputBlock[0], dtype='float')       # assuming red's the first band 
+        blue = np.array(inputBlock[1], dtype='float')       # assuming blue's the second band... per extractBands in .getConfiguration() 
+        outBlock = (red + blue) / 2.0                       # this is just an example. nothing complicated here. 
 
         np.copyto(pixelBlocks['output_pixels'], outBlock, casting='unsafe')     # copy local array to output pixel block.
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):       # This method can update dataset-level or band-level key metadata.
-        # When a request for a datset's key metadata is made, this method (if present) allows the python raster function 
-        # to invalidate or override specific requests. 
+        # When a request for a dataset's key metadata is made, this method (if present) allows the python raster function 
+        # to invalidate or overwrite specific requests. 
 
         # The names argument is a tuple of property names being requested. An empty tuple indicates that all properties are being requested. 
         # The bandIndex argument is a integer representing the raster band for which key metadata is being requested. 
