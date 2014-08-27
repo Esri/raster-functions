@@ -74,7 +74,7 @@ class Reference():
         return {
           'extractBands': (0, 2),       # we only need the first (red) and third (blue) band.
           'compositeRasters': False,
-          'inheritProperties': 2 | 4 | 8, # inherit everything but the pixel type (1) and band IDs (16) 
+          'inheritProperties': 2 | 4 | 8, # inherit everything but the pixel type (1)
           'invalidateProperties': 2 | 4 | 8 # invalidate these aspects because we are modifying pixel values and updating key properties.
         }
 
