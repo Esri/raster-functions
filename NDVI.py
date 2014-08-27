@@ -60,7 +60,7 @@ class NDVI():
         return {
           "extractBands": (scalars["red"], scalars["ir"]),      # extract only the two bands corresponding to user-specified red and infrared band indexes.
           "compositeRasters": False,                            # input is a single raster, band compositing doesn't apply.
-          "referenceProperties": 2 | 4 | 8,                     # 
+          "inheritProperties": 2 | 4 | 8,                       # 
           "invalidatedProperties": 2 | 4 | 8                    # reset any statistics and histogram that might be held by the parent dataset (because this function modifies pixel values). 
         }
 
