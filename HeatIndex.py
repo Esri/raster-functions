@@ -27,17 +27,17 @@ class HeatIndex():
                 'name': 'temperature',
                 'dataType': 2,                  # raster
                 'value': None,
+                'required': True,
                 'displayName': "Temperature Raster",
-                'description': "A single-band raster where pixel values represent ambient air temperature in Fahrenheit.",
-                'required': True
+                'description': "A single-band raster where pixel values represent ambient air temperature in Fahrenheit."
             },
             {
                 'name': 'rh',
                 'dataType': 2,                  # raster
                 'value': None,
+                'required': True,
                 'displayName': "Relative Humidity Raster",
-                'description': "A single-band raster where pixel values represent relative humidity as a percentage value between 0 and 100.",
-                'required': True
+                'description': "A single-band raster where pixel values represent relative humidity as a percentage value between 0 and 100."
             },
         ]
 
