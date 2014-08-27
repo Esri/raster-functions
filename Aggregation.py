@@ -26,9 +26,9 @@ class Aggregation():
                 'name': 'rasters',
                 'dataType': 3,                                      # multiple rasters
                 'value': None,
-                'displayName': 'Rasters',
                 'required': True,
-                'description': 'The set of rasters to aggregate.',
+                'displayName': "Rasters",
+                'description': "The set of rasters to aggregate.",
             },]
 
     def getConfiguration(self, **scalars):
