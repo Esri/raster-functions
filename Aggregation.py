@@ -33,16 +33,16 @@ class Aggregation():
 
     def getConfiguration(self, **scalars):
         return {
-          "referenceProperties": 2 | 4 | 8,                         #
-          "invalidateProperties": 2 | 4                             # 
+          "inheritProperties": 2 | 4 | 8,                           # inherit everything but the pixel type (1)
+          "invalidateProperties": 2 | 4                             # invalidate histogram and statistics because we are modifying pixel values
         }
 
     def updateRasterInfo(self, **kwargs):
-        kwargs["output_rasterInfo"]["pixelType"] = "32_BIT_FLOAT"   # output pixels are floating-point values
+        kwargs["output_info"]["pixelType"] = "32_BIT_FLOAT"         # output pixels are floating-point values
         return kwargs
 
     def updatePixels(self, **pixelBlocks):
-        inBlocks = pixelBlocks["rasters_pixelBlock"]                # get a tuple of pixel blocks where each element is...
+        inBlocks = pixelBlocks["rasters_pixels"]                    # get a tuple of pixel blocks where each element is...
         n = len(inBlocks)                                           # ...a numpy array corresponding to the pixel block of an input raster
         if (n < 1):
           raise Exception("No input rasters provided.")
@@ -51,5 +51,5 @@ class Aggregation():
         for i in range(1, n):                                       # add each subsequent input block to our local output array
           outBlock = outBlock + np.array(inBlocks[i], dtype="float")
 
-        np.copyto(pixelBlocks["output_pixelBlock"], outBlock, casting="unsafe")  # copy local array to output pixel block.
+        np.copyto(pixelBlocks["output_pixels"], outBlock, casting="unsafe")  # copy local array to output pixel block.
         return pixelBlocks
