@@ -2,10 +2,9 @@ import numpy as np
 
 
 ### This class serves as a quick reference for all methods and attributes associated with a python raster function. 
-### It doesn't performs any processing. 
 ### Feel free to use this template a starting point for your implementation or as a cheat-sheet. 
 
-class Reference():                                      
+class Reference():
     ## Class name defaults to module name unless specified in the Python Adapter function property page
 
     def __init__(self):     # Intialize your class' attributes here.
@@ -16,122 +15,168 @@ class Reference():
         # This method must be defined.
         # Each entry in the list is a dictionary that corresponds to an input parameter--and describes the parameter.
         # These are the recognized attributes of a parameter: 
-        #   name        : The keyword associated with this parameter that enables dictionary lookup in other methods
-        #   dataType    : The data type of the value held by this parameter.
+        #   name :        The keyword associated with this parameter that enables dictionary lookup in other methods
+        #   dataType :    The data type of the value held by this parameter.
         #                 Allowed values: {0: numeric, 1: string, 2: raster, 3: rasters, 4: boolean}
-        #   value       : The default value associated with this parameter.
-        #   required    : Indicates whether this parameter is required or optional. Allowed values: {True, False}.
+        #   value :       The default value associated with this parameter.
+        #   required :    Indicates whether this parameter is required or optional. Allowed values: {True, False}.
         #   displayName : A friendly name that represents this parameter in Python Adapter function's property page and other UI components
-        #   domain      : Indicates the set of allowed values for this parameter. If specified, the property page shows a drop-down list pre-populated with these values. 
+        #   domain :      Indicates the set of allowed values for this parameter. 
+        #                 If specified, the property page shows a drop-down list pre-populated with these values. 
         #                 This attribute is applicable only to string parameters (dataType: 1).
         #   description : A detailed description of this parameter primarily displayed as tooltip in Python Adapter function's property page.
         
-        return [                                    
-            {                                       
-                'name': 'keyword',
-                'dataType': 0,
+        return [
+            {
+                'name': 'raster',
+                'dataType': 2,
                 'value': None,
                 'required': True,
+                'displayName': "Input Raster",
+                'description': "The story of this raster...",      
+            },
+            {
+                'name': 'processing_parameter',
+                'dataType': 0,
+                'value': "<default value>",
+                'required': False,
                 'displayName': "Friendly Name",
                 'domain': ('Value 1', 'Value 2'),
-                'description': "The story...",      
+                'description': "The story of this parameter...",
             },
 
             # ... add dictionaries here for additional parameters
         ]
 
-    def getConfiguration(self, **scalars):      # This method can override aspects of function raster dataset based on all scalar (non-raster) user inputs.
+    def getConfiguration(self, **scalars):      # This method can override aspects of parent dataset based on all scalar (non-raster) user inputs.
         # This method, if defined, gets called after .getParameterInfo() but before .updateRasterInfo(). 
         # Use scalar['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
         # These are the recognized configuration attributes:
-        #   extractBands            : 
-        #   compositeRasters        :
-        #   referenceProperties     :
-        #   invalidateProperties    :
+        #   extractBands : xxx
+        #   compositeRasters :
+        #   referenceProperties :
+        #   invalidateProperties :
 
         return {
           'extractBands': (),
           'compositeRasters': False,
-          'referenceProperties': 1 | 2 | 4,
+          'referenceProperties': 1 | 2 | 4 | 8 | 16,
           'invalidateProperties': 2 | 4
         }
+
+#  esriRasterPixelType      = 1,
+#  esriRasterNoData         = 2,
+#    helpstring("The spatial reference, extent, and cellsize.")
+#  esriRasterDimension      = 4,
+#  esriRasterResamplingType = 8,
+#  esriRasterBandID         = 16,
+
+#      helpstring("XForm stored by the function raster dataset.")
+#esriFunctionRasterDatasetPropertyGeodataXform   = 1,
+#    helpstring("Statistics stored by the function raster dataset.")
+#  esriFunctionRasterDatasetPropertyStatistics     = 2,
+#    helpstring("Histogram stored by the function raster dataset.")
+#  esriFunctionRasterDatasetPropertyHistograms     = 4,
+#    helpstring("The key properties stored by the function raster dataset.")
+#  esriFunctionRasterDatasetPropertyKeyProperties  = 8,
 
     def updateRasterInfo(self, **kwargs):       # This method can update the output raster's information
         # This method, if defined, gets called after .getConfiguration().
         # It's invoked each time a function raster dataset containing this python function is initialized. 
+
         # kwargs contains all user-specified scalar values and information associated with all input rasters.
         # Use kwargs['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
+        
         # If 'keyword' represents a raster, kwargs['keyword_info'] will be a dictionary representing the the information associated with the raster. 
+        # Access aspects of a particular raster's information like this: kwargs['<rasterName>_info']['<propertyName>']
+        # where <rasterName> corresponds to a raster parameter where 'rasterName' is the value of the 'name' attribute of the parameter.
+        # and <propertyName> is an aspect of the raster information.
+
+        # If <rasterName> represents a parameter of type rasters (dataType: 3), then kwargs['<rasterName>_info'] is a tuple of raster info dictionaries.
+
         # kwargs['output_info'] is always available and populated with values based on the first raster parameter and .getConfiguration().
         # This method can update the values of the dictionary in kwargs['output_info'] based on the operation in .updatePixels() 
 
-        # Access aspects of a particular raster's information like this: kwargs['<rasterName>_info']['<propertyName>']
-        # where <rasterName> corresponds to a raster parameter xxx
-        # and <propertyName> is an aspect of the raster information.
-
-        # These are the recognized properties of raster information:
-        #   rasterAttributeTable    : Tuple(String + Tuple(Strings)) : Tuple containing path to the attribute table and field names.
-        #   bandCount               : Int
-        #   blockHeight             : Int
-        #   blockWidth              : Int
-        #   cellSize                : Tuple(Floats) : Tuple of x- and y-cell-size values.
-        #                           : 
-        #   colormap                : Tuple(ndarray(int32), ndarray(uint8), ndarray(uint8), ndarray(uint8)) : A tuple of four arrays where the first array contains 32-bit integers corresponding to pixel values in the indexed raster. 
-        #                           : The subsequent three arrays contain unsigned 8-bit integers corresponding to the Red, Green, and Blue components of the mapped color. The sizes of all arrays must match and corresponds to the number of colors in the RGB image. 
-        #                           : 
-        #   extent                  : Tuple(Floats) : Tuple of XMin, YMin, XMax, YMax values.
-        #   firstPyramidLevel       : Int: 
-        #   format                  : String: 
-        #   geodataXform            : String: XML-string representation of the associated XForm.
-        #   histogram               : Tuple(numpy.ndarrays): Tuple of histogram values. Each value is a numpy array of histogram values for each band.
-        #   levelOfDetails          : Int: The number of level of details in the input raster.
-        #   maximumCellSize         : Tuple(Floats): Tuple of x and y cell size values.
-        #   maxPyramidLevel         : Int
-        #   nativeExtent            : Tuple(Floats): Tuple of XMin, YMin, XMax, YMax values.
-        #   nativeSpatialReference  : Int: EPSG code for the spatial reference.
-        #   noData                  : Float
-        #   origin                  : Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
-        #   pixelType               : String: String representation of pixel type of the input raster.
-        #   resampling              : Bool
-        #   spatialReference        : Int: EPSG code for the spatial reference.
-        #   bandSelection           : Bool
-        #   statistics              : Tuple(Dicts): Tuple of statistics values. Each vale is a dictionary contains the following attributes for each band. 
-        #   . minimum               : Float
-        #   . maximum               : Float
-        #   . mean                  : Float
-        #   . standardDeviation     : Float
-        #   . skipFactorX           : Int
-        #     skipFactorY           : Int
+        # These are the properties associated with a raster information:
+        #   bandCount :             Integer representing the number of bands in the raster. 
+        #   pixelType :             String representation of pixel type of the raster. These are the allowed values:
+        #                           {'8_BIT_UNSIGNED', '8_BIT_SIGNED', '16_BIT_UNSIGNED', '16_BIT_SIGNED', '32_BIT_UNSIGNED', '32_BIT_SIGNED', 
+        #                            '32_BIT_FLOAT', '1_BIT', '2_BIT', '4_BIT', '64_BIT'}
+        #   noData :                Float.
+        #   cellSize :              Tuple(2 x floats) representing x- and y-cell-size values.
+        #   nativeExtent :          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
+        #   nativeSpatialReference: Int repersenting the EPSG code of the native image coordinate system.
+        #   geodataXform :          XML-string representation of the associated XForm between native image and map coordinate systems.
+        #   extent :                Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the map coordinates.
+        #   spatialReference :      Int repersenting the EPSG code of the raster's map coordinate system.
+        #   colormap:               Tuple(ndarray(int32), 3 x ndarray(uint8)) A tuple of four arrays where the first array contains 32-bit integers 
+        #                           corresponding to pixel values in the indexed raster. The subsequent three arrays contain unsigned 8-bit integers 
+        #                           corresponding to the Red, Green, and Blue components of the mapped color. The sizes of all arrays 
+        #                           must match and correspond to the number of colors in the RGB image. 
+        #   rasterAttributeTable :  Tuple(String, Tuple(Strings)) : A tuple of a string representing the path of the attribute table, 
+        #                           and another tuple representing field names.
+        #                           Use the information in this tuple with arcpy.da.TableToNumPyArray() to access the values.
+        #   levelOfDetails :        Int: The number of level of details in the input raster.
+        #   origin :                Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
+        #   resampling :            Bool
+        #   bandSelection :         Bool
+        #   histogram :             Tuple(numpy.ndarrays): Tuple where each entry is an array of histogram values of a band.
+        #   statistics :            Tuple(dicts): Tuple of statistics values. 
+        #                           Each entry in the tuple is a dictionary containing the following attributes of band statistics:
+        #                           . minimum : Float. Approximate lowest value.
+        #                           . maximum : Float. Approximate highest value.
+        #                           . mean : Float. Approximate average value.
+        #                           . standardDeviation : Float. Approximate measure of spread of values about the mean. 
+        #                           . skipFactorX : Int. Number of horizontal pixels between samples when calculating statistics.
+        #                           . skipFactorY : Int. Number of vertical pixels between samples when calculating statistics.
 
         # Note:
-        # . The tuple passed in by CellSize and MaximumCellSize attributes can be used in the arcpy.Point() to create a python point object.
-        # . The tuple passed in by Extent, NativeExtent and Origin attributes can be used in the arcpy.Extent() to create a python extent object.
-        # . The epsg code passed in by NativeSpatialReference and SpatialReference attribute can be used in arcpy.SpatialReference() to create a python spatial refrence object.
-        # . The tuple passed in by RasterAttributeTable attribute can be used in the arcpy.da.TableToNumPyArray() to access the data. The values should be stored back at the path passed in as first argument in the tuple.
+        # . The tuple in cellSize and maximumCellSize attributes can be used to construct an arcpy.Point object.
+        # . The tuple in extent, nativeExtent and origin attributes can be used to construct an arcpy.Extent object.
+        # . The epsg code in nativeSpatialReference and spatialReference attributes can be used to construct an arcpy.SpatialReference() object.
 
         kwargs['output_info']['bandCount'] = 1                # output is a single band raster
         kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'   # ... with floating-point pixel values.
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 200.0}, )   
         return kwargs
 
-    def updatePixels(self, **pixelBlocks):      # This method can update output pixels based on pixel blocks associated with all input rasters.
-        # 
-        # The pixelBlocks dictionary does not contain scalars. 
-        inputBlock = pixelBlocks['raster_pixels']                  # get the input raster pixel block.
-        inputBlocks = pixelBlocks['rasters_pixels']                  # get the input raster pixel block.
-        red = np.array(inblock[0], dtype='float')                   # extractbandids ensures first band is Red.
-        ir = np.array(inblock[1], dtype='float')                    # extractbandids ensures second band is Infrared.
+    def updatePixels(self, **pixelBlocks):      # This method can provide output pixels based on pixel blocks associated with all input rasters.
+        # A python raster function that doesnt actively modify out pixel values doesn't need to define this method. 
 
-        np.copyto(pixelBlocks['output_pixels'], outblock, casting='unsafe')              # copy local array to output pixel block.
+        # The pixelBlock keyword argument contains pixels and mask associated with each input raster.
+        # If 'keyword' represents a parameter of type raster, pixelBlocks['keyword_pixels'] and pixelBlocks['keyword_mask'] are 
+        # numpy.ndarrays of pixel and mask values. If 'keyword' represents a parameter of type rasters, these are tuples of ndarrays.
+        # The arrays are three-dimensional for multiband rasters. 
+        
+        # This method can update pixelBlocks['output_pixels'] and pixelBlocks['output_mask']. 
+        # Note: the pixelBlocks dictionary does not contain any scalars parameters.
+
+        if not pixelBlocks.has_key("raster_pixels"):
+          raise Exception("No input raster was provided.")
+
+        inputBlock = pixelBlocks['raster_pixels']           # get pixels of an raster
+        red  = np.array(inputBlock[0], dtype='float')       # assuming red's the first band
+        blue = np.array(inputBlock[2], dtype='float')       # assuming blue's the third band
+        outBlock = (red + blue) / 2.0
+
+        np.copyto(pixelBlocks['output_pixels'], outBlock, casting='unsafe')     # copy local array to output pixel block.
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):       # This method can update dataset-level or band-level key metadata.
-        # bandIndex == -1 indicates that dataset-level key properties are being requested.
+        # When a request for a datset's key metadata is made, this method (if present) allows the python raster function 
+        # to invalidate or override specific requests. 
 
-        if bandIndex == -1:
-            keyMetadata['datatype'] = 'Processed'               # outgoing raster is now 'Processed'
-        elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
+        # The names argument is a tuple of property names being requested. An empty tuple indicates that all properties are being requested. 
+        # The bandIndex argument is a integer representing the raster band for which key metadata is being requested. 
+        # bandIndex == -1 indicates that the request is for dataset-level key properties.
+        # The keyMetadata keyword argument contains all currently known key metadata (or a subset as defined by the names tuple). 
+        
+        # This method can update the keyMetadata dictionary and must return it. 
+
+        if bandIndex == -1:                             # dataset-level properties           
+            keyMetadata['datatype'] = 'Processed'       # outgoing dataset is now 'Processed'
+        elif bandIndex == 0:                            # properties for the first band
+            keyMetadata['wavelengthmin'] = None         # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
-            keyMetadata['bandname'] = 'NDVI'
+            keyMetadata['bandname'] = 'Red_and_Blue'    # ... or something meaningful
         return keyMetadata
