@@ -60,7 +60,7 @@ class KeyMetadata():
 
     def getConfiguration(self, **scalars):
         return { 
-            "invalidatedProperties": 8          # reset any key properties held by the parent function raster dataset
+            "invalidateProperties": 8           # reset any key properties held by the parent function raster dataset
         }
 
     def updateRasterInfo(self, **kwargs):
