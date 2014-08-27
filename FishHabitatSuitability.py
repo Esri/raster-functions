@@ -18,53 +18,53 @@ import numpy as np
 
 class FishHabitatSuitability():
     def __init__(self):
-        self.name = "FishHabitatSuitability Function"
-        self.description = "Computes fish habitat suitability by depth"
-        self.depthval = "0"
+        self.name = "Fish Habitat Suitability Function"
+        self.description = "Computes fish habitat suitability by depth."
+        self.depth = 0.0
 
-        #Define function parameters
+    def getParameterInfo(self):
         self.argumentinfo = [{
-                "name": "temperature",
-                "datatype": 2,
-                "value": "",
-                "displayname": "Surface Temperature",
-                "required": True
+                'name': 'temperature',
+                'datatype': 2,
+                'value': None,
+                'displayname': 'Surface Temperature Raster',
+                'required': True
             },
             {
-                "name": "salinity",
-                "datatype": 2,
-                "value": "",
-                "displayname": "Surface Sanility",
-                "required": True
+                'name': 'salinity',
+                'datatype': 2,
+                'value': None,
+                'displayname': 'Surface Salinty Raster',
+                'required': True
             },
             {
-                "name": "depth",
-                "datatype": 0,
-                "value": 0.0,
-                "displayname": "Ocean Depth",
-                "required": True
+                'name': 'depth',
+                'datatype': 0,
+                'value': self.depth,
+                'displayname': 'Ocean Depth',
+                'required': True
             }]
 
-    def getconfiguration(self, **scalars):
+    def getConfiguration(self, **scalars):
         return {
-            "referenceproperties": 2 | 4
+            'inheritProperties': 2 | 4,
+            'invalidateProperties': 2 | 4 | 8
         }
 
     def bind(self, **kwargs):
-        kwargs["output_rasterinfo"]["bandcount"] = 1
-        kwargs["output_rasterinfo"]["pixeltype"] = "32_BIT_FLOAT"
-        kwargs["output_rasterinfo"]["statistics"] = ({"minimum": 0.0, "maximum": 1.0}, )
-        kwargs["output_rasterinfo"]["histogram"] = ()
-        self.depthval = abs(float(kwargs["depth"]))
-
+        kwargs['output_info']['bandCount'] = 1
+        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'
+        kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 1.0}, )
+        kwargs['output_info']['histogram'] = ()
+        self.depth = abs(float(kwargs['depth']))
         return kwargs
 
     def read(self, **kwargs):
-        temperatureblock = kwargs["temperature_pixelblock"]
-        salinityblock = kwargs["salinity_pixelblock"]
+        temperatureblock = kwargs['temperature_pixels']
+        salinityblock = kwargs['salinity_pixels']
 
-        t_pb = np.array(temperatureblock, dtype="float")
-        s_pb = np.array(salinityblock, dtype="float")
+        t_pb = np.array(temperatureblock, dtype='float')
+        s_pb = np.array(salinityblock, dtype='float')
 
         #Temperature(c)
         tmina = 17.99
@@ -95,32 +95,26 @@ class FishHabitatSuitability():
         dminp = 2
         dmaxp = 11
         dmaxa = 20
-        if self.depthval <= 2:
-            if self.depthval < 0:
+        if self.depth <= 2:
+            if self.depth < 0:
                 suitd = 0
             else:
-                suitd = (self.depthval - dmina) / (dminp - dmina)
-        elif self.depthval >= 11:
-            if self.depthval > 20:
+                suitd = (self.depth - dmina) / (dminp - dmina)
+        elif self.depth >= 11:
+            if self.depth > 20:
                 suitd = 0
             else:
-                suitd = (self.depthval - dmaxa) / (dmaxp - dmaxa)
+                suitd = (self.depth - dmaxa) / (dmaxp - dmaxa)
         else:
             suitd = 1
 
         #Get overall probability by timing all conditions
         out_pb = (t_pb * s_pb) * suitd
 
-        np.copyto(kwargs["output_pixelblock"], out_pb, casting="unsafe")
+        np.copyto(kwargs['output_pixels'], out_pb, casting='unsafe')
         return kwargs
 
-    def getproperty(self, name, defaultvalue, **kwargs):
-        if name.lower == "variable":
-            return "FishHabitatSuitability"
-        else:
-            return defaultvalue
-
-    def getallproperties(self, **args):
-        args["variable"] = "FishHabitatSuitability"
-        return args
-
+    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
+        if bandIndex == -1:
+            keyMetadata['variable'] = 'FishHabitatSuitability'
+        return keyMetadata
