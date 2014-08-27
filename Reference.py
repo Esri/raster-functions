@@ -133,6 +133,7 @@ class Reference():
         kwargs['output_info']['bandCount'] = 1                # output is a single band raster
         kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'   # ... with floating-point pixel values.
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 200.0}, )   
+        kwargs['output_info']['histogram'] = ()   
         return kwargs
 
     def updatePixels(self, **pixelBlocks):      # This method can provide output pixels based on pixel blocks associated with all input rasters.
