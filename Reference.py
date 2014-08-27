@@ -40,8 +40,8 @@ class Reference():
                 'dataType': 0,
                 'value': "<default value>",
                 'required': False,
-                'displayName': "Friendly Name",
                 'domain': ('Value 1', 'Value 2'),
+                'displayName': "Friendly Name",
                 'description': "The story of this parameter...",
             },
 
