@@ -1,25 +1,22 @@
-# raster-functions-python
+# ArcGIS Raster Functions
 
-???.  Learn more [here](http://www.arcgis.com/about/).
+This repository houses *raster function templates* (as .rft.xml files) that connect multiple *raster functions* as a chain to describe image processing operation. You can apply easily these template on a raster dataset, a mosaic dataset, or an image service to enable on-the-fly processing. This repository also contains new *raster functions* written in Python that extend the image processing capabilities of ArcGIS. 
 
-## Features
-* A - AAA
-
-## Instructions
-
-1. Step 1
-2. Step 2 
+Jump to the [Resources]() section for links to pages that elaborate on these concepts.
 
 ## Requirements
 
-* 1
-* 2
+* ArcGIS 10.3
+* Python 2.7 or above (if you plan to modify or create Python raster functions) 
 
 ## Resources
 
-* [ArcGIS for JavaScript API Resource Center](http://help.arcgis.com/en/webapi/javascript/arcgis/index.html)
-* [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
-* [twitter@esri](http://twitter.com/esri)
+* [Rasters with functions](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000000m000000)
+* [A blog on raster functions](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
+* [Editing function chain templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
+* [Editing functions on a raster dataset](http://resources.arcgis.com/en/help/main/10.2/index.html#/Editing_functions_on_a_raster_dataset/009t000001zs000000/)
+* [Image Analysis window: Processing section](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000000m7000000)
+* [Create new raster function templates using the template editor](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t00000234000000)
 
 ## Issues
 
