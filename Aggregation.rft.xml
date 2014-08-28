@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlRasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
+  <Name>Aggregate</Name>
+  <Description>A raster function template.</Description>
+  <Function xsi:type="typens:PythonAdapterFunction">
+    <Name>Python Adapter Function</Name>
+    <Description>Adapter function for raster functions written in python.</Description>
+    <PixelType>F32</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:PythonAdapterFunctionArguments">
+    <Names xsi:type="typens:ArrayOfString">
+      <String>PythonModule</String>
+      <String>Rasters</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType">
+      <AnyType xsi:type="xs:string">Aggregation.py</AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable">
+        <Name>Raster[]</Name>
+        <Description>The set of overlapping rasters to aggregate.</Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail></Thumbnail>
+  <Definition></Definition>
+  <Group>GroupName</Group>
+  <Tag>Tag</Tag>
+</XmlRasterFunctionTemplate>
