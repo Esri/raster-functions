@@ -23,6 +23,7 @@ class NDVI():
         self.applyScaling = True
         self.applyColormap = False
 
+
     def getParameterInfo(self):
         return [
             {
@@ -39,7 +40,7 @@ class NDVI():
                 'value': 1,
                 'required': True,
                 'displayName': "Red Band Index",
-                'description': "The zero-based index of the red band."
+                'description': "The index of the red band. The first band has index 1."
             },
             {
                 'name': 'ir',
@@ -47,7 +48,7 @@ class NDVI():
                 'value': 2,
                 'required': True,
                 'displayName': "Infrared Band Index",
-                'description': "The zero-based index of the infrared band."
+                'description': "The index of the infraredband. The first band has index 1."
             },
             {
                 'name': 'method',
@@ -60,13 +61,19 @@ class NDVI():
             },
         ]
 
+
     def getConfiguration(self, **scalars):
+        red, ir = 1, 2
+        if scalars.has_key('red'): red = scalars['red']
+        if scalars.has_key('ir'): ir = scalars['ir']
+
         return {
-          'extractBands': (scalars['red'], scalars['ir']),      # extract only the two bands corresponding to user-specified red and infrared band indexes.
+          'extractBands': (red - 1, ir - 1),                    # extract only the two bands corresponding to user-specified red and infrared band indexes.
           'compositeRasters': False,                            # input is a single raster, band compositing doesn't apply.
           'inheritProperties': 2 | 4 | 8,                       # 
           'invalidatedProperties': 2 | 4 | 8                    # reset any statistics and histogram that might be held by the parent dataset (because this function modifies pixel values). 
         }
+
 
     def updateRasterInfo(self, **kwargs):
         if kwargs.has_key('method'):                            # update flags based on user input
@@ -92,8 +99,8 @@ class NDVI():
         kwargs['output_info']['histogram'] = ()           # we know a nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = pixelType    # bit-depth of the outgoing NDVI raster based on user-specified parameters
         kwargs['output_info']['colormap'] = colormap      # optional colormap if requesting for an color image
-  
         return kwargs
+
 
     def updatePixels(self, **pixelBlocks):
         inBlock = pixelBlocks['raster_pixels']                  # get the input raster pixel block
@@ -107,6 +114,7 @@ class NDVI():
 
         np.copyto(pixelBlocks['output_pixels'], outBlock, casting='unsafe')      # copy local array to output pixel block
         return pixelBlocks
+
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:

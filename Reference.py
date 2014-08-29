@@ -60,8 +60,8 @@ class Reference():  # Class name defaults to module name unless specified in the
         Use scalar['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
 
         These are the recognized configuration attributes:
-        . extractBands :         Tuple(ints) representing the bands of the input raster that need to be extracted.
-                                 If unspecified, all bands of the input raster are available in .updatePixels()
+        . extractBands :         Tuple(ints) containing indexes of bands of the input raster that need to be extracted. 
+                                 The first band has index 0. If unspecified, all bands of the input raster are available in .updatePixels()
         . compositeRasters :     Boolean indicating whether all input rasters are composited as a single multi-band raster. Defaults to False. 
                                  If set to True, a raster by the name 'compositeraster' is available in .updateRasterInfo() and .updatePixels().
         . inheritProperties :    Bitwise-OR'd integer that indicates the set of input raster properties that are inherited by the output raster.
@@ -76,13 +76,15 @@ class Reference():  # Class name defaults to module name unless specified in the
                                  . 2 : Statistics stored by the function raster dataset.
                                  . 4 : Histogram stored by the function raster dataset.
                                  . 8 : The key properties stored by the function raster dataset.
+        . padding :              The number of extra pixels needed on each side of input pixel blocks.
         """
 
         return {
-          'extractBands': (0, 2),           # we only need the first (red) and third (blue) band.
+          'extractBands': (0, 2),            # we only need the first (red) and third (blue) band.
           'compositeRasters': False,
-          'inheritProperties': 2 | 4 | 8,   # inherit everything but the pixel type (1)
-          'invalidateProperties': 2 | 4 | 8 # invalidate these aspects because we are modifying pixel values and updating key properties.
+          'inheritProperties': 2 | 4 | 8,    # inherit everything but the pixel type (1)
+          'invalidateProperties': 2 | 4 | 8, # invalidate these aspects because we are modifying pixel values and updating key properties.
+          'padding': 0                       # No padding needed. Return input pixel block as is. 
         }
 
 
