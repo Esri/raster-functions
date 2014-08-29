@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
+  <Name>Composite</Name>
+  <Description>A raster function template.</Description>
+  <Function xsi:type="typens:CompositeBandFunction">
+    <Name>Composite Band Function</Name>
+    <Description>Combines rasters to form a multiband raster.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:RasterFunctionVariable">
+    <Name>Raster[]</Name>
+    <Description>The collection of all input rasters.</Description>
+    <Value></Value>
+    <IsDataset>false</IsDataset>
+  </Arguments>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group>GroupName</Group>
+  <Tag>Tag</Tag>
+</RasterFunctionTemplate>
