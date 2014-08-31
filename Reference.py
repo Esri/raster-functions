@@ -1,4 +1,4 @@
-`import numpy as np
+import numpy as np
 
 
 """
@@ -45,19 +45,19 @@ class Reference():
             These are the recognized attributes of a parameter: 
             . name :        The keyword associated with this parameter that enables dictionary lookup in other methods
             . dataType :    The data type of the value held by this parameter.
-                            Allowed values: {0: numeric, 1: string, 2: raster, 3: rasters, 4: boolean}
+                            Allowed values: {'numeric', 'string', 'raster', 'rasters', 'boolean'}
             . value :       The default value associated with this parameter.
             . required :    Indicates whether this parameter is required or optional. Allowed values: {True, False}.
             . displayName : A friendly name that represents this parameter in Python Adapter function's property page and other UI components
             . domain :      Indicates the set of allowed values for this parameter. 
                             If specified, the property page shows a drop-down list pre-populated with these values. 
-                            This attribute is applicable only to string parameters (dataType: 1).
+                            This attribute is applicable only to string parameters (dataType='string').
             . description : Details on this parameter that's displayed as tooltip in Python Adapter function's property page.
         """    
         return [
             {
                 'name': 'raster',
-                'dataType': 2,
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayName': "Input Raster",
@@ -65,7 +65,7 @@ class Reference():
             },
             {
                 'name': 'processing_parameter',
-                'dataType': 0,
+                'dataType': 'numeric',
                 'value': "<default value>",
                 'required': False,
                 'domain': ('Value 1', 'Value 2'),
@@ -84,8 +84,8 @@ class Reference():
         It's invoked after .getParameterInfo() but before .updateRasterInfo(). 
 
         Args:
-            Use scalar['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 
-            'keyword' in the .getParameterInfo().
+            Use scalar['x'] to obtain the user-specified value of the scalar whose 'name' attribute is 
+            'x' in the .getParameterInfo().
 
         Returns:
             A dictionary describing the configuration. These are the recognized configuration attributes:
@@ -111,13 +111,19 @@ class Reference():
                                      . 4 : Histogram stored by the function raster dataset.
                                      . 8 : The key properties stored by the function raster dataset.
             . padding :              The number of extra pixels needed on each side of input pixel blocks.
+            . inputMask :            Boolean indicating whether NoData mask arrays associated with all input rasters are needed
+                                     by this function for proper construction of output pixels and mask. 
+                                     If set to True, the input masks are made available in the pixelBlocks keyword 
+                                     argument in .updatePixels(). If unspecified, input masks are not made available--
+                                     in the interest of performance. 
         """
         return {
           'extractBands': (0, 2),            # we only need the first (red) and third (blue) band.
           'compositeRasters': False,
           'inheritProperties': 2 | 4 | 8,    # inherit everything but the pixel type (1)
           'invalidateProperties': 2 | 4 | 8, # invalidate these aspects because we are modifying pixel values and updating key properties.
-          'padding': 0                       # No padding needed. Return input pixel block as is. 
+          'padding': 0,                      # No padding needed. Return input pixel block as is. 
+          'inputMask': False                 #  
         }
 
 
@@ -129,24 +135,25 @@ class Reference():
 
         Args:
             kwargs contains all user-specified scalar values and information associated with all input rasters.
-            Use kwargs['keyword'] to obtain the user-specified value of the scalar whose 'name' attribute is 'keyword' in the .getParameterInfo().
+            Use kwargs['x'] to obtain the user-specified value of the scalar whose 'name' attribute is 'x' in the .getParameterInfo().
         
-            If 'keyword' represents a raster, kwargs['keyword_info'] will be a dictionary representing the the information associated with the raster. 
+            If 'x' represents a raster, kwargs['x_info'] will be a dictionary representing the the information associated with the raster. 
             Access aspects of a particular raster's information like this: kwargs['<rasterName>_info']['<propertyName>']
             where <rasterName> corresponds to a raster parameter where 'rasterName' is the value of the 'name' attribute of the parameter.
             and <propertyName> is an aspect of the raster information.
 
-            If <rasterName> represents a parameter of type rasters (dataType: 3), then kwargs['<rasterName>_info'] is a tuple of raster info dictionaries.
+            If <rasterName> represents a parameter of type rasters (dataType='rasters'), then 
+            kwargs['<rasterName>_info'] is a tuple of raster info dictionaries.
 
             kwargs['output_info'] is always available and populated with values based on the first raster parameter and .getConfiguration().
 
             These are the properties associated with a raster information:
             . bandCount :             Integer representing the number of bands in the raster. 
             . pixelType :             String representation of pixel type of the raster. These are the allowed values:
-                                      {'8_BIT_UNSIGNED', '8_BIT_SIGNED', '16_BIT_UNSIGNED', '16_BIT_SIGNED', '32_BIT_UNSIGNED', '32_BIT_SIGNED', 
-                                      '32_BIT_FLOAT', '1_BIT', '2_BIT', '4_BIT', '64_BIT'}
-            . noData :                Float.
-            . cellSize :              Tuple(2 x floats) representing x- and y-cell-size values.
+                                      {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
+                                      cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
+            . noData :                TODO.
+            . cellSize :              Tuple(2 x floats) representing cell-size in the x- and y-direction.
             . nativeExtent :          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
             . nativeSpatialReference: Int representing the EPSG code of the native image coordinate system.
             . geodataXform :          XML-string representation of the associated XForm between native image and map coordinate systems.
@@ -161,8 +168,8 @@ class Reference():
                                       Use the information in this tuple with arcpy.da.TableToNumPyArray() to access the values.
             . levelOfDetails :        Int: The number of level of details in the input raster.
             . origin :                Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
-            . resampling :            Bool
-            . bandSelection :         Bool
+            . resampling :            Boolean
+            . bandSelection :         Boolean
             . histogram :             Tuple(numpy.ndarrays): Tuple where each entry is an array of histogram values of a band.
             . statistics :            Tuple(dicts): Tuple of statistics values. 
                                       Each entry in the tuple is a dictionary containing the following attributes of band statistics:
@@ -174,8 +181,9 @@ class Reference():
                                       . skipFactorY : Int. Number of vertical pixels between samples when calculating statistics.
                               
         Returns:
-            The updated kwargs dictionary. This method can update the values of the dictionary in kwargs['output_info'] 
-            depending on the kind of operation in .updatePixels() 
+            A dictionary containing updated output raster info. 
+            This method can update the values of the dictionary in kwargs['output_info'] depending on the kind of 
+            operation in .updatePixels() 
 
         Note:
             . The tuple in cellSize and maximumCellSize attributes can be used to construct an arcpy.Point object.
@@ -184,38 +192,68 @@ class Reference():
               arcpy.SpatialReference() object.
         """
         kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
-        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'     # ... with floating-point pixel values.
+        kwargs['output_info']['pixelType'] = 'f4'               # ... with floating-point pixel values.
         kwargs['output_info']['statistics'] = ()                # invalidate any statistics
         kwargs['output_info']['histogram'] = ()                 # invalidate any histogram
         return kwargs
 
 
-    def updatePixels(self, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         """This method can provide output pixels based on pixel blocks associated with all input rasters.
 
         A python raster function that doesn't actively modify output pixel values doesn't need to define this method. 
 
         Args:
-            The pixelBlock keyword argument contains pixels and mask associated with each input raster.
-            For a raster parameter with dataType=2 and name='keyword', pixelBlocks['keyword_pixels'] and 
-            pixelBlocks['keyword_mask'] numpy.ndarrays of pixel and mask values for that input raster. 
-            For a parameter of type rasters (dataType=3), these are tuples of ndarrays--one entry per raster.
+            . tlc : Tuple(2 x floats) representing the coordinates of the top-left corner of the pixel request.
+            . shape : Tuple(ints) representing the shape of ndarray that defines the output pixel block. 
+                For a single-band pixel block, the tuple contains two ints (rows, columns). 
+                For multi-band output raster, the tuple defines a three-dimensional array (bands, rows, columns).
+                The shape associated with the output pixel block must match this arguments value.
+            . props : A dictionary containing properties that define the virtual output raster from which 
+                a pixel block--of size and location is defined by 'shape' and 'tlc' arguments--is being requested.
+                These are the available attributes in this dictionary:
+                . extent : Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the output 
+                           raster's map coordinates.
+                . pixelType : String representation of pixel type of the raster. These are the allowed values:
+                              {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
+                              cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
+                . spatialReference : Int representing the EPSG code of the output raster's map coordinate system.
+                . cellSize : Tuple(2 x floats) representing cell-size in the x- and y-direction.                
+                . width : Number of columns of pixels in the output raster.
+                . height : Number of rows of pixels in the output raster.
+                . noData : TODO.
+            . pixelBlocks : Keyword argument containing pixels and mask associated with each input raster.
+                            
+            For a raster parameter with dataType='raster' and name='x', pixelBlocks['x_pixels'] and 
+            pixelBlocks['x_mask'] are numpy.ndarrays of pixel and mask values for that input raster. 
+            For a parameter of type rasters (dataType='rasters'), these are tuples of ndarrays--one entry per raster.
             The arrays are three-dimensional for multiband rasters. 
 
-            Note that the pixelBlocks dictionary does not contain any scalars parameters.
+            Note:
+            . The pixelBlocks dictionary does not contain any scalars parameters.
 
         Returns:
-            An updated pixelBlocks dictionary with output_pixels and output_mask.
+            A dictionary with a numpy array containing pixel values in the 'output_pixels' key and, 
+            optionally, an array representing the mask in the 'output_mask' key.
+
+            The 'shape' argument defines the shape of the ndarray in 'output_pixels'. It's two- or three-
+            dimensional depending on whether it's a single- or multi-band output raster pixel block.
+             
+            If a mask is returned, the shape of the ndarray in 'output_mask' is defined by the last two values 
+            of the 'shape' tuple. Mask is always two-dimensional.
+
+        References:
+            
         """
         if not pixelBlocks.has_key("raster_pixels"):
           raise Exception("No input raster was provided.")
 
         inputBlock = pixelBlocks['raster_pixels']           # get pixels of an raster
-        red  = np.array(inputBlock[0], dtype='float')       # assuming red's the first band 
-        blue = np.array(inputBlock[1], dtype='float')       # assuming blue's the second band... per extractBands in .getConfiguration() 
+        red  = np.array(inputBlock[0], 'f4')                # assuming red's the first band 
+        blue = np.array(inputBlock[1], 'f4')                # assuming blue's the second band... per extractBands in .getConfiguration() 
         outBlock = (red + blue) / 2.0                       # this is just an example. nothing complicated here. 
 
-        np.copyto(pixelBlocks['output_pixels'], outBlock, casting='unsafe')     # copy local array to output pixel block.
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
         return pixelBlocks
 
 
