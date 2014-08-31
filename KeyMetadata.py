@@ -15,6 +15,7 @@ email: contracts@esri.com
 
 
 class KeyMetadata():
+
     def __init__(self):
         self.name = "Key Metadata"
         self.description = "Override key metadata in a function chain."
@@ -22,11 +23,12 @@ class KeyMetadata():
         self.propertyValue = None
         self.bandNames = []
 
+
     def getParameterInfo(self):
         return [
             {
                 'name': 'raster',
-                'dataType': 2,                  # raster
+                'dataType': 'raster',
                 'value': '',
                 'displayName': "Raster",
                 'required': True,
@@ -34,7 +36,7 @@ class KeyMetadata():
             },
             {
                 'name': 'property',
-                'dataType': 1,                  # string
+                'dataType': 'string',
                 'value': self.propertyName,
                 'displayName': "Property Name",
                 'required': False,
@@ -42,7 +44,7 @@ class KeyMetadata():
             },
             {
                 'name': 'value',
-                'dataType': 1,                  # string
+                'dataType': 'string',
                 'value': self.propertyValue,
                 'displayName': "Property Value",
                 'required': False,
@@ -50,7 +52,7 @@ class KeyMetadata():
             },
             {
                 'name': 'bands',
-                'dataType': 1,                  # string
+                'dataType': 'string',
                 'value': '',
                 'displayName': "Band Names",
                 'required': False,
@@ -58,17 +60,20 @@ class KeyMetadata():
             }
         ]
 
+
     def getConfiguration(self, **scalars):
         return { 
-            'invalidateProperties': 8           # reset any key properties held by the parent function raster dataset
+            'invalidateProperties': 8,          # reset any key properties held by the parent function raster dataset
+            'inputMask': False
         }
+
 
     def updateRasterInfo(self, **kwargs):
         self.propertyName = kwargs['property']  # remember these user-specified scalar inputs
         self.propertyValue = kwargs['value']
         self.bandNames = kwargs['bands'].split(',')
-       
         return kwargs
+
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:

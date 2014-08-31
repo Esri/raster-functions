@@ -17,15 +17,17 @@ import numpy as np
 
 
 class HeatIndex():
+
     def __init__(self):
         self.name = "HeatIndex Function"
         self.description = "This function combines ambient air temperature and relative humidity to return apparent temperature."
+
 
     def getParameterInfo(self):
         return [
             {
                 'name': 'temperature',
-                'dataType': 2,                  # raster
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayName': "Temperature Raster",
@@ -33,7 +35,7 @@ class HeatIndex():
             },
             {
                 'name': 'rh',
-                'dataType': 2,                  # raster
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayName': "Relative Humidity Raster",
@@ -44,19 +46,20 @@ class HeatIndex():
     def getConfiguration(self, **scalars):
         return {
           'inheritProperties': 2 | 4 | 8,                       # inherit all but the pixel type from the input raster
-          'invalidateProperties': 2 | 4 | 8                     # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
+          'invalidateProperties': 2 | 4 | 8,                    # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
+          'inputMask': False                                    # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
         }
 
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
         kwargs['output_info']['histogram'] = ()                 # we know a nothing about the histogram of the outgoing raster.
-        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'     # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
+        kwargs['output_info']['pixelType'] = 'f4'               # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
         return kwargs
 
-    def updatePixels(self, **pixelBlocks):
-        t = np.array(pixelBlocks['temperature_pixels'], dtype='float')
-        r = np.array(pixelBlocks['rh_pixels'], dtype='float')
+    def updatePixels(self, tlc, size, props, **pixelBlocks):
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
+        r = np.array(pixelBlocks['rh_pixels'], dtype='f4')
 
         tr = t * r
         rr = r * r
@@ -65,8 +68,8 @@ class HeatIndex():
         trr = t * rr
         ttrr = ttr * r
 
-        output = -42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) + (0.00085282 * trr) - (0.00000199 * ttrr)
-        np.copyto(pixelBlocks['output_pixels'], output, casting='unsafe')
+        outBlock = -42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) + (0.00085282 * trr) - (0.00000199 * ttrr)
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
