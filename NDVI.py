@@ -48,7 +48,7 @@ class NDVI():
                 'value': 2,
                 'required': True,
                 'displayName': "Infrared Band Index",
-                'description': "The index of the infraredband. The first band has index 1."
+                'description': "The index of the infrared band. The first band has index 1."
             },
             {
                 'name': 'method',
@@ -97,7 +97,7 @@ class NDVI():
 
         kwargs['output_info']['bandCount'] = 1            # output is a single band raster
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': maximumValue}, )  # we know something about the stats of the outgoing NDVI raster. 
-        kwargs['output_info']['histogram'] = ()           # we know a nothing about the histogram of the outgoing raster.
+        kwargs['output_info']['histogram'] = ()           # we know nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = pixelType    # bit-depth of the outgoing NDVI raster based on user-specified parameters
         kwargs['output_info']['colormap'] = colormap      # optional colormap if requesting for an color image
         return kwargs

@@ -53,7 +53,7 @@ class HeatIndex():
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
-        kwargs['output_info']['histogram'] = ()                 # we know a nothing about the histogram of the outgoing raster.
+        kwargs['output_info']['histogram'] = ()                 # we know nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = 'f4'               # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
         return kwargs
 
