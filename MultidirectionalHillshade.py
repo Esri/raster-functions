@@ -1,18 +1,3 @@
-#------------------------------------------------------------------------------
-# Copyright 2014 Esri
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#------------------------------------------------------------------------------
-
 import numpy as np
 import math 
 
@@ -34,27 +19,31 @@ class MultidirectionalHillshade():
 
 
     def getParameterInfo(self):
-        return [{
+        return [
+            {
                 'name': 'raster',
-                'dataType': 2,
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayName': "Input Raster",
                 'description': "The primary input raster where pixel values represent elevation.",
-            },]
+            },
+        ]
 
 
     def getConfiguration(self, **scalars): 
         return {
-          'extractBands': (0,),             # we only need the first band.  Comma after zero ensures it's a tuple.
-          'inheritProperties': 4 | 8,       # inherit everything but the pixel type (1) and NoData (2)
-          'invalidateProperties': 2 | 4 | 8 # invalidate these aspects because we are modifying pixel values and updating key properties.
+          'extractBands': (0,),                 # we only need the first band.  Comma after zero ensures it's a tuple.
+          'inheritProperties': 4 | 8,           # inherit everything but the pixel type (1) and NoData (2)
+          'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
+          'padding': 0,                         # TODO
+          'inputMask': False                    # we need the input mask in .updatePixels()
         }
 
 
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1
-        kwargs['output_info']['pixelType'] = '8_BIT_UNSIGNED'
+        kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['colormap'] = ()
@@ -77,8 +66,10 @@ class MultidirectionalHillshade():
 
         return kwargs
 
-    def updatePixels(self, **pixelBlocks):
-        v = np.array(pixelBlocks['raster_pixels'], dtype='float')
+
+    def updatePixels(self, tlc, size, props, **pixelBlocks):
+        # cf: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+        v = np.array(pixelBlocks['raster_pixels'], dtype='f4')
         dx, dy = np.gradient(v)
         dx = dx * self.factors[0]
         dy = dy * self.factors[1]
@@ -87,18 +78,19 @@ class MultidirectionalHillshade():
         for i in range(1, 5):
             outBlock = outBlock + (self.weights[i] * self.getHillshade(v, i, dx, dy))
 
-        np.copyto(pixelBlocks['output_pixels'], outBlock, casting='unsafe')     # copy local array to output pixel block.
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
         return pixelBlocks
 
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == - 1:                            # dataset-level properties           
+        if bandIndex == -1:                             # dataset-level properties           
             keyMetadata['datatype'] = 'Processed'       # outgoing dataset is now 'Processed'
         elif bandIndex == 0:                            # properties for the first band
             keyMetadata['wavelengthmin'] = None         # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Hillshade'
         return keyMetadata
+
 
     def getHillshade(self, pixelBlock, index, dx, dy):
         # cf: http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//009z000000z2000000.htm
