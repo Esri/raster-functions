@@ -186,19 +186,19 @@ class Reference():
         return kwargs
 
 
-    def updatePixels(self, tlc, size, props, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         """This method can provide output pixels based on pixel blocks associated with all input rasters.
 
         A python raster function that doesn't actively modify output pixel values doesn't need to define this method. 
 
         Args:
             . tlc : Tuple(2 x floats) representing the coordinates of the top-left corner of the pixel request.
-            . size : Tuple(ints) representing the shape of ndarray that defines the output pixel block. 
+            . shape : Tuple(ints) representing the shape of ndarray that defines the output pixel block. 
                 For a single-band pixel block, the tuple contains two ints (rows, columns). 
                 For multi-band output raster, the tuple defines a three-dimensional array (bands, rows, columns).
-                The shape associated with the output pixel block must match this argument's value.
+                The shape associated with the outgoing pixel block and mask must match this argument's value.
             . props : A dictionary containing properties that define the output raster from which 
-                a pixel block--of size and location is defined by the 'size' and 'tlc' arguments--is being requested.
+                a pixel block--of dimension and location is defined by the 'shape' and 'tlc' arguments--is being requested.
                 These are the available attributes in this dictionary:
                 . extent : Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the output 
                            raster's map coordinates.
@@ -222,16 +222,8 @@ class Reference():
 
         Returns:
             A dictionary with a numpy array containing pixel values in the 'output_pixels' key and, 
-            optionally, an array representing the mask in the 'output_mask' key.
-
-            The 'size' argument defines the shape of the ndarray in 'output_pixels'. It's two- or three-
-            dimensional depending on whether it's a single- or multi-band output raster pixel block.
-             
-            If a mask is returned, the shape of the ndarray in 'output_mask' is defined by the last two values 
-            of the 'size' tuple. Mask is always two-dimensional.
-
-        References:
-            
+            optionally, an array representing the mask in the 'output_mask' key. The shape of both arrays
+            must match the 'shape' argument. 
         """
         if not pixelBlocks.has_key("raster_pixels"):
           raise Exception("No input raster was provided.")

@@ -49,7 +49,7 @@ class Aggregation():
         return kwargs
 
 
-    def updatePixels(self, tlc, size, props, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         inBlocks = pixelBlocks['rasters_pixels']                    # get a tuple of pixel blocks where each element is...
         n = len(inBlocks)                                           # ...a numpy array corresponding to the pixel block of an input raster
         if (n < 1):

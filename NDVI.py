@@ -103,7 +103,7 @@ class NDVI():
         return kwargs
 
 
-    def updatePixels(self, tlc, size, props, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         inBlock = pixelBlocks['raster_pixels']                  # get the input raster pixel block
         red = np.array(inBlock[0], dtype='f4')                  # extractbands ensures first band is Red.
         ir = np.array(inBlock[1], dtype='f4')                   # extractbands ensures second band is Infrared

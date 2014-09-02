@@ -57,7 +57,7 @@ class HeatIndex():
         kwargs['output_info']['pixelType'] = 'f4'               # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
         return kwargs
 
-    def updatePixels(self, tlc, size, props, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
         r = np.array(pixelBlocks['rh_pixels'], dtype='f4')
 
