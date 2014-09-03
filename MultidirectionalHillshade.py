@@ -36,8 +36,8 @@ class MultidirectionalHillshade():
           'extractBands': (0,),                 # we only need the first band.  Comma after zero ensures it's a tuple.
           'inheritProperties': 4 | 8,           # inherit everything but the pixel type (1) and NoData (2)
           'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
-          'padding': 0,                         # TODO
-          'inputMask': False                    # we need the input mask in .updatePixels()
+          'padding': 1,                         # one extra on each each of the input pixel block
+          'inputMask': True                     # we need the input mask in .updatePixels()
         }
 
 
@@ -78,7 +78,14 @@ class MultidirectionalHillshade():
         for i in range(1, 5):
             outBlock = outBlock + (self.weights[i] * self.getHillshade(v, i, dx, dy))
 
-        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'])
+
+        m = np.array(pixelBlocks['raster_mask'], dtype='u1')
+        pixelBlocks['output_mask'] = \
+            m[:-2,:-2]  & m[1:-1,:-2]  & m[2:,:-2]  \
+          & m[:-2,1:-1] & m[1:-1,1:-1] & m[2:,1:-1] \
+          & m[:-2,2:]   & m[1:-1,2:]   & m[2:,2:]
+
         return pixelBlocks
 
 
