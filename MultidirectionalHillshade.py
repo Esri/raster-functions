@@ -11,11 +11,13 @@ class MultidirectionalHillshade():
     def __init__(self):
         self.name = "Multidirectional Hillshade Function"
         self.description = ""
+
+        self.isMD = True
         self.trigLookup = None
-        self.azimuths     = (315.0, 270.0, 225.0, 360.0, 180.0,   0.0)
-        self.elevations   = ( 60.0,  60.0, 60.0,   60.0,  60.0,   0.0)
-        self.weights      = (0.167, 0.278, 0.167, 0.111, 0.056, 0.222)
-        self.factors      = ()
+        self.azimuths   = (315.0, 270.0, 225.0, 360.0, 180.0,   0.0)
+        self.elevations = ( 60.0,  60.0, 60.0,   60.0,  60.0,   0.0)
+        self.weights    = (0.167, 0.278, 0.167, 0.111, 0.056, 0.222)
+        self.factors    = ()
 
 
     def getParameterInfo(self):
@@ -27,6 +29,14 @@ class MultidirectionalHillshade():
                 'required': True,
                 'displayName': "Input Raster",
                 'description': "The primary input raster where pixel values represent elevation.",
+            },
+            {
+                'name': 'md',
+                'dataType': 'boolean',
+                'value': self.isMD,
+                'required': True,
+                'displayName': "Multidirectional",
+                'description': "Indicates whether a multidirectional hillshade is generated.",
             },
         ]
 
@@ -42,6 +52,9 @@ class MultidirectionalHillshade():
 
 
     def updateRasterInfo(self, **kwargs):
+        if kwargs.has_key('md'):
+            self.isMD = kwargs['md']
+
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ()
@@ -67,20 +80,23 @@ class MultidirectionalHillshade():
         return kwargs
 
 
-    def updatePixels(self, tlc, size, props, **pixelBlocks):
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
         # cf: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
         v = np.array(pixelBlocks['raster_pixels'], dtype='f4')
+        m = np.array(pixelBlocks['raster_mask'], dtype='u1')
+
         dx, dy = np.gradient(v)
         dx = dx * self.factors[0]
         dy = dy * self.factors[1]
 
-        outBlock = self.weights[0] * self.getHillshade(v, 0, dx, dy)
-        for i in range(1, 5):
-            outBlock = outBlock + (self.weights[i] * self.getHillshade(v, i, dx, dy))
+        if self.isMD:
+            outBlock = self.weights[0] * self.getHillshade(v, 0, dx, dy)
+            for i in range(1, 5):
+                outBlock = outBlock + (self.weights[i] * self.getHillshade(v, i, dx, dy))
+        else:
+            outBlock = self.getHillshade(v, 0, dx, dy)
 
         pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'])
-
-        m = np.array(pixelBlocks['raster_mask'], dtype='u1')
         pixelBlocks['output_mask'] = \
             m[:-2,:-2]  & m[1:-1,:-2]  & m[2:,:-2]  \
           & m[:-2,1:-1] & m[1:-1,1:-1] & m[2:,1:-1] \
