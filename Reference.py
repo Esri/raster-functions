@@ -102,8 +102,9 @@ class Reference():
             . inputMask :            Boolean indicating whether NoData mask arrays associated with all input rasters are needed
                                      by this function for proper construction of output pixels and mask. 
                                      If set to True, the input masks are made available in the pixelBlocks keyword 
-                                     argument in .updatePixels(). If unspecified, input masks are not made available--
-                                     in the interest of performance. 
+                                     argument in .updatePixels(). For improved performance, input masks are not made available if 
+                                     attribute is unspecified.
+                                      
         """
         return {
           'extractBands': (0, 2),            # we only need the first (red) and third (blue) band.
