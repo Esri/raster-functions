@@ -23,101 +23,101 @@ class FishHabitatSuitability():
         self.depth = 0.0
 
     def getParameterInfo(self):
-        self.argumentinfo = [{
+        self.argumentinfo = [
+            {
                 'name': 'temperature',
-                'datatype': 2,
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayname': "Surface Temperature Raster",
-                'description': "",
+                'description': "A single-band raster where values represent surface temperature in Celsius.",
             },
             {
                 'name': 'salinity',
-                'datatype': 2,
+                'dataType': 2,
                 'value': None,
                 'required': True,
                 'displayname': "Surface Salinty Raster",
-                'description': "",
+                'description': "A single-band raster where values represent surface salinity in PSU.",
             },
             {
                 'name': 'depth',
-                'datatype': 0,
+                'dataType': 0,
                 'value': self.depth,
                 'required': True,
                 'displayname': "Ocean Depth",
-                'description': "",
-            }]
+                'description': "A numeric value representing ocean depth in meters.",
+            }   
+        ]
+
 
     def getConfiguration(self, **scalars):
         return {
-            'inheritProperties': 2 | 4,
-            'invalidateProperties': 2 | 4 | 8
+            'inheritProperties': 2 | 4 | 8,     # inherit everything but the pixel type (1)
+            'invalidateProperties': 2 | 4 | 8   # invalidate these aspects because we are modifying pixels and key metadata
         }
 
-    def bind(self, **kwargs):
+
+    def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1
-        kwargs['output_info']['pixelType'] = '32_BIT_FLOAT'
+        kwargs['output_info']['pixelType'] = 'f4'
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 1.0}, )
         kwargs['output_info']['histogram'] = ()
         self.depth = abs(float(kwargs['depth']))
-        return kwargs
 
-    def read(self, **kwargs):
-        temperatureblock = kwargs['temperature_pixels']
-        salinityblock = kwargs['salinity_pixels']
+        # piece-wise linear parameters for depth...
+        d = self.depth
+        dMinA = 0
+        dMinP = 2
+        dMaxP = 11
+        dMaxA = 20
 
-        t_pb = np.array(temperatureblock, dtype='float')
-        s_pb = np.array(salinityblock, dtype='float')
-
-        #Temperature(c)
-        tmina = 17.99
-        tminp = 26.37
-        tmaxp = 29.15
-        tmaxa = 33.35
-
-        np.putmask(t_pb, t_pb <= tminp, (t_pb - tmina) / (tminp - tmina))
-        np.putmask(t_pb, t_pb >= tmaxp, (t_pb - tmaxa) / (tmaxp - tmaxa))
-        np.putmask(t_pb, (t_pb > tminp) & (t_pb < tmaxp), 1)
-        np.putmask(t_pb, t_pb < 0, 0)
-
-        #Salinity(psu)
-        smina = 28.81
-        sminp = 32.27
-        smaxp = 35.81
-        smaxa = 36.79
-
-        np.putmask(s_pb, s_pb <= sminp, (s_pb - smina) / (sminp - smina))
-        np.putmask(s_pb, s_pb >= smaxp, (s_pb - smaxa) / (smaxp - smaxa))
-        np.putmask(s_pb, (s_pb > sminp) & (s_pb < smaxp), 1)
-        np.putmask(s_pb, s_pb < 0, 0)
-
-        suitd = 0
-
-        #Depth (meter)
-        dmina = 0
-        dminp = 2
-        dmaxp = 11
-        dmaxa = 20
-        if self.depth <= 2:
-            if self.depth < 0:
-                suitd = 0
-            else:
-                suitd = (self.depth - dmina) / (dminp - dmina)
-        elif self.depth >= 11:
-            if self.depth > 20:
-                suitd = 0
-            else:
-                suitd = (self.depth - dmaxa) / (dmaxp - dmaxa)
+        if d < dMinA or d > dMaxA:
+            d = 0.0
+        elif d <= dMinP:
+            d = (d - dMinA) / (dMinP - dMinA)
+        elif d >= dMaxP:
+            d = (d - dMaxA) / (dMaxP - dMaxA)
         else:
-            suitd = 1
+            d = 1
 
-        #Get overall probability by timing all conditions
-        out_pb = (t_pb * s_pb) * suitd
-
-        np.copyto(kwargs['output_pixels'], out_pb, casting='unsafe')
+        self.depth = d
         return kwargs
+
+
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
+        s = np.array(pixelBlocks['salinity_pixels'], dtype='f4')
+
+        # piece-wise linear parameters for temperature...
+        tMinA = 17.99
+        tMinP = 26.37
+        tMaxP = 29.15
+        tMaxA = 33.35
+
+        np.putmask(t, t <= tMinP, (t - tMinA) / (tMinP - tMinA))
+        np.putmask(t, t >= tMaxP, (t - tMaxA) / (tMaxP - tMaxA))
+        np.putmask(t, (t > tMinP) | (t < tMaxP), 1)
+        np.putmask(t, t < 0, 0)
+
+        # piece-wise linear parameters for salinity...
+        sMinA = 28.81
+        sMinP = 32.27
+        sMaxP = 35.81
+        sMaxA = 36.79
+
+        np.putmask(s, s <= sMinP, (s - sMinA) / (sMinP - sMinA))
+        np.putmask(s, s >= sMaxP, (s - sMaxA) / (sMaxP - sMaxA))
+        np.putmask(s, (s > sMinP) | (s < sMaxP), 1)
+        np.putmask(s, s < 0, 0)
+
+        # get overall probability by tying all conditions
+        pixelBlocks['output_pixels'] = np.array(t * s * self.depth).astype(props['pixelType'])
+        return pixelBlocks
+
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
+            keyMetadata['datatype'] = 'Scientific'
             keyMetadata['variable'] = 'FishHabitatSuitability'
         return keyMetadata
