@@ -9,7 +9,7 @@ class MultidirectionalHillshade():
 
     def __init__(self):
         self.name = "Multidirectional Hillshade Function"
-        self.description = ""
+        self.description = "This function computes a hillshade surface from six different directions. The result is a stunning visualization in both high slope and expressionless areas."
 
         self.isMDH = True
         self.zf = 1.0
