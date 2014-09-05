@@ -21,12 +21,18 @@
         <Description>A single-band raster where values represent surface temperature in Celsius.</Description>
         <Value/>
         <IsDataset>true</IsDataset>
+        <Aliases xsi:type="typens:ArrayOfString">
+          <String>Raster1</String>
+        </Aliases>
       </AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>salinity</Name>
         <Description>A single-band raster where values represent surface salinity in PSU.</Description>
         <Value/>
         <IsDataset>true</IsDataset>
+        <Aliases xsi:type="typens:ArrayOfString">
+          <String>Raster2</String>
+        </Aliases>
       </AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>depth</Name>

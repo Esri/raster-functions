@@ -1,29 +1,15 @@
-"""
-COPYRIGHT 1995-2004 ESRI
-
-TRADE SECRETS: ESRI PROPRIETARY AND CONFIDENTIAL
-Unpublished material - all rights reserved under the
-Copyright Laws of the United States.
-
-For additional information, contact:
-Environmental Systems Research Institute, Inc.
-Attn: Contracts Dept
-380 New York Street
-Redlands, California, USA 92373
-email: contracts@esri.com
-"""
-
 import numpy as np
 
 
 class FishHabitatSuitability():
+
     def __init__(self):
         self.name = "Fish Habitat Suitability Function"
         self.description = "Computes fish habitat suitability by depth."
         self.depth = 0.0
 
     def getParameterInfo(self):
-        self.argumentinfo = [
+        return [
             {
                 'name': 'temperature',
                 'dataType': 'raster',
@@ -34,7 +20,7 @@ class FishHabitatSuitability():
             },
             {
                 'name': 'salinity',
-                'dataType': 2,
+                'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayname': "Surface Salinty Raster",
@@ -42,7 +28,7 @@ class FishHabitatSuitability():
             },
             {
                 'name': 'depth',
-                'dataType': 0,
+                'dataType': 'numeric',
                 'value': self.depth,
                 'required': True,
                 'displayname': "Ocean Depth",
@@ -97,7 +83,7 @@ class FishHabitatSuitability():
 
         np.putmask(t, t <= tMinP, (t - tMinA) / (tMinP - tMinA))
         np.putmask(t, t >= tMaxP, (t - tMaxA) / (tMaxP - tMaxA))
-        np.putmask(t, (t > tMinP) | (t < tMaxP), 1)
+        np.putmask(t, (t > tMinP) & (t < tMaxP), 1)
         np.putmask(t, t < 0, 0)
 
         # piece-wise linear parameters for salinity...
@@ -108,7 +94,7 @@ class FishHabitatSuitability():
 
         np.putmask(s, s <= sMinP, (s - sMinA) / (sMinP - sMinA))
         np.putmask(s, s >= sMaxP, (s - sMaxA) / (sMaxP - sMaxA))
-        np.putmask(s, (s > sMinP) | (s < sMaxP), 1)
+        np.putmask(s, (s > sMinP) & (s < sMaxP), 1)
         np.putmask(s, s < 0, 0)
 
         # get overall probability by tying all conditions
