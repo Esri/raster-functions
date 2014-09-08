@@ -229,6 +229,9 @@ class Reference():
         if not pixelBlocks.has_key("raster_pixels"):
           raise Exception("No input raster was provided.")
 
+        if len(shape) != 3 or shape[1] >= 2:
+          raise Exception("Input raster must have at least two bands.")
+
         inputBlock = pixelBlocks['raster_pixels']   # get pixels of an raster
         red  = np.array(inputBlock[0], 'f4')        # assuming red's the first band 
         blue = np.array(inputBlock[1], 'f4')        # assuming blue's the second band... per extractBands in .getConfiguration() 
@@ -264,7 +267,6 @@ class Reference():
 
 
     def isLicensed(self, **productInfo): 
-        # http://resources.arcgis.com/en/help/main/10.2/index.html#//002z0000000z000000
         """This method, if defined, indicates whether this python raster function is licensed to execute. 
         
         This method is invoked soon after the function object is constructed. It enables the python
@@ -289,15 +291,15 @@ class Reference():
             python raster function has passed--and, optional attributes that control additional licensing checks 
             enforced by the Python Adapter:
             . okToRun:      [Required] Boolean indicating whether it's OK to proceed with the use of this 
-                            raster function object.
-                            This attribute must be present and, specifically, set to False for execution to halt. 
-                            Otherwise, it's assumed to be True (and, OK to proceed). 
+                            raster function object. This attribute must be present and, specifically, 
+                            set to False for execution to halt. Otherwise, it's assumed to be True (and, that it's OK to proceed). 
             . message:      [Optional] String representing the message to be displayed to the user or logged 
                             when okToRun is False.
             . productLevel: [Optional] String representing the product license-level expected from the parent application. 
                             Allowed values include {'Basic', 'Standard', 'Advanced'}. 
             . extension:    [Optional] String representing the name of the extension that must be available before
-                            the Python Adapter is allowed to use this raster function.
+                            the Python Adapter is allowed to use this raster function. The set of recognized extension names
+                            are enumerated here: http://resources.arcgis.com/en/help/main/10.2/index.html#//002z0000000z000000.
         """
         major = productInfo.get('major', 0) 
         minor = productInfo.get('minor', 0.0) 
@@ -307,5 +309,5 @@ class Reference():
             'okToRun': major >= 10 and minor >= 3.0 and build >= 4276,
             'message': "The python raster function is only compatible with ArcGIS 10.3 build 4276",
             'productLevel': 'Standard', 
-            'extension': '' 
+            'extension': ''
         }

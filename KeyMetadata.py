@@ -17,7 +17,7 @@ email: contracts@esri.com
 class KeyMetadata():
 
     def __init__(self):
-        self.name = "Key Metadata"
+        self.name = "Key Metadata Function"
         self.description = "Override key metadata in a function chain."
         self.propertyName = ''
         self.propertyValue = None
@@ -64,14 +64,13 @@ class KeyMetadata():
     def getConfiguration(self, **scalars):
         return { 
             'invalidateProperties': 8,          # reset any key properties held by the parent function raster dataset
-            'inputMask': False
         }
 
 
     def updateRasterInfo(self, **kwargs):
-        self.propertyName = kwargs['property']  # remember these user-specified scalar inputs
-        self.propertyValue = kwargs['value']
-        self.bandNames = kwargs['bands'].split(',')
+        self.propertyName = kwargs.get('property', "")  # remember these user-specified scalar inputs
+        self.propertyValue = kwargs.get('value', "")
+        self.bandNames = kwargs.get('bands', "").split(',')
         return kwargs
 
 
