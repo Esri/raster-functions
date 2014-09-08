@@ -37,7 +37,7 @@ class KeyMetadata():
             {
                 'name': 'property',
                 'dataType': 'string',
-                'value': self.propertyName,
+                'value': '',
                 'displayName': "Property Name",
                 'required': False,
                 'description': "The name of the optional key metadata to override."
@@ -45,7 +45,7 @@ class KeyMetadata():
             {
                 'name': 'value',
                 'dataType': 'string',
-                'value': self.propertyValue,
+                'value': None,
                 'displayName': "Property Value",
                 'required': False,
                 'description': "The overriding new value of the key metadata."

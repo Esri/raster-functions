@@ -36,7 +36,7 @@ class MultidirectionalHillshade():
             {
                 'name': 'mdh',
                 'dataType': 'boolean',
-                'value': self.isMDH,
+                'value': True,
                 'required': True,
                 'displayName': "Multidirectional",
                 'description': "Indicates whether a multidirectional hillshade is generated.",
@@ -44,7 +44,7 @@ class MultidirectionalHillshade():
             {
                 'name': 'zf',
                 'dataType': 'numeric',
-                'value': self.zf,
+                'value': 1.0,
                 'required': False,
                 'displayName': "Z Factor",
                 'description': "The multiplicative factor that converts elevation values to the units of the horizontal (xy-) coordinate system.",

@@ -141,7 +141,7 @@ class Reference():
             . pixelType:             String representation of pixel type of the raster. These are the allowed values:
                                      {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
                                      cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
-            . noData:                TODO.
+            . noData:                ndarray(<bandCount> x <dtype>): An array of one value per raster band representing NoData.
             . cellSize:              Tuple(2 x floats) representing cell-size in the x- and y-direction.
             . nativeExtent:          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
             . nativeSpatialReference: Int representing the EPSG code of the native image coordinate system.
@@ -227,10 +227,12 @@ class Reference():
             must match the 'shape' argument. 
         """
         if not pixelBlocks.has_key("raster_pixels"):
-          raise Exception("No input raster was provided.")
+            raise Exception("No input raster was provided.")
 
-        if len(shape) != 3 or shape[1] >= 2:
-          raise Exception("Input raster must have at least two bands.")
+        raise Exception("{0}".format(shape))
+        
+        if len(shape) != 3 or shape[1] < 2:
+            raise Exception("Input raster must have at least two bands.")
 
         inputBlock = pixelBlocks['raster_pixels']   # get pixels of an raster
         red  = np.array(inputBlock[0], 'f4')        # assuming red's the first band 
@@ -309,5 +311,5 @@ class Reference():
             'okToRun': major >= 10 and minor >= 3.0 and build >= 4276,
             'message': "The python raster function is only compatible with ArcGIS 10.3 build 4276",
             'productLevel': 'Standard', 
-            'extension': ''
+            # 'extension': ''
         }
