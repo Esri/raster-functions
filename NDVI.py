@@ -63,9 +63,8 @@ class NDVI():
 
 
     def getConfiguration(self, **scalars):
-        red, ir = 1, 2
-        if scalars.has_key('red'): red = int(scalars['red'])
-        if scalars.has_key('ir'): ir = int(scalars['ir'])
+        red = int(scalars.get('red', 1))
+        ir = int(scalars.get('ir', 2))
 
         return {
           'extractBands': (red - 1, ir - 1),    # extract only the two bands corresponding to user-specified red and infrared band indexes.
@@ -77,10 +76,9 @@ class NDVI():
 
 
     def updateRasterInfo(self, **kwargs):
-        if kwargs.has_key('method'):                            # update flags based on user input
-            method = kwargs['method'].lower()
-            self.applyColormap = method == 'colormap'
-            self.applyScaling = self.applyColormap or method == 'grayscale'
+        method = kwargs.get('method', 'Colormap').lower()
+        self.applyColormap = method == 'colormap'
+        self.applyScaling = self.applyColormap or method == 'grayscale'
               
         maximumValue = 1.0
         if self.applyScaling:                                   # maximum output value depends on whether we are scaling

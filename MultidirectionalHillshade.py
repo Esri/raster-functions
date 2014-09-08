@@ -63,11 +63,8 @@ class MultidirectionalHillshade():
 
 
     def updateRasterInfo(self, **kwargs):
-        if kwargs.has_key('mdh'):
-            self.isMDH = kwargs['mdh']
-
-        if kwargs.has_key('zf'):
-            self.zf = kwargs['zf']
+        self.isMDH = kwargs.get('mdh', True)
+        self.zf = kwargs.get('zf', 1.0)
 
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['pixelType'] = 'u1'
