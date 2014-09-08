@@ -13,7 +13,7 @@ class Reference():
 
 
     def __init__(self): 
-        """Initialize your class' attributes here.
+        """Initialize your class attributes here.
 
         """
         self.name = "Reference Function"                # a short name for the function. Usually named "<something> Function".
@@ -31,16 +31,16 @@ class Reference():
         Returns:
             A list of dictionaries where each entry in the list corresponds to an input parameter--and describes the parameter.
             These are the recognized attributes of a parameter: 
-            . name :        The keyword associated with this parameter that enables dictionary lookup in other methods
-            . dataType :    The data type of the value held by this parameter.
-                            Allowed values: {'numeric', 'string', 'raster', 'rasters', 'boolean'}
-            . value :       The default value associated with this parameter.
-            . required :    Indicates whether this parameter is required or optional. Allowed values: {True, False}.
-            . displayName : A friendly name that represents this parameter in Python Adapter function's property page and other UI components
-            . domain :      Indicates the set of allowed values for this parameter. 
-                            If specified, the property page shows a drop-down list pre-populated with these values. 
-                            This attribute is applicable only to string parameters (dataType='string').
-            . description : Details on this parameter that's displayed as tooltip in Python Adapter function's property page.
+            . name:        The keyword associated with this parameter that enables dictionary lookup in other methods
+            . dataType:    The data type of the value held by this parameter.
+                           Allowed values: {'numeric', 'string', 'raster', 'rasters', 'boolean'}
+            . value:       The default value associated with this parameter.
+            . required:    Indicates whether this parameter is required or optional. Allowed values: {True, False}.
+            . displayName: A friendly name that represents this parameter in Python Adapter function's property page and other UI components
+            . domain:      Indicates the set of allowed values for this parameter. 
+                           If specified, the property page shows a drop-down list pre-populated with these values. 
+                           This attribute is applicable only to string parameters (dataType='string').
+            . description: Details on this parameter that's displayed as tooltip in Python Adapter function's property page.
         """    
         return [
             {
@@ -78,32 +78,32 @@ class Reference():
         Returns:
             A dictionary describing the configuration. These are the recognized configuration attributes:
 
-            . extractBands :         Tuple(ints) containing indexes of bands of the input raster that need to be extracted. 
-                                     The first band has index 0. 
-                                     If unspecified, all bands of the input raster are available in .updatePixels()
-            . compositeRasters :     Boolean indicating whether all input rasters are composited as a single multi-band raster. 
-                                     Defaults to False. If set to True, a raster by the name 'compositeraster' is available 
-                                     in .updateRasterInfo() and .updatePixels().
-            . inheritProperties :    Bitwise-OR'd integer that indicates the set of input raster properties that are inherited 
-                                     by the output raster. If unspecified, all properties are inherited. 
-                                     These are the recognized values:
-                                     . 1 : Pixel type
-                                     . 2 : NoData
-                                     . 4 : Dimensions (spatial reference, extent, and cell-size)
-                                     . 8 : Resampling type
-            . invalidateProperties : Bitwise-OR'd integer that indicates the set of properties of the parent dataset that needs 
-                                     to be invalidated. If unspecified, no property gets invalidated.
-                                     These are the recognized values:
-                                     . 1 : XForm stored by the function raster dataset.
-                                     . 2 : Statistics stored by the function raster dataset.
-                                     . 4 : Histogram stored by the function raster dataset.
-                                     . 8 : The key properties stored by the function raster dataset.
-            . padding :              The number of extra pixels needed on each side of input pixel blocks.
-            . inputMask :            Boolean indicating whether NoData mask arrays associated with all input rasters are needed
-                                     by this function for proper construction of output pixels and mask. 
-                                     If set to True, the input masks are made available in the pixelBlocks keyword 
-                                     argument in .updatePixels(). For improved performance, input masks are not made available if 
-                                     attribute is unspecified.
+            . extractBands:         Tuple(ints) containing indexes of bands of the input raster that need to be extracted. 
+                                    The first band has index 0. 
+                                    If unspecified, all bands of the input raster are available in .updatePixels()
+            . compositeRasters:     Boolean indicating whether all input rasters are composited as a single multi-band raster. 
+                                    Defaults to False. If set to True, a raster by the name 'compositeraster' is available 
+                                    in .updateRasterInfo() and .updatePixels().
+            . inheritProperties:    Bitwise-OR'd integer that indicates the set of input raster properties that are inherited 
+                                    by the output raster. If unspecified, all properties are inherited. 
+                                    These are the recognized values:
+                                    . 1: Pixel type
+                                    . 2: NoData
+                                    . 4: Dimensions (spatial reference, extent, and cell-size)
+                                    . 8: Resampling type
+            . invalidateProperties: Bitwise-OR'd integer that indicates the set of properties of the parent dataset that needs 
+                                    to be invalidated. If unspecified, no property gets invalidated.
+                                    These are the recognized values:
+                                    . 1: XForm stored by the function raster dataset.
+                                    . 2: Statistics stored by the function raster dataset.
+                                    . 4: Histogram stored by the function raster dataset.
+                                    . 8: The key properties stored by the function raster dataset.
+            . padding:              The number of extra pixels needed on each side of input pixel blocks.
+            . inputMask:            Boolean indicating whether NoData mask arrays associated with all input rasters are needed
+                                    by this function for proper construction of output pixels and mask. 
+                                    If set to True, the input masks are made available in the pixelBlocks keyword 
+                                    argument in .updatePixels(). For improved performance, input masks are not made available if 
+                                    attribute is unspecified.
                                       
         """
         return {
@@ -137,40 +137,40 @@ class Reference():
             kwargs['output_info'] is always available and populated with values based on the first raster parameter and .getConfiguration().
 
             These are the properties associated with a raster information:
-            . bandCount :             Integer representing the number of bands in the raster. 
-            . pixelType :             String representation of pixel type of the raster. These are the allowed values:
-                                      {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
-                                      cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
-            . noData :                TODO.
-            . cellSize :              Tuple(2 x floats) representing cell-size in the x- and y-direction.
-            . nativeExtent :          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
+            . bandCount:             Integer representing the number of bands in the raster. 
+            . pixelType:             String representation of pixel type of the raster. These are the allowed values:
+                                     {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
+                                     cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
+            . noData:                TODO.
+            . cellSize:              Tuple(2 x floats) representing cell-size in the x- and y-direction.
+            . nativeExtent:          Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the native image coordinates.
             . nativeSpatialReference: Int representing the EPSG code of the native image coordinate system.
-            . geodataXform :          XML-string representation of the associated XForm between native image and map coordinate systems.
-            . extent :                Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the map coordinates.
-            . spatialReference :      Int representing the EPSG code of the raster's map coordinate system.
-            . colormap:               Tuple(ndarray(int32), 3 x ndarray(uint8)) A tuple of four arrays where the first array contains 32-bit integers 
-                                      corresponding to pixel values in the indexed raster. The subsequent three arrays contain unsigned 8-bit integers 
-                                      corresponding to the Red, Green, and Blue components of the mapped color. The sizes of all arrays 
-                                      must match and correspond to the number of colors in the RGB image. 
-            . rasterAttributeTable :  Tuple(String, Tuple(Strings)) : A tuple of a string representing the path of the attribute table, 
-                                      and another tuple representing field names.
-                                      Use the information in this tuple with arcpy.da.TableToNumPyArray() to access the values.
-            . levelOfDetails :        Int: The number of level of details in the input raster.
-            . origin :                Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
-            . resampling :            Boolean
-            . bandSelection :         Boolean
-            . histogram :             Tuple(numpy.ndarrays): Tuple where each entry is an array of histogram values of a band.
-            . statistics :            Tuple(dicts): Tuple of statistics values. 
-                                      Each entry in the tuple is a dictionary containing the following attributes of band statistics:
-                                      . minimum : Float. Approximate lowest value.
-                                      . maximum : Float. Approximate highest value.
-                                      . mean : Float. Approximate average value.
-                                      . standardDeviation : Float. Approximate measure of spread of values about the mean. 
-                                      . skipFactorX : Int. Number of horizontal pixels between samples when calculating statistics.
-                                      . skipFactorY : Int. Number of vertical pixels between samples when calculating statistics.
+            . geodataXform:          XML-string representation of the associated XForm between native image and map coordinate systems.
+            . extent:                Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the map coordinates.
+            . spatialReference:      Int representing the EPSG code of the raster's map coordinate system.
+            . colormap:              Tuple(ndarray(int32), 3 x ndarray(uint8)) A tuple of four arrays where the first array contains 32-bit integers 
+                                     corresponding to pixel values in the indexed raster. The subsequent three arrays contain unsigned 8-bit integers 
+                                     corresponding to the Red, Green, and Blue components of the mapped color. The sizes of all arrays 
+                                     must match and correspond to the number of colors in the RGB image. 
+            . rasterAttributeTable:  Tuple(String, Tuple(Strings)): A tuple of a string representing the path of the attribute table, 
+                                     and another tuple representing field names.
+                                     Use the information in this tuple with arcpy.da.TableToNumPyArray() to access the values.
+            . levelOfDetails:        Int: The number of level of details in the input raster.
+            . origin:                Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
+            . resampling:            Boolean
+            . bandSelection:         Boolean
+            . histogram:             Tuple(numpy.ndarrays): Tuple where each entry is an array of histogram values of a band.
+            . statistics:            Tuple(dicts): Tuple of statistics values. 
+                                     Each entry in the tuple is a dictionary containing the following attributes of band statistics:
+                                     . minimum: Float. Approximate lowest value.
+                                     . maximum: Float. Approximate highest value.
+                                     . mean: Float. Approximate average value.
+                                     . standardDeviation: Float. Approximate measure of spread of values about the mean. 
+                                     . skipFactorX: Int. Number of horizontal pixels between samples when calculating statistics.
+                                     . skipFactorY: Int. Number of vertical pixels between samples when calculating statistics.
                               
         Returns:
-            A dictionary containing updated output raster info. 
+            A dictionary containing output raster info. 
             This method can update the values of the dictionary in kwargs['output_info'] depending on the kind of 
             operation in .updatePixels() 
 
@@ -180,10 +180,10 @@ class Reference():
             . The epsg code in nativeSpatialReference and spatialReference attributes can be used to construct an 
               arcpy.SpatialReference() object.
         """
-        kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
-        kwargs['output_info']['pixelType'] = 'f4'               # ... with floating-point pixel values.
-        kwargs['output_info']['statistics'] = ()                # invalidate any statistics
-        kwargs['output_info']['histogram'] = ()                 # invalidate any histogram
+        kwargs['output_info']['bandCount'] = 1      # output is a single band raster
+        kwargs['output_info']['pixelType'] = 'f4'   # ... with floating-point pixel values.
+        kwargs['output_info']['statistics'] = ()    # invalidate any statistics
+        kwargs['output_info']['histogram'] = ()     # invalidate any histogram
         return kwargs
 
 
@@ -193,25 +193,25 @@ class Reference():
         A python raster function that doesn't actively modify output pixel values doesn't need to define this method. 
 
         Args:
-            . tlc : Tuple(2 x floats) representing the coordinates of the top-left corner of the pixel request.
-            . shape : Tuple(ints) representing the shape of ndarray that defines the output pixel block. 
+            . tlc: Tuple(2 x floats) representing the coordinates of the top-left corner of the pixel request.
+            . shape: Tuple(ints) representing the shape of ndarray that defines the output pixel block. 
                 For a single-band pixel block, the tuple contains two ints (rows, columns). 
                 For multi-band output raster, the tuple defines a three-dimensional array (bands, rows, columns).
                 The shape associated with the outgoing pixel block and mask must match this argument's value.
-            . props : A dictionary containing properties that define the output raster from which 
+            . props: A dictionary containing properties that define the output raster from which 
                 a pixel block--of dimension and location is defined by the 'shape' and 'tlc' arguments--is being requested.
                 These are the available attributes in this dictionary:
-                . extent : Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the output 
-                           raster's map coordinates.
-                . pixelType : String representation of pixel type of the raster. These are the allowed values:
+                . extent: Tuple(4 x floats) representing XMin, YMin, XMax, YMax values of the output 
+                          raster's map coordinates.
+                . pixelType: String representation of pixel type of the raster. These are the allowed values:
                               {'t1', 't2', 't4', 'i1', 'i2', 'i4', 'u1', 'u2', 'u4', 'f4', 'f8'}
                               cf: http://docs.scipy.org/doc/numpy/reference/arrays.interface.html
-                . spatialReference : Int representing the EPSG code of the output raster's map coordinate system.
-                . cellSize : Tuple(2 x floats) representing cell-size in the x- and y-direction.                
-                . width : Number of columns of pixels in the output raster.
-                . height : Number of rows of pixels in the output raster.
-                . noData : TODO.
-            . pixelBlocks : Keyword argument containing pixels and mask associated with each input raster.
+                . spatialReference: Int representing the EPSG code of the output raster's map coordinate system.
+                . cellSize: Tuple(2 x floats) representing cell-size in the x- and y-direction.                
+                . width: Number of columns of pixels in the output raster.
+                . height: Number of rows of pixels in the output raster.
+                . noData: TODO.
+            . pixelBlocks: Keyword argument containing pixels and mask associated with each input raster.
                             
             For a raster parameter with dataType='raster' and name='x', pixelBlocks['x_pixels'] and 
             pixelBlocks['x_mask'] are numpy.ndarrays of pixel and mask values for that input raster. 
@@ -229,10 +229,10 @@ class Reference():
         if not pixelBlocks.has_key("raster_pixels"):
           raise Exception("No input raster was provided.")
 
-        inputBlock = pixelBlocks['raster_pixels']           # get pixels of an raster
-        red  = np.array(inputBlock[0], 'f4')                # assuming red's the first band 
-        blue = np.array(inputBlock[1], 'f4')                # assuming blue's the second band... per extractBands in .getConfiguration() 
-        outBlock = (red + blue) / 2.0                       # this is just an example. nothing complicated here. 
+        inputBlock = pixelBlocks['raster_pixels']   # get pixels of an raster
+        red  = np.array(inputBlock[0], 'f4')        # assuming red's the first band 
+        blue = np.array(inputBlock[1], 'f4')        # assuming blue's the second band... per extractBands in .getConfiguration() 
+        outBlock = (red + blue) / 2.0               # this is just an example. nothing complicated here. 
 
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
         return pixelBlocks
@@ -245,11 +245,11 @@ class Reference():
         to invalidate or overwrite specific requests. 
 
         Args:
-            . names :       A tuple containing names of the properties being requested. 
-                            An empty tuple indicates that all properties are being requested. 
-            . bandIndex:    A zero-based integer representing the raster band for which key metadata is being requested. 
-                            bandIndex == -1 indicates that the request is for dataset-level key properties.
-            . keyMetadata : Keyword argument containing all currently known metadata (or a subset as defined by the names tuple). 
+            . names:       A tuple containing names of the properties being requested. An empty tuple 
+                           indicates that all properties are being requested. 
+            . bandIndex:   A zero-based integer representing the raster band for which key metadata is being requested. 
+                           bandIndex == -1 indicates that the request is for dataset-level key properties.
+            . keyMetadata: Keyword argument containing all currently known metadata (or a subset as defined by the names tuple). 
         
         Returns:
             The updated keyMetadata dictionary.
@@ -263,15 +263,49 @@ class Reference():
         return keyMetadata
 
 
-    def isLicensed(self): 
+    def isLicensed(self, **productInfo): 
+        # http://resources.arcgis.com/en/help/main/10.2/index.html#//002z0000000z000000
         """This method, if defined, indicates whether this python raster function is licensed to execute. 
         
-        This method is invoked soon after the function object is constructed. 
+        This method is invoked soon after the function object is constructed. It enables the python
+        raster function to halt execution--given information about the parent product and the context of execution. 
+        It also allows the function to, optionally, indicate the expected product-level and the extension that 
+        must be available before execution can proceed.  
 
         Args:
-            None
+            The productInfo keyword argument describes the current execution environment. 
+            It contains the following attributes:
+            . productName: String representing the name of the product {'Desktop', 'Server', 'Engine', ...}
+            . version: The version string associated with the product
+            . path: String conntaining the installation path of the product.
+            . major: An integer representing the major version number of the product. 
+            . minor: A floating-point number representing the minor version number of the product. 
+            . build: An integer represening the build number associated with the product.
+            . spNumber: An integer representing the service pack number, if applicable.
+            . spBuild: An integer representing the service pack build, if applicable.
 
         Returns:
-            True if it's OK to execute.
+            A dictionary containing an attribute that indicates whether licensing checks specific to this 
+            python raster function has passed--and, optional attributes that control additional licensing checks 
+            enforced by the Python Adapter:
+            . okToRun:      [Required] Boolean indicating whether it's OK to proceed with the use of this 
+                            raster function object.
+                            This attribute must be present and, specifically, set to False for execution to halt. 
+                            Otherwise, it's assumed to be True (and, OK to proceed). 
+            . message:      [Optional] String representing the message to be displayed to the user or logged 
+                            when okToRun is False.
+            . productLevel: [Optional] String representing the product license-level expected from the parent application. 
+                            Allowed values include {'Basic', 'Standard', 'Advanced'}. 
+            . extension:    [Optional] String representing the name of the extension that must be available before
+                            the Python Adapter is allowed to use this raster function.
         """
-        return True
+        major = productInfo.get('major', 0) 
+        minor = productInfo.get('minor', 0.0) 
+        build = productInfo.get('build', 0)
+
+        return {
+            'okToRun': major >= 10 and minor >= 3.0 and build >= 4276,
+            'message': "The python raster function is only compatible with ArcGIS 10.3 build 4276",
+            'productLevel': 'Standard', 
+            'extension': '' 
+        }
