@@ -37,7 +37,7 @@ class VineyardAnalysis():
                 'name': 'soiltype',
                 'dataType': 'raster',
                 'value': None,
-                'required': True,
+                'required': False,
                 'displayName': 'Soil Type Raster',
                 'description': ""
             },            
@@ -64,7 +64,7 @@ class VineyardAnalysis():
         elev = np.array(pixelBlocks['elevation_pixels'], dtype='float')
         slope = np.array(pixelBlocks['slope_pixels'], dtype='float')
         aspect = np.array(pixelBlocks['aspect_pixels'], dtype='float')
-        soil = np.array(pixelBlocks['soiltype_pixels'], dtype='int8')
+        #soil = np.array(pixelBlocks['soiltype_pixels'], dtype='int8')
         
         E = elev > 30 & elev < 400
         S = slope > 5 & slope < 60
