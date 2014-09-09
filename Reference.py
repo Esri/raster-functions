@@ -311,5 +311,5 @@ class Reference():
             'okToRun': major >= 10 and minor >= 3.0 and build >= 4276,
             'message': "The python raster function is only compatible with ArcGIS 10.3 build 4276",
             'productLevel': 'Standard', 
-            # 'extension': ''
+            'extension': 'Image'
         }
