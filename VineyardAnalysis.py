@@ -56,20 +56,20 @@ class VineyardAnalysis():
         kwargs['output_info']['bandCount'] = 1  
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ({'minimum': 0, 'maximum': 3}, )
-        kwargs['output_info']['noData'] = 0
+        kwargs['output_info']['noData'] = np.array([0], 'u1')
         return kwargs
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        elev = np.array(pixelBlocks['elevation_pixels'], dtype='float')
-        slope = np.array(pixelBlocks['slope_pixels'], dtype='float')
-        aspect = np.array(pixelBlocks['aspect_pixels'], dtype='float')
-        #soil = np.array(pixelBlocks['soiltype_pixels'], dtype='int8')
+        elev = np.array(pixelBlocks['elevation_pixels'], 'f4')
+        slope = np.array(pixelBlocks['slope_pixels'], 'f4')
+        aspect = np.array(pixelBlocks['aspect_pixels'], 'f4')
+        #soil = np.array(pixelBlocks['soiltype_pixels'], 'i8')
         
-        E = elev > 30 & elev < 400
-        S = slope > 5 & slope < 60
-        A = aspect > 0 & aspect < 200
-        pixelBlocks['output_pixels'] = (E + S + A).astype(int)
+        E = (elev > 30).astype('u1') & (elev < 400).astype('u1')
+        S = (slope > 5).astype('u1') & (slope < 60).astype('u1')
+        A = (aspect > 0).astype('u1') & (aspect < 200).astype('u1')
+        pixelBlocks['output_pixels'] = (E + S + A).astype(props['pixelType'])
         
         return pixelBlocks
 

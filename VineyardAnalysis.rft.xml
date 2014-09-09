@@ -11,7 +11,6 @@
       <String>PythonModule</String>
       <String>ClassName</String>
       <String>elevation</String>
-      <String>soiltype</String>
       <String>slope</String>
       <String>aspect</String>
     </Names>
@@ -19,13 +18,7 @@
       <AnyType xsi:type='xs:string'>VineyardAnalysis.py</AnyType>
       <AnyType xsi:type='xs:string'>VineyardAnalysis</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>Raster1</Name>
-        <Description></Description>
-        <Value></Value>
-        <IsDataset>true</IsDataset>
-      </AnyType>
-      <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>Raster2</Name>
+        <Name>Raster</Name>
         <Description></Description>
         <Value></Value>
         <IsDataset>true</IsDataset>
@@ -49,7 +42,7 @@
           </Names>
           <Values xsi:type='typens:ArrayOfAnyType'>
             <AnyType xsi:type='typens:RasterFunctionVariable'>
-              <Name>Raster1</Name>
+              <Name>Raster</Name>
               <Description></Description>
               <Value></Value>
               <IsDataset>true</IsDataset>
@@ -102,7 +95,7 @@
           <PixelType>UNKNOWN</PixelType>
         </Function>
         <Arguments xsi:type='typens:RasterFunctionVariable'>
-          <Name>Raster1</Name>
+          <Name>Raster</Name>
           <Description></Description>
           <Value></Value>
           <IsDataset>true</IsDataset>
