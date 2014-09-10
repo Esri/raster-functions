@@ -5,25 +5,26 @@ class Windchill():
 
     def __init__(self):
         self.name = "Windchill Function"
-        self.description = "Windchill Function"
+        self.description = "This function computes windchill on the Fahrenheit scale given wind-speed and temperature."
+
 
     def getParameterInfo(self):
         return [
-            {
-                'name': 'ws',
-                'dataType': 'raster',
-                'value': None,
-                'required': True,
-                'displayName': "Windspeed Raster",
-                'description': ""
-            },
             {
                 'name': 'temperature',
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
                 'displayName': "Temperature Raster",
-                'description': ""
+                'description': "A single-band raster where pixel values represent ambient air temperature in Fahrenheit."
+            },
+            {
+                'name': 'ws',
+                'dataType': 'raster',
+                'value': None,
+                'required': True,
+                'displayName': "Wind-speed Raster",
+                'description': "A single-band raster where pixel values represent wind speed measured in miles per hour."
             },
         ]
 
@@ -45,13 +46,13 @@ class Windchill():
 
 
     def updatePixels(self, tlc, size, props, **pixelBlocks):
-        ws = np.array(kwargs['ws_pixels'], dtype='f4')
-        t = np.array(kwargs['temperature_pixels'], dtype='f4')
+        ws = np.array(pixelBlocks['ws_pixels'], dtype='f4')
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
 
         ws16 = np.power(ws, 0.16)
-        outBlock = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t_pb * ws16)
+        outBlock = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t * ws16)
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
-        return kwargs
+        return pixelBlocks
 
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
