@@ -69,9 +69,9 @@ class NDVI():
         return {
           'extractBands': (red - 1, ir - 1),    # extract only the two bands corresponding to user-specified red and infrared band indexes.
           'compositeRasters': False,            # input is a single raster, band compositing doesn't apply.
-          'inheritProperties': 2 | 4 | 8,       # 
+          'inheritProperties': 4 | 8,           # inherit all but the pixel type and NoData from the input raster
           'invalidateProperties': 2 | 4 | 8,    # reset any statistics and histogram that might be held by the parent dataset (because this function modifies pixel values). 
-          'inputMask': False                    # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
+          'inputMask': False                    # Don't need input raster mask in .updatePixels().
         }
 
 

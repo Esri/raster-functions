@@ -31,17 +31,17 @@ class Windchill():
 
     def getConfiguration(self, **scalars):
         return {
-          'inheritProperties': 2 | 4 | 8,                       # inherit all but the pixel type from the input raster
-          'invalidateProperties': 2 | 4 | 8,                    # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
-          'inputMask': False                                    # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
+          'inheritProperties': 4 | 8,               # inherit all but the pixel type and NoData from the input raster
+          'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
+          'inputMask': False                        # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
         }
 
 
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
-        kwargs['output_info']['statistics'] = ()                # we know nothing about the stats of the outgoing raster. 
-        kwargs['output_info']['histogram'] = ()                 # we know nothing about the histogram of the outgoing raster.
-        kwargs['output_info']['pixelType'] = 'f4'
+        kwargs['output_info']['bandCount'] = 1      # output is a single band raster
+        kwargs['output_info']['statistics'] = ()    # we know nothing about the stats of the outgoing raster. 
+        kwargs['output_info']['histogram'] = ()     # we know nothing about the histogram of the outgoing raster.
+        kwargs['output_info']['pixelType'] = 'f4'   
         return kwargs
 
 
@@ -60,7 +60,7 @@ class Windchill():
             keyMetadata['datatype'] = 'Scientific'
             keyMetadata['datatype'] = 'Windchill'
         elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
+            keyMetadata['wavelengthmin'] = None     # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Winchill'
         return keyMetadata

@@ -45,16 +45,16 @@ class HeatIndex():
 
     def getConfiguration(self, **scalars):
         return {
-          'inheritProperties': 2 | 4 | 8,                       # inherit all but the pixel type from the input raster
-          'invalidateProperties': 2 | 4 | 8,                    # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
-          'inputMask': False                                    # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
+          'inheritProperties': 4 | 8,               # inherit all but the pixel type and NoData from the input raster
+          'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
+          'inputMask': False                        # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
         }
 
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['bandCount'] = 1                  # output is a single band raster
+        kwargs['output_info']['bandCount'] = 1      # output is a single band raster
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
-        kwargs['output_info']['histogram'] = ()                 # we know nothing about the histogram of the outgoing raster.
-        kwargs['output_info']['pixelType'] = 'f4'               # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
+        kwargs['output_info']['histogram'] = ()     # we know nothing about the histogram of the outgoing raster.
+        kwargs['output_info']['pixelType'] = 'f4'   # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
