@@ -15,7 +15,7 @@ class Random():
     def getConfiguration(self, **scalars):
         return {
           'inheritProperties': 0,                   # no input raster, nothing to inherit. 
-          'invalidateProperties': 1 | 2 | 4 | 8,    # reset any statistics and histogram that might be held by the parent dataset (because this function modifies pixel values). 
+          'invalidateProperties': 1 | 2 | 4 | 8,    # reset everything on the parent dataset.
         }
 
 
@@ -36,7 +36,8 @@ class Random():
             'statistics': (),
             'histogram': (),
             'colormap': (),
-            'noData': np.array([256], dtype='u1')
+            'noData': np.array([256], dtype='u1'),
+            'resampling': True
         }
 
         kwargs['output_info'] = outputInfo
@@ -46,4 +47,5 @@ class Random():
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         outBlock = 255.0 * np.random.random_sample(shape)
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
+        pixelBlocks['output_mask'] = np.ones(shape).astype('u1')
         return pixelBlocks
