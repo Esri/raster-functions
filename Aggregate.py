@@ -1,10 +1,10 @@
 import numpy as np
 
 
-class Aggregation():
+class Aggregate():
 
     def __init__(self):
-        self.name = "Aggregation Function"
+        self.name = "Aggregate Rasters Function"
         self.description = "This function computes the sum of pixel values over a collection of overlapping single-band rasters."
 
 
