@@ -19,8 +19,7 @@ import numpy as np
 class UnitConversion():
     def __init__(self):
         self.name = ""
-        self.description = ""
-
+        self.description = "This function converts a raster representing precipitation in mm/s to mm/month."
 
     def getParameterInfo(self):
         return [
