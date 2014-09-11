@@ -4,9 +4,10 @@ import numpy as np
 class VineyardAnalysis():
 
     def __init__(self):
-        self.name = "Vineyard Analysis Function"
-        self.description = ""
+        self.name = "Vineyard Suitability Analysis Function"
+        self.description = "This function computes vineyard suitability given elevation, slope, aspect, and soil-type rasters."
        
+
     def getParameterInfo(self):
         return [
             {
@@ -15,7 +16,7 @@ class VineyardAnalysis():
                 'value': None,
                 'required': True,
                 'displayName': 'Elevation Raster',
-                'description': ""
+                'description': "The primary single-band raster where pixel values represent elevation in meters."
             },
             {
                 'name': 'slope',
@@ -23,7 +24,7 @@ class VineyardAnalysis():
                 'value': None,
                 'required': True,
                 'displayName': 'Slope Raster',
-                'description': ""
+                'description': "A single-band raster where pixel values represent slope."
             },
             {
                 'name': 'aspect',
@@ -31,7 +32,7 @@ class VineyardAnalysis():
                 'value': None,
                 'required': True,
                 'displayName': 'Aspect Raster',
-                'description': ""
+                'description': "A single-band raster where pixel values represent aspect."
             },
             {
                 'name': 'soiltype',
@@ -39,7 +40,7 @@ class VineyardAnalysis():
                 'value': None,
                 'required': False,
                 'displayName': 'Soil Type Raster',
-                'description': ""
+                'description': "A single-band thematic raster where pixel values represent soil type."
             },            
         ]        
 
@@ -77,9 +78,9 @@ class VineyardAnalysis():
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
             keyMetadata['datatype'] = 'Scientific'
-            keyMetadata['variable'] = 'Vineyard'
+            keyMetadata['variable'] = 'VineyardSuitability'
         elif bandIndex == 0:
             keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
-            keyMetadata['bandname'] = 'Vineyard'
+            keyMetadata['bandname'] = 'VineyardSuitability'
         return keyMetadata
