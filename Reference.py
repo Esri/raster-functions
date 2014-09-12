@@ -56,7 +56,6 @@ class Reference():
                 'dataType': 'numeric',
                 'value': "<default value>",
                 'required': False,
-                'domain': ('Value 1', 'Value 2'),
                 'displayName': "Friendly Name",
                 'description': "The story of this parameter...",
             },
