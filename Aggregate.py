@@ -25,7 +25,7 @@ class Aggregate():
                 'value': 'Sum',
                 'required': False,
                 'displayName': "Method",
-                'domain': ('Sum', 'Average', 'Count', 'Median', 'Standard Deviation'),
+                'domain': ('Sum', 'Average', 'Median', 'Standard Deviation', 'Minimum', 'Maximum'),
                 'description': "The method indicating how overlapping pixels of the input rasters are aggregated.",
             },
         ]
