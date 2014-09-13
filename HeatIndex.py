@@ -61,6 +61,9 @@ class HeatIndex():
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
         r = np.array(pixelBlocks['rh_pixels'], dtype='f4')
 
+        #Convert t to Fahrenheit
+        t = 9.0/5.0 * t + 32
+
         tr = t * r
         rr = r * r
         tt = t * t
