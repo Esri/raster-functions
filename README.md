@@ -1,6 +1,6 @@
 # ArcGIS Raster Functions
 
-This repository houses *raster function templates* (as .rft.xml files) that chain multiple *raster functions* to describe a powerful image processing operation. Templates can be very easily applied on single raster dataset, a mosaic dataset, or an image service to enable on-the-fly processing. This repository also contains new *raster functions* written in Python that extend the image processing capabilities of ArcGIS. 
+This repository houses *raster function templates* (as .rft.xml files) that chain multiple *raster functions* to describe a powerful image processing operation. Templates can be very easily applied on single raster dataset, a mosaic dataset, or an image service to enable on-the-fly processing. This repository also contains *raster functions* written in Python that extend the image processing capabilities of ArcGIS. 
 
 Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/README.md#resources) section for links to pages that elaborate on these concepts.
 
@@ -11,6 +11,7 @@ Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/R
 
 ## Resources
 
+* [Wiki](https://github.com/ArcGIS/raster-functions/wiki)
 * [Rasters with functions](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000000m000000)
 * [A blog on raster functions](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
 * [Editing function chain templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
