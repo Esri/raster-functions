@@ -3,12 +3,13 @@ from datetime import datetime
 from calendar import monthrange
 
 
-class UnitConversion():
+class ConvertPerSecondToPerMonth():
 
     def __init__(self):
         self.name = ""
-        self.description = "This function converts a raster representing precipitation in mm/s to mm/month."
+        self.description = "This function converts a raster representing an observation units per second to units per month."
         self.scaleFactor = 1.0
+        self.units = "per month"
 
 
     def getParameterInfo(self):
@@ -20,6 +21,14 @@ class UnitConversion():
                 'required': True,
                 'displayName': "Raster",
                 'description': "The primary input raster."
+            },
+            {
+                'name': 'units',
+                'dataType': 'string',
+                'value': "per month",
+                'required': False,
+                'displayName': "Output Units",
+                'description': "Units associated with the output raster."
             },
         ]
 
@@ -53,6 +62,7 @@ class UnitConversion():
             raise Exception("Unable to compute scale factor using the date '{0}' obtained from the input raster.".format(d))
             
         self.scaleFactor = float(r[1]) * 86400.0
+        self.units = kwargs.get('units', "per month")
         return kwargs
 
 
@@ -64,5 +74,5 @@ class UnitConversion():
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
-            keyMetadata['units'] = 'mm per month'
+            keyMetadata['units'] = self.units
         return keyMetadata
