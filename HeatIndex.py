@@ -1,18 +1,3 @@
-"""
-COPYRIGHT 1995-2004 ESRI
-
-TRADE SECRETS: ESRI PROPRIETARY AND CONFIDENTIAL
-Unpublished material - all rights reserved under the
-Copyright Laws of the United States.
-
-For additional information, contact:
-Environmental Systems Research Institute, Inc.
-Attn: Contracts Dept
-380 New York Street
-Redlands, California, USA 92373
-email: contracts@esri.com
-"""
-
 import numpy as np
 
 
@@ -20,7 +5,8 @@ class HeatIndex():
 
     def __init__(self):
         self.name = "HeatIndex Function"
-        self.description = "This function combines ambient air temperature and relative humidity to return apparent temperature."
+        self.description = "This function combines ambient air temperature and relative humidity to return apparent temperature in degrees Fahrenheit."
+        self.doConversion = False
 
 
     def getParameterInfo(self):
@@ -32,6 +18,15 @@ class HeatIndex():
                 'required': True,
                 'displayName': "Temperature Raster",
                 'description': "A single-band raster where pixel values represent ambient air temperature in Fahrenheit."
+            },
+            {
+                'name': 'units',
+                'dataType': 'string',
+                'value': 'Fahrenheit',
+                'required': True,
+                'domain': ('Celsius', 'Fahrenheit'),
+                'displayName': "Temperature Measured In",
+                'description': "The unit of measurement associated with the temperature raster."
             },
             {
                 'name': 'rh',
@@ -55,11 +50,16 @@ class HeatIndex():
         kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 180}, )  # we know something about the stats of the outgoing HeatIndex raster. 
         kwargs['output_info']['histogram'] = ()     # we know nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = 'f4'   # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
+
+        self.doConversion = bool(kwargs.get('units', 'Fahrenheit').lower() == 'Celsius')
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
         r = np.array(pixelBlocks['rh_pixels'], dtype='f4')
+
+        if self.doConversion:
+            t = (9.0/5.0 * t) + 32.0
 
         tr = t * r
         rr = r * r
@@ -73,8 +73,9 @@ class HeatIndex():
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == -1:
+        if bandIndex == -1:                                     # update dataset-level key metadata
             keyMetadata['datatype'] = 'Scientific'
+            keyMetadata['variable'] = 'HeatIndex'
         elif bandIndex == 0:
             keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
