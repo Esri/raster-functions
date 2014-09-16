@@ -14,12 +14,7 @@
       <String>ws</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="typens:RasterFunctionVariable">
-        <Name>PythonModule</Name>
-        <Description></Description>
-        <Value xsi:type="xs:string">Windchill.py</Value>
-        <IsDataset>false</IsDataset>
-      </AnyType>
+      <AnyType xsi:type="xs:string">Windchill.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Temperature</Name>
         <Description>A single-band raster where pixel values represent ambient air temperature in Fahrenheit.</Description>
