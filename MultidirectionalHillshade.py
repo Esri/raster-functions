@@ -100,7 +100,7 @@ class MultidirectionalHillshade():
 
         if self.isMDH:
             outBlock = self.weights[1] * self.getHillshade(v, 1, dx, dy)
-            for i in range(2, 6):
+            for i in range(2, 7):
                 outBlock = outBlock + (self.weights[i] * self.getHillshade(v, i, dx, dy))
         else:
             outBlock = self.getHillshade(v, 0, dx, dy)
