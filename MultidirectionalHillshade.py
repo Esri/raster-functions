@@ -16,7 +16,7 @@ class MultidirectionalHillshade():
 
         self.trigLookup = None
         self.azimuths   = (315.0, 315.0, 270.0, 225.0, 360.0, 180.0,   0.0)
-        self.elevations = (45.0,   60.0,  60.0, 60.0,   60.0,  60.0,   0.0)
+        self.elevations = (45.0,   60.0,  60.0, 60.0,   60.0,  60.0,  90.0)
         self.weights    = (0.00,  0.167, 0.278, 0.167, 0.111, 0.056, 0.222)
         self.factors    = ()
         self.kx         = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
