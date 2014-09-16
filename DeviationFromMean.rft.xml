@@ -1,0 +1,57 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
+  <Name>Deviation from Mean</Name>
+  <Description>A raster function template.</Description>
+  <Function xsi:type='typens:PythonAdapterFunction'>
+    <Name>Aggregate</Name>
+    <Description>Adapter function for raster functions written in python.</Description>
+    <PixelType>F32</PixelType>
+  </Function>
+  <Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
+    <Names xsi:type='typens:ArrayOfString'>
+      <String>PythonModule</String>
+      <String>Rasters</String>
+      <String>ClassName</String>
+      <String>method</String>
+      <String>ModuleBlob</String>
+      <String>ModuleHash</String>
+      <String>ModuleTime</String>
+    </Names>
+    <Values xsi:type='typens:ArrayOfAnyType'>
+      <AnyType xsi:type='xs:string'>Aggregate.py</AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster[]</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='xs:string'>Aggregate</AnyType>
+      <AnyType xsi:type='xs:string'>Average</AnyType>
+      <AnyType xsi:type='xs:base64Binary'>
+        WQoAAH4DAAB42o1WTU/cMBC9V+p/GNFDErSNSsWhQuVAiyr1AKoKt9VqZZJJ1sKxU9sBVi3/veOP
+        7Ca7AdZIKHHmw/PevPHyplXaguyadg3MgGzfv3N/hWDGwEVda6yZxTQ7c7tAq8QKlksuuV0uU4Oi
+        cp8gLveeS9YgnMPRxht+M2NRG/jRycJyJY92PEo0heat++Qcb1fcQBVtgfVhDLT8CQU8MNHRi3pA
+        DQwKJQQGS1X5TcHalssaDP0T+PGOyRJ0OEG+m1m1qJlVmtLKNjddE8rvC63R/mKa6iHnn7JSewVr
+        tJ2WMN/uuPV3/OpW4lBJziCJJ0lmEzYls+x23b5p5xEgo2slceq7xj8d11iSya3uJk1KblrB1tfh
+        VEeRoaNJ0y07zvR2ha+AHo8NVm2Jy3fDPs8Ox4uwX6nyTbiM1ZT+VbSSm65J3oDrBxPmELyu/Kmm
+        4VIN4w6pNCSE5ILwYTW6xyssOZPu6cZSXzJdwiU+cObBdd9JWE3wumJP/jE7kJMAFHBZ8oLiERcr
+        9TjixsvHOMYs2XPZdnbDF9O4Jax8lbHFnka+K1nxutO+DK+RGRwfm4IJps1QLg3pLG7n5Jdu2A3k
+        ZLlQj6jTbOvBK+d0DgmLIJ6NDzah4gaZ3Bqh2IRoAviHRHCG0zEiQQcE4S9EiLweEIE9TUYwfeuU
+        m9Z5O5ix5TCYwQNcwjjcmXU7Yk0KRXeI4RbjDOmHztBox4XLFWpuf2mXz3J0PqfwD76MnOADRENA
+        In9tV66J76hpXfuGu8CS/CE9ycAN+Wt1SRMB0s/ZXj6aAZzGBY5SfqaUp7Nxvt4Q6A6yqqbZ70MT
+        5JY2eGHgDgvWGYRH9KJpVMmr9UZe8XbaOwBp7YqZ+37EwOT6AJfEJV3HiOVIn9CQL+1A3rW+DK/k
+        NMsHyD6PZRkMAyebq8vJ8v6R6XqkyrAzT1RnKSXd7ZVKFvPE1+Pn64L6IalOE3/EYNUPEwdBJZQf
+        OB9bxaXdQ+CF8O5e/q46aX34kx6BGD7WTT8Ehtf4ZkLtdWVIMgVBxCqUb0UxA7NiLfVnS71gHCK+
+        lG9CFfcjWLj0e3S4gcF82+/LAEGyGIqERCpQptE396ky+HpOzUayGm3PPy2cnE92hEgA9Hmj+au6
+        HZiPJNwfYQY0b8z5p2x4ylFBkZe+GgrUx8yJBOI/9UiNGiLbI2AQ0mX6DxDG47U=
+      </AnyType>
+      <AnyType xsi:type='xs:string'>Aggregate-1335310809eea77dbbae1bd3470a502e.py</AnyType>
+      <AnyType xsi:type='xs:dateTime'>2014-09-16T01:12:14.853</AnyType>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail xsi:type='xs:string'></Thumbnail>
+  <Definition></Definition>
+  <Group>GroupName</Group>
+  <Tag>Tag</Tag>
+</RasterFunctionTemplate>

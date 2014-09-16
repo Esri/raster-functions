@@ -1,0 +1,78 @@
+import numpy as np
+
+
+class Arithmetic():
+    def __init__(self):
+        self.name = "Arithmetic Function"
+        self.description = ""
+        self.op = None
+
+    def getParameterInfo(self):
+        return [
+            {
+                'name': 'r1',
+                'dataType': 'raster',
+                'value': None,
+                'required': True,
+                'displayName': "Raster A",
+                'description': ""
+            },
+            {
+                'name': 'r2',
+                'dataType': 'raster',
+                'value': None,
+                'required': True,
+                'displayName': "Raster A",
+                'description': ""
+            },
+            {
+                'name': 'op',
+                'dataType': 'string',
+                'value': 'Add',
+                'required': False,
+                'domain': ('Add', 'Subtract', 'Multiply', 'Divide'),
+                'displayName': "Operation",
+                'description': ""
+            },
+        ]
+
+
+    def getConfiguration(self, **scalars):
+        return {
+          'inheritProperties': 2 | 4 | 8,
+          'invalidateProperties': 2 | 4 | 8, 
+        }
+
+
+    def updateRasterInfo(self, **kwargs):
+        m = kwargs.get('method', 'Add').lower()
+        if m == 'add':
+            self.op = np.add
+        elif m == 'subtract': 
+            self.op = np.subtract
+        elif m == 'multiply': 
+            self.op = np.multiply
+        elif m == 'divide': 
+            self.op = np.divide
+                      
+        kwargs['output_info']['statistics'] = () 
+        kwargs['output_info']['histogram'] = ()
+        return kwargs
+
+
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4')
+        r2 = np.array(pixelBlocks['r2_pixels'], dtype='f4')
+
+        np.seterr(divide='ignore')
+        pixelBlocks['output_pixels'] = self.op(r1, r2).astype(props['pixelType'])
+        return pixelBlocks
+
+
+    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
+        if bandIndex == -1:
+            keyMetadata['datatype'] = 'Processed'               # outgoing raster is now 'Processed'
+        elif bandIndex == 0:
+            keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
+            keyMetadata['wavelengthmax'] = None
+        return keyMetadata
