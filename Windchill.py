@@ -4,8 +4,8 @@ import numpy as np
 class Windchill():
 
     def __init__(self):
-        self.name = "Windchill Function"
-        self.description = "This function computes windchill on the Fahrenheit scale given wind-speed and temperature."
+        self.name = "Wind Chill Function"
+        self.description = "This function computes wind chill on the Fahrenheit scale given wind speed and air temperature."
 
 
     def getParameterInfo(self):

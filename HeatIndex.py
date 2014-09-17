@@ -4,7 +4,7 @@ import numpy as np
 class HeatIndex():
 
     def __init__(self):
-        self.name = "HeatIndex Function"
+        self.name = "Heat Index Function"
         self.description = "This function combines ambient air temperature and relative humidity to return apparent temperature in degrees Fahrenheit."
         self.doConversion = False
 
