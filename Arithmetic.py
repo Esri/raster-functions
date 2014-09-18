@@ -22,7 +22,7 @@ class Arithmetic():
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Raster A",
+                'displayName': "Raster B",
                 'description': ""
             },
             {
@@ -45,7 +45,7 @@ class Arithmetic():
 
 
     def updateRasterInfo(self, **kwargs):
-        m = kwargs.get('method', 'Add').lower()
+        m = kwargs.get('op', 'Add').lower()
         if m == 'add':
             self.op = np.add
         elif m == 'subtract': 
