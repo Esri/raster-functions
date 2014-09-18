@@ -16,7 +16,7 @@
       <String>method</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>Arithmetic.py</AnyType>
+      <AnyType xsi:type='xs:string'>../functions/Arithmetic.py</AnyType>
       <AnyType xsi:type='xs:string'>Arithmetic</AnyType>
       <AnyType xsi:type='xs:string'>Subtract</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
@@ -40,7 +40,7 @@
             <String>method</String>
           </Names>
           <Values xsi:type='typens:ArrayOfAnyType'>
-            <AnyType xsi:type='xs:string'>Aggregate.py</AnyType>
+            <AnyType xsi:type='xs:string'>../functions/Aggregate.py</AnyType>
             <AnyType xsi:type='typens:RasterFunctionVariable'>
               <Name>Raster[]</Name>
               <Description></Description>

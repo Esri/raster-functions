@@ -15,7 +15,7 @@
       <String>depth</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">FishHabitatSuitability.py</AnyType>
+      <AnyType xsi:type="xs:string">../functions/FishHabitatSuitability.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>water_temp</Name>
         <Description>A single-band raster where values represent surface temperature in Celsius.</Description>

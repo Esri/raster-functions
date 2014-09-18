@@ -16,7 +16,7 @@
       <String>method</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">NDVI.py</AnyType>
+      <AnyType xsi:type="xs:string">../functions/NDVI.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Raster</Name>
         <Description></Description>

@@ -14,7 +14,7 @@
       <String>mask</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>MaskRaster.py</AnyType>
+      <AnyType xsi:type='xs:string'>../functions/MaskRaster.py</AnyType>
       <AnyType xsi:type='xs:string'>MaskRaster</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster1</Name>
