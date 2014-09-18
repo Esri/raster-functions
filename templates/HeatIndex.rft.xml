@@ -14,7 +14,7 @@
       <String>rh</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">HeatIndex.py</AnyType>
+      <AnyType xsi:type="xs:string">../functions/HeatIndex.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Temperature</Name>
         <Description>A single-band raster where pixel values represent ambient air temperature in Fahrenheit.</Description>

@@ -12,7 +12,7 @@
       <String>PythonModule</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">Random.py</AnyType>
+      <AnyType xsi:type="xs:string">../functions/Random.py</AnyType>
     </Values>
   </Arguments>
   <Help></Help>
