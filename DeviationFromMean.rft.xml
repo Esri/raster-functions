@@ -14,9 +14,6 @@
       <String>r1</String>
       <String>r2</String>
       <String>method</String>
-      <String>ModuleBlob</String>
-      <String>ModuleHash</String>
-      <String>ModuleTime</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
       <AnyType xsi:type='xs:string'>Arithmetic.py</AnyType>
@@ -41,9 +38,6 @@
             <String>Rasters</String>
             <String>ClassName</String>
             <String>method</String>
-            <String>ModuleBlob</String>
-            <String>ModuleHash</String>
-            <String>ModuleTime</String>
           </Names>
           <Values xsi:type='typens:ArrayOfAnyType'>
             <AnyType xsi:type='xs:string'>Aggregate.py</AnyType>
@@ -55,48 +49,10 @@
             </AnyType>
             <AnyType xsi:type='xs:string'>Aggregate</AnyType>
             <AnyType xsi:type='xs:string'>Average</AnyType>
-            <AnyType xsi:type='xs:base64Binary'>
-              WQoAAH4DAAB42o1WTU/cMBC9V+p/GNFDErSNSsWhQuVAiyr1AKoKt9VqZZJJ1sKxU9sBVi3/veOP
-              7Ca7AdZIKHHmw/PevPHyplXaguyadg3MgGzfv3N/hWDGwEVda6yZxTQ7c7tAq8QKlksuuV0uU4Oi
-              cp8gLveeS9YgnMPRxht+M2NRG/jRycJyJY92PEo0heat++Qcb1fcQBVtgfVhDLT8CQU8MNHRi3pA
-              DQwKJQQGS1X5TcHalssaDP0T+PGOyRJ0OEG+m1m1qJlVmtLKNjddE8rvC63R/mKa6iHnn7JSewVr
-              tJ2WMN/uuPV3/OpW4lBJziCJJ0lmEzYls+x23b5p5xEgo2slceq7xj8d11iSya3uJk1KblrB1tfh
-              VEeRoaNJ0y07zvR2ha+AHo8NVm2Jy3fDPs8Ox4uwX6nyTbiM1ZT+VbSSm65J3oDrBxPmELyu/Kmm
-              4VIN4w6pNCSE5ILwYTW6xyssOZPu6cZSXzJdwiU+cObBdd9JWE3wumJP/jE7kJMAFHBZ8oLiERcr
-              9TjixsvHOMYs2XPZdnbDF9O4Jax8lbHFnka+K1nxutO+DK+RGRwfm4IJps1QLg3pLG7n5Jdu2A3k
-              ZLlQj6jTbOvBK+d0DgmLIJ6NDzah4gaZ3Bqh2IRoAviHRHCG0zEiQQcE4S9EiLweEIE9TUYwfeuU
-              m9Z5O5ix5TCYwQNcwjjcmXU7Yk0KRXeI4RbjDOmHztBox4XLFWpuf2mXz3J0PqfwD76MnOADRENA
-              In9tV66J76hpXfuGu8CS/CE9ycAN+Wt1SRMB0s/ZXj6aAZzGBY5SfqaUp7Nxvt4Q6A6yqqbZ70MT
-              5JY2eGHgDgvWGYRH9KJpVMmr9UZe8XbaOwBp7YqZ+37EwOT6AJfEJV3HiOVIn9CQL+1A3rW+DK/k
-              NMsHyD6PZRkMAyebq8vJ8v6R6XqkyrAzT1RnKSXd7ZVKFvPE1+Pn64L6IalOE3/EYNUPEwdBJZQf
-              OB9bxaXdQ+CF8O5e/q46aX34kx6BGD7WTT8Ehtf4ZkLtdWVIMgVBxCqUb0UxA7NiLfVnS71gHCK+
-              lG9CFfcjWLj0e3S4gcF82+/LAEGyGIqERCpQptE396ky+HpOzUayGm3PPy2cnE92hEgA9Hmj+au6
-              HZiPJNwfYQY0b8z5p2x4ylFBkZe+GgrUx8yJBOI/9UiNGiLbI2AQ0mX6DxDG47U=
-            </AnyType>
-            <AnyType xsi:type='xs:string'>Aggregate-1335310809eea77dbbae1bd3470a502e.py</AnyType>
-            <AnyType xsi:type='xs:dateTime'>2014-09-16T20:31:07.716</AnyType>
           </Values>
         </Arguments>
       </AnyType>
       <AnyType xsi:type='xs:string'>Sum</AnyType>
-      <AnyType xsi:type='xs:base64Binary'>
-        pAkAAPoCAAB42uVWW2vbMBR+L/Q/iPRBTnHDEvowAnnoNgpltCtb30IIin3siMqSJslNw9b/viNf
-        Yjtx0449TiFgW9937udIPNPKOCLzTG8Js0Tq0xP/iwSzllwZ7tYZOB4Fw+npCcEVQ0KWSy65Wy4D
-        CyKpN/zy7yPJMiAzMmjI5DqXkeNKDvagMdjIcO23PGN/W2n8eqckeItq5Sm4e2ZQhwNzIxN1YIQB
-        lxtJ5s0Xv351X/2i3lI6JdSMadizHTPHHra6hDCL+nphT0zkHuMN7ds38DPnBmKEPJi8FxJzqwXb
-        3pX2DL4XysjVoBfbxMxjB13IS/gXbk/+S7eVftNt6wyX6VG36VUc0zf8vmbC9juuMsa9H0EphtAf
-        +coZFjn/fJsLx7XY+ucv/InHQIfvCN83DYYVXfZv8VuUE6DVb5+VTHial9KLfgvJ+bmNmGDG9rRe
-        J/qUyzXgKLg3Cg10HCzqn5Df5BL/H8M9KIaXYybgFTRp4C9dM3PtaWUJ7caCN/Nxw0zasTLDqVJ+
-        HaFzAcVRslZFFnwyhiOhNmCCYUPgiefMCGW4P+1GrhlUUo9wv9kFsePZOrtTcoRdo3pFZHVRHBVR
-        o3pFxGUtHRVQYg7rp1zN9zJ+c6pyp3OH50Gi6GKOjYM1YnHkW7pAgcHwbcoa8SrFgV4xDqqp5PVl
-        +54/g7BVpp2IQmLXTENINFaP9cnXHvFJqOixW6fjKl/GsG3QAs3xLFgW7+hASGKHA2FGk0vaNmvy
-        OnnyGrmh+0T7s8sEZaxnlKdSGWir6Ait4lULRuVVxgIzDtGa4QiLHlUFhddzWgCLSbY4DGZLcl9E
-        v8L2Fhzzs7AKq5+aGMoVk/GNjOG5aKkG1Y4qFtoO5gvuYrzXKy3evJi3rrASPaLY7xFYi2Nzr+TO
-        CPqfKhzHpDyMCMdbitq0KXvV3jHiwzEbNuwJBMgU7yk4jhfVbeOg7M8wepgzwiXTWvCIrQQUWi6s
-        hogneMNBsSSr5JL3aWTPO42HNd9wTk/+AL12fzw=
-      </AnyType>
-      <AnyType xsi:type='xs:string'>Arithmetic-6b90bb75eef637db01c95a2f078b4fec.py</AnyType>
-      <AnyType xsi:type='xs:dateTime'>2014-09-16T20:31:07.728</AnyType>
     </Values>
   </Arguments>
   <Help></Help>
