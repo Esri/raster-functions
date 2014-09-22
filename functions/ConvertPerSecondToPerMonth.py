@@ -6,7 +6,7 @@ from calendar import monthrange
 class ConvertPerSecondToPerMonth():
 
     def __init__(self):
-        self.name = ""
+        self.name = "Convert Per-Second To Per-Month"
         self.description = "This function converts a raster representing an observation units per second to units per month."
         self.scaleFactor = 1.0
         self.units = "per month"
