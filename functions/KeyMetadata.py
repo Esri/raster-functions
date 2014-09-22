@@ -54,7 +54,12 @@ class KeyMetadata():
     def updateRasterInfo(self, **kwargs):
         self.propertyName = kwargs.get('property', "")  # remember these user-specified scalar inputs
         self.propertyValue = kwargs.get('value', "")
-        self.bandNames = kwargs.get('bands', "").split(',')
+
+        self.bandNames = []
+        b = kwargs.get('bands', "").strip()
+        if len(b) > 0:
+            self.bandNames = b.split(',')
+
         return kwargs
 
 
