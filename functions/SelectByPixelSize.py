@@ -4,8 +4,8 @@ import numpy as np
 class SelectByPixelSize():
 
     def __init__(self):
-        self.name = "Select by Pixel Size Function"
-        self.description = ""
+        self.name = "Select by Pixel Size"
+        self.description = "This function returns pixels associated with one of two input rasters based on the request resolution."
         self.threshold = 0.0
 
     def getParameterInfo(self):
@@ -15,16 +15,16 @@ class SelectByPixelSize():
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Raster A",
-                'description': ""
+                'displayName': "Raster 1",
+                'description': "The raster that's returned when request cell size is lower than the 'Cell Size Threshold'. A lower cell size value implies finer resolution."
             },
             {
                 'name': 'r2',
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Raster B",
-                'description': ""
+                'displayName': "Raster 2",
+                'description': "The raster that's returned when request cell size is higher than or equal to the 'Cell Size Threshold'. A higher cell size value implies coarser resolution."
             },
             {
                 'name': 'threshold',
@@ -32,7 +32,7 @@ class SelectByPixelSize():
                 'value': 0.0,
                 'required': True,
                 'displayName': "Cell Size Threshold",
-                'description': ""
+                'description': "The cell size threshold that controls which of the two input rasters contributes pixels to the output."
             },
         ]
 
