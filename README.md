@@ -1,13 +1,21 @@
 # ArcGIS Raster Functions
 
-This repository houses *raster function templates* (as .rft.xml files) that chain multiple *raster functions* to describe a powerful image processing operation. Templates can be very easily applied on single raster dataset, a mosaic dataset, or an image service to enable on-the-fly processing. This repository also contains *raster functions* written in Python that extend the image processing capabilities of ArcGIS. 
+This repository houses modern image processing and analytic tools called **raster functions**. 
+Raster functions are *lightweight* and process only the pixels visible on your screen, in memory, without creating intermediate files. 
+They are *powerful* because you can chain them together and apply them on huge rasters and mosaics on the fly. 
 
-Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/README.md#resources) section for links to pages that elaborate on these concepts.
+In this repository, you will find useful **function chains** (*.rft.xml) created by the Esri community. 
+You can create custom raster functions in Python that work seamlessly with the several dozen functions that ship with ArcGIS. 
+
+Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/README.md#resources) section 
+for links to pages that elaborate on creating function chains and customized functions.
+
 
 ## Requirements
 
 * ArcGIS 10.3 Pre-release (or higher)
-* Python 2.7 or above (if you plan to modify or create Python raster functions) 
+* Python 2.7
+
 
 ## Resources
 
@@ -19,13 +27,16 @@ Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/R
 * [Image Analysis window: Processing section](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000000m7000000)
 * [Create new raster function templates using the template editor](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t00000234000000)
 
+
 ## Issues
 
 Find a bug or want to request a new feature?  Please let us know by submitting an issue.
 
+
 ## Contributing
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
+
 
 ## Licensing
 Copyright 2014 Esri
@@ -44,5 +55,5 @@ limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](https://github.com/ArcGIS/raster-functions/blob/master/License.txt) file.
 
-[](Esri Tags: ArcGIS Raster Function On-the-fly Image Processing Samples)
+[](Esri Tags: ArcGIS Raster Function Chain On-the-fly Image Processing Samples)
 [](Esri Language: Python)​
