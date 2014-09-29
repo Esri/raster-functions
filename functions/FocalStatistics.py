@@ -8,7 +8,9 @@ class FocalStatistics():
         self.name = "Focal Statistics"
         self.description = ""
         self.factor = 1.0
-        
+        self.emit = ctypes.windll.kernel32.OutputDebugStringA
+        self.emit.argtypes = [ctypes.c_char_p]
+
     def getParameterInfo(self):
         return [
             {
@@ -43,6 +45,8 @@ class FocalStatistics():
         kwargs['output_info']['cellSize'] = tuple(np.multiply(kwargs['raster_info']['cellSize'], self.factor))
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
+
+        self.emit("Trace|FocalStatistics.UpdateRasterInfo|{0}\n".format(kwargs))
         return kwargs
         
 
@@ -53,5 +57,8 @@ class FocalStatistics():
 
         pixelBlocks['output_pixels'] = p[s, s].astype(props['pixelType'])
         pixelBlocks['output_mask'] = m[s, s].astype('u1')
+
+        self.emit("Trace|Request Raster|{0}\n".format(props))
+        self.emit("Trace|Request Size|{0}\n".format(shape))
         return pixelBlocks
 
