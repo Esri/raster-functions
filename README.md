@@ -7,8 +7,7 @@ They are *powerful* because you can chain them together and apply them on huge r
 In this repository, you will find useful **function chains** (*.rft.xml) created by the Esri community. 
 You can create custom raster functions in Python that work seamlessly with the several dozen functions that ship with ArcGIS. 
 
-Jump to the [Resources](https://github.com/ArcGIS/raster-functions/blob/master/README.md#resources) section 
-for links to pages that elaborate on creating function chains and customized functions.
+Jump to the [Resources][] section for links to pages that elaborate on creating function chains and customized functions.
 
 
 ## Requirements
@@ -19,7 +18,7 @@ for links to pages that elaborate on creating function chains and customized fun
 
 ## Resources
 
-* [Wiki](https://github.com/ArcGIS/raster-functions/wiki)
+* [Wiki](https://github.com/Esri/raster-functions/wiki)
 * [Rasters with functions](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000000m000000)
 * [A blog on raster functions](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
 * [Editing function chain templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
@@ -53,7 +52,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-A copy of the license is available in the repository's [License.txt](https://github.com/ArcGIS/raster-functions/blob/master/License.txt) file.
+A copy of the license is available in the repository's [License.txt](License.txt?raw=true) file.
 
 [](Esri Tags: ArcGIS Raster Function Chain On-the-fly Image Processing Samples)
 [](Esri Language: Python)​
