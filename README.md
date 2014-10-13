@@ -7,7 +7,7 @@ They are *powerful* because you can chain them together and apply them on huge r
 In this repository, you will find useful **function chains** (*.rft.xml) created by the Esri community. 
 You can create custom raster functions in Python that work seamlessly with the several dozen functions that ship with ArcGIS. 
 
-Jump to the [Resources][] section for links to pages that elaborate on creating function chains and customized functions.
+Jump to the [Resources](#resources) section for links to pages that elaborate on creating function chains and customized functions.
 
 
 ## Requirements
