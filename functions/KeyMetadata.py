@@ -13,7 +13,7 @@ class KeyMetadata():
             {
                 'name': 'raster',
                 'dataType': 'raster',
-                'value': '',
+                'value': None,
                 'displayName': "Raster",
                 'required': True,
                 'description': "The primary raster input."

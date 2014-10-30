@@ -36,29 +36,37 @@ class FocalStatistics():
         self.factor = scalars.get('factor', 1.0)
         return { 
             'samplingFactor': self.factor,
+            # 'padding': self.factor,
             'inputMask': True 
         }
 
         
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['resampling'] = True
+        kwargs['output_info']['resampling'] = False
         kwargs['output_info']['cellSize'] = tuple(np.multiply(kwargs['raster_info']['cellSize'], self.factor))
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
 
-        self.emit("Trace|FocalStatistics.UpdateRasterInfo|{0}\n".format(kwargs))
+        self.emit("Trace|FocalStatistics.updateRasterInfo|{0}\n".format(kwargs))
         return kwargs
         
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        s = slice(None, None, self.factor)
+        s = slice(None, None, max(1, self.factor))
         p = pixelBlocks['raster_pixels']
         m = pixelBlocks['raster_mask']
 
-        pixelBlocks['output_pixels'] = p[s, s].astype(props['pixelType'])
-        pixelBlocks['output_mask'] = m[s, s].astype('u1')
+        if len(p.shape) <= 2 or p.shape[0] == 1:
+            outP = p[s, s]
+            outM = m[s, s]
+        else:
+            outP = p[:, s, s]
+            outM = m[:, s, s]
 
-        self.emit("Trace|Request Raster|{0}\n".format(props))
-        self.emit("Trace|Request Size|{0}\n".format(shape))
+        pixelBlocks['output_pixels'] = outP.astype(props['pixelType'])
+        pixelBlocks['output_mask'] = outM.astype('u1')
+
+        self.emit("Trace|FocalStatistics.updatePixels|Request Raster|{0}\n".format(props))
+        self.emit("Trace|FocalStatistics.updatePixels|Request Size|{0}\n".format(shape))
         return pixelBlocks
 
