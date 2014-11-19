@@ -47,7 +47,6 @@ class Aggregate():
             self.operator = np.sum
 
         return {
-            'compositeRasters': True,            
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4,          # invalidate histogram and statistics because we are modifying pixel values
             'inputMask': False                      # Don't need input raster mask in .updatePixels(). 
@@ -61,13 +60,8 @@ class Aggregate():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        inBlock = pixelBlocks['composite_pixels']
-
-        if len(inBlock.shape) <= 2 or inBlock.shape[0] == 1:
-            outBlock = inBlock
-        else:
-            outBlock = self.operator(inBlock, axis=0)
-
+        inBlocks = pixelBlocks['rasters_pixels']    # tuple of 2-d or 3-d array containing pixel blocks from each input raster
+        outBlock = self.operator(inBlocks, axis=0)  # apply the selected operator over each item in the tuple
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
         return pixelBlocks
 
