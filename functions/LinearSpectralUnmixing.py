@@ -46,7 +46,6 @@ class LinearSpectralUnmixing():
 
         # output bandCount is number of endmembers + 1 residuals raster
         bandCount = len(self.signatures) + 1
-        print bandCount
 
         kwargs['output_info']['bandCount'] = bandCount
         kwargs['output_info']['statistics'] = ()
