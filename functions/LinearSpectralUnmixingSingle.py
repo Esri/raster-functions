@@ -1,10 +1,11 @@
 import numpy as np
 
-class LinearSpectralUnmixing():
+class LinearSpectralUnmixingSingle():
     def __init__(self):
         self.name = 'Linear Spectral Unmixing'
         self.description = 'Performs linear spectral unmixing for a multiband raster.'
         self.signatures = '{}'
+        self.choice = ''
 
 
     def getParameterInfo(self):
@@ -28,6 +29,14 @@ class LinearSpectralUnmixing():
                 'displayName': 'Endmember Training Signature Means',
                 'description': 'The training site means per each classification for each band'
             },
+            {
+                'name': 'choice',
+                'dataType': 'string',
+                'value': 'Veg',
+                'required': True,
+                'displayName': 'Output Endmember or Residual',
+                'description': 'The single output endmember or residuals image. NOTE: Valid values are the endmember names or "Residuals".'
+            },
         ]
 
 
@@ -35,7 +44,7 @@ class LinearSpectralUnmixing():
         return {
             'compositeRasters': False,
             'inheritProperties': 1 | 2| 4 | 8,    # inherit all from the raster
-            'invalidateProperties': 2 | 4 | 8,    # reset stats, histogram, key properties
+            #'invalidateProperties': 2 | 4 | 8,    # reset stats, histogram, key properties
             'inputMask': False                    # no input raster mask
         }
 
@@ -43,14 +52,16 @@ class LinearSpectralUnmixing():
     def updateRasterInfo(self, **kwargs):
         signatures = kwargs['signatures'] # get endmember input string value
         self.signatures = eval(signatures) # convert to python dict
+        self.choice = kwargs['choice']
 
-        # output bandCount is number of endmembers + 1 residuals raster
-        bandCount = len(self.signatures) + 1
+        # output bandCount is only 1
+        bandCount = 1
 
         kwargs['output_info']['bandCount'] = bandCount
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['pixelType'] = 'f4'
+        kwargs['output_info']['resampling'] = True
 
         return kwargs
 
@@ -73,22 +84,28 @@ class LinearSpectralUnmixing():
         # reshape to slightly flatten to 2d array
         inBlockTFlat = inBlockT.reshape((-1, inBlockT.shape[-1]))
 
+        # determine which values to output from np.linalg.lstsq (either [0][?] or [1][0])
+        positionA = 0
+        positionB = 0
+        if self.signatures.has_key(self.choice):
+            # endmember requested
+            positionB = self.signatures.keys().index(self.choice)
+        else:
+            #residuals requested
+            positionA = 1
+
         # solve simultaneous functions at each pixel stack
         # looping and output of new array of all lstsq results
-        def unmixPixel(pixelStack, sigs):
-            solution = np.linalg.lstsq(sigs, pixelStack)
-            results = np.append(solution[0], solution[1][0]) # return endmembers and residual
-            return results
+        solutions = []
+        for pixelStack in inBlockTFlat:
+            solution = np.linalg.lstsq(signaturesT, pixelStack)
+            solutions.append(solution[positionA][positionB])
+        outBlock = np.array(solutions)
 
-        # np.apply_along_axis seems to be slower than native Python looping
-        outBlock = np.apply_along_axis(unmixPixel, 1, inBlockTFlat, signaturesT)
-
-        # outBlock shape is (n, 4); must reconstruct into endmember bands with values in correct x,y
-        # e.g. you can reconstruct:  inBlockTFlat.reshape((1994,2310,6)) back to inBlockT
-        # here we need (1994,2310,4) without residuals; (1994,2310,5) with residuals
-        outBlockReshaped = outBlock.reshape(-1, inBlock.shape[-1], 5).transpose((2,0,1))
+        outBlockReshaped = outBlock.reshape(-1, inBlock.shape[-1])
 
         pixelBlocks['output_pixels'] = outBlockReshaped.astype(props['pixelType'])
+
         return pixelBlocks
 
 
