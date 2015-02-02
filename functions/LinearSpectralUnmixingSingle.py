@@ -44,7 +44,7 @@ class LinearSpectralUnmixingSingle():
         return {
             'compositeRasters': False,
             'inheritProperties': 1 | 2| 4 | 8,    # inherit all from the raster
-            #'invalidateProperties': 2 | 4 | 8,    # reset stats, histogram, key properties
+            'invalidateProperties': 2 | 4 | 8,    # reset stats, histogram, key properties
             'inputMask': False                    # no input raster mask
         }
 
