@@ -10,11 +10,10 @@ class Hillshade():
         self.prepare()   
 
   
-    def prepare(self, azimuth=315.0, elevation=45.0,
-                zFactor=1.0, cellSizeExponent=0.664, cellSizeFactor=0.024, 
-                cellSize=None, sr=None):
-        Z = (90.0 - elevation) * math.pi / 180.0   # solar _zenith_ angle in radians
-        A = (90.0 - azimuth) * math.pi / 180.0     # solar azimuth _arithmetic_ angle in radians
+    def prepare(self, azimuth=315., elevation=45.,
+                zFactor=1., cellSizeExponent=0.664, cellSizeFactor=0.024, cellSize=None, sr=None):
+        Z = (90. - elevation) * math.pi / 180.   # solar _zenith_ angle in radians
+        A = (90. - azimuth) * math.pi / 180.     # solar azimuth _arithmetic_ angle in radians
         sinZ = math.sin(Z)
         self.cosZ = math.cos(Z)
         self.sinZsinA = sinZ * math.sin(A)
@@ -22,8 +21,8 @@ class Hillshade():
         self.xKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
         self.yKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
 
-        m = 1.0
-        if math.fabs(zFactor - 1.0) <= 0.0001 and sr == 4326: 
+        m = 1.
+        if math.fabs(zFactor - 1.) <= 0.0001 and sr == 4326: 
             m = 1.11e5  # multiplicative factor for converting cell size in degrees to meters (defaults to 1)
 
         if not cellSize is None and len(cellSize) == 2:
@@ -46,7 +45,7 @@ class Hillshade():
             {
                 'name': 'zf',
                 'dataType': 'numeric',
-                'value': 1.0,
+                'value': 1.,
                 'required': False,
                 'displayName': "Z Factor",
                 'description': "The multiplicative factor that converts elevation values to the units of the horizontal (xy-) coordinate system.",
@@ -83,7 +82,7 @@ class Hillshade():
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['pixelType'] = 'u1'
-        kwargs['output_info']['statistics'] = ({'minimum': 0.0, 'maximum': 255.0}, )
+        kwargs['output_info']['statistics'] = ({'minimum': 0., 'maximum': 255.}, )
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['colormap'] = ()
 
@@ -91,7 +90,7 @@ class Hillshade():
         if r['bandCount'] > 1:
             raise Exception("Input raster has more than one band. Only single-band raster datasets are supported")
 
-        self.prepare(zFactor=kwargs.get('zf', 1.0), 
+        self.prepare(zFactor=kwargs.get('zf', 1.), 
                      cellSizeExponent=kwargs.get('ce', 0.664), 
                      cellSizeFactor=kwargs.get('cf', 0.024), 
                      cellSize=r['cellSize'],
@@ -100,13 +99,12 @@ class Hillshade():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        v = np.array(pixelBlocks['raster_pixels'], dtype='f4')
-        m = np.array(pixelBlocks['raster_mask'], dtype='u1')
+        v = np.array(pixelBlocks['raster_pixels'], dtype='f4', copy=False)
+        m = np.array(pixelBlocks['raster_mask'], dtype='u1', copy=False)
 
         dx, dy = self.computeGradients(v)
         outBlock = self.computeHillshade(dx, dy)
-        
-        pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'], copy=False)
 
         # cf: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
         pixelBlocks['output_mask'] = \
@@ -135,5 +133,5 @@ class Hillshade():
 
     def computeHillshade(self, dx, dy):
         # cf: http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//009z000000z2000000.htm
-        return np.clip(255 * (self.cosZ + dy*self.sinZsinA - dx*self.sinZcosA) / np.sqrt(1. + (dx*dx + dy*dy)), 0.0, 255.0)
+        return np.clip(255 * (self.cosZ + dy*self.sinZsinA - dx*self.sinZcosA) / np.sqrt(1. + (dx*dx + dy*dy)), 0., 255.)
 
