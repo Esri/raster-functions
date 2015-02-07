@@ -46,14 +46,11 @@ class Arithmetic():
 
     def updateRasterInfo(self, **kwargs):
         m = kwargs.get('op', 'Add').lower()
-        if m == 'add':
-            self.op = np.add
-        elif m == 'subtract': 
-            self.op = np.subtract
-        elif m == 'multiply': 
-            self.op = np.multiply
-        elif m == 'divide': 
-            self.op = np.divide
+        
+        if m == 'add':          self.op = np.add
+        elif m == 'subtract':   self.op = np.subtract
+        elif m == 'multiply':   self.op = np.multiply
+        elif m == 'divide':     self.op = np.divide
                       
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
@@ -61,11 +58,11 @@ class Arithmetic():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4')
-        r2 = np.array(pixelBlocks['r2_pixels'], dtype='f4')
+        r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4', copy=False)
+        r2 = np.array(pixelBlocks['r2_pixels'], dtype='f4', copy=False)
 
         np.seterr(divide='ignore')
-        pixelBlocks['output_pixels'] = self.op(r1, r2).astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = self.op(r1, r2).astype(props['pixelType'], copy=False)
         return pixelBlocks
 
 
