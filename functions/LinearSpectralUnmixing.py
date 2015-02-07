@@ -6,6 +6,7 @@ class LinearSpectralUnmixing():
         self.description = 'Performs linear spectral unmixing for a multiband raster.'
         self.inputSignatures = None # ultimately will be a dict
         self.coefficients = None    # ultimately will be a transposed np array
+        self.applyScaling = False
 
 
     def getParameterInfo(self):
@@ -21,13 +22,25 @@ class LinearSpectralUnmixing():
             {
                 'name': 'inputsignatures',
                 'dataType': 'string',
-                'value': '{\'Veg\': [16.91479, 19.83083, 14.53383,93.16165, 41.97619, 18.11779],'+
-                    ' \'Shadow\': [17.78413, 11.62528, 5.50679, 8.22514, 0.72993, 0.14649],'+
-                    ' \'NPV\': [17.45967, 17.11275, 16.30269, 26.19254, 40.90807, 45.67303],'+
-                    ' \'Soil\': [50.17609, 60.45217, 67.33043,83.83261, 93.41739, 81.16739]}',
+                'value': ("{'Veg': [16.91479, 19.83083, 14.53383, 93.16165, 41.97619, 18.11779], "
+                            "'Shadow': [17.78413, 11.62528, 5.50679, 8.22514, 0.72993, 0.14649], "
+                            "'NPV': [17.45967, 17.11275, 16.30269, 26.19254, 40.90807, 45.67303], "
+                            "'Soil': [50.17609, 60.45217, 67.33043,83.83261, 93.41739, 81.16739]}"),
                 'required': True,
                 'displayName': 'Endmember Training Signature Means',
-                'description': 'The training site means per each classification for each band'
+                'description': ('The training site means for each endmember classification for each band. '
+                                'Input value should adhere to Python dictionary or JSON formatting.')
+            },
+            {
+                'name': 'method',
+                'dataType': 'string',
+                'value': 'Scaled',
+                'required': True,
+                'domain': ('Scaled', 'Raw'),
+                'displayName': 'Output Image Type',
+                'description': ('The type of output expected from this function. '
+                                'Specify Scaled for least squares values constrained between 0.0 - 1.0. '
+                                'Choose Raw for unaltered values.')
             },
         ]
 
@@ -58,8 +71,17 @@ class LinearSpectralUnmixing():
         # output bandCount is number of endmembers + 1 residuals raster
         bandCount = len(self.inputSignatures) + 1
 
-        # rough estimation of output stats
-        outStats = {'minimum': -10.0, 'maximum': 10.0, 'skipFactorX': 50, 'skipFactorY': 50}
+        # determine output pixel value method
+        method = kwargs['method'].lower()
+        if method == 'scaled':
+            # constrained output pixels
+            self.applyScaling = True
+            outStats = {'minimum': 0, 'maximum': 1.0, 'skipFactorX': 10, 'skipFactorY': 10}
+        else:
+            self.applyScaling = False
+            # rough estimation of output stats
+            outStats = {'minimum': -10.0, 'maximum': 10.0, 'skipFactorX': 10, 'skipFactorY': 10}
+        # repeat stats for all output raster bands
         outStats = tuple(outStats for i in xrange(bandCount))
 
         kwargs['output_info']['bandCount'] = bandCount
@@ -85,9 +107,20 @@ class LinearSpectralUnmixing():
         # pixel stacks to solve must be transposed to (M,K) matrix of K columns
         results = np.linalg.lstsq(self.coefficients, inBlockTFlat.T)
 
-        outBlockList = [arr.reshape(-1, inBlock.shape[-1]) for arr in results[0]]
+        outBlockList = []
+        # endmember solutions
+        if self.applyScaling:
+            for endmember in results[0]:
+                endmember = endmember.reshape(-1, inBlock.shape[-1])
+                endmember.clip(min=0, out=endmember)
+                endmember *= (1.0 / endmember.max())
+                outBlockList.append(endmember)
+        else:
+            outBlockList = [endmember.reshape(-1, inBlock.shape[-1]) for endmember in results[0]]
+        # residuals
         outBlockList.append(results[1].reshape(-1, inBlock.shape[-1]))
 
+        # output pixel arrays of endmembers & residuals
         pixelBlocks['output_pixels'] = np.array(outBlockList).astype(props['pixelType'])
 
         return pixelBlocks
@@ -98,11 +131,12 @@ class LinearSpectralUnmixing():
             # dataset level
             keyMetadata['datatype'] = 'Processed'
         elif bandIndex == len(self.inputSignatures):
-            # residuals raster
+            # residuals band
             keyMetadata['wavelengthmin'] = None
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Residuals'
         else:
+            # endmember bands
             keyMetadata['wavelengthmin'] = None
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = self.inputSignatures.keys()[bandIndex]
