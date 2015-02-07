@@ -4,7 +4,8 @@ class LinearSpectralUnmixing():
     def __init__(self):
         self.name = 'Linear Spectral Unmixing'
         self.description = 'Performs linear spectral unmixing for a multiband raster.'
-        self.signatures = '{}'
+        self.inputSignatures = None # ultimately will be a dict
+        self.coefficients = None    # ultimately will be a transposed np array
 
 
     def getParameterInfo(self):
@@ -18,7 +19,7 @@ class LinearSpectralUnmixing():
                 'description': 'The primary multi-band input raster to be classified'
             },
             {
-                'name': 'signatures',
+                'name': 'inputsignatures',
                 'dataType': 'string',
                 'value': '{\'Veg\': [16.91479, 19.83083, 14.53383,93.16165, 41.97619, 18.11779],'+
                     ' \'Shadow\': [17.78413, 11.62528, 5.50679, 8.22514, 0.72993, 0.14649],'+
@@ -34,21 +35,35 @@ class LinearSpectralUnmixing():
     def getConfiguration(self, **scalars):
         return {
             'compositeRasters': False,
-            'inheritProperties': 1 | 2| 4 | 8,    # inherit all from the raster
-            'invalidateProperties': 2 | 4 | 8,    # reset stats, histogram, key properties
-            'inputMask': False                    # no input raster mask
+            'inheritProperties': 1 | 2 | 4 | 8, # inherit all from the raster
+            'invalidateProperties': 2 | 4 | 8,  # reset stats, histogram, key properties
+            'inputMask': False
         }
 
 
     def updateRasterInfo(self, **kwargs):
-        signatures = kwargs['signatures'] # get endmember input string value
-        self.signatures = eval(signatures) # convert to python dict
+        # get endmember input string value and convert to dict
+        inputSignatures = kwargs['inputsignatures']
+        self.inputSignatures = eval(inputSignatures)
+
+        # convert input endmember signatures into arrays of each endmember across bands
+        # [[vegB, vegG, vegR, ...], [shadowB, shadowG, shadowR, ...], [...]]
+        signaturesArray = np.array(self.inputSignatures.values())
+
+        # transpose signature axes to into arrays of each band's endmembers
+        # [[vegB, shadowB, npvB, ...], [vegG, shadowG, npvG, ...], [...]]
+        # assign to coefficients member var to use in np.linalg.lstsq()
+        self.coefficients = signaturesArray.T
 
         # output bandCount is number of endmembers + 1 residuals raster
-        bandCount = len(self.signatures) + 1
+        bandCount = len(self.inputSignatures) + 1
+
+        # rough estimation of output stats
+        outStats = {'minimum': -10.0, 'maximum': 10.0, 'skipFactorX': 50, 'skipFactorY': 50}
+        outStats = tuple(outStats for i in xrange(bandCount))
 
         kwargs['output_info']['bandCount'] = bandCount
-        kwargs['output_info']['statistics'] = ()
+        kwargs['output_info']['statistics'] = outStats
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['pixelType'] = 'f4'
 
@@ -56,39 +71,25 @@ class LinearSpectralUnmixing():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        # convert endmember signature means into arrays of each endmember across bands
-        # [[vegB, vegG, vegR, ...], [shadowB, shadowG, shadowR, ...], [...]]
-        signatures = np.array(self.signatures.values())
-
-        # transpose axes to into arrays of each band's endmembers
-        # [[vegB, shadowB, npvB, ...], [vegG, shadowG, npvG, ...], [...]]
-        signaturesT = signatures.T
-
         # get the input raster pixel block
         inBlock = pixelBlocks['raster_pixels']
 
-        # transpose image array axes into arrays of band values per pixel,
+        # transpose raster array axes into arrays of band values per pixel,
         # [B, G, R, NIR1, SWIR1, SWIR2] at each pixel
         inBlockT = inBlock.transpose([1, 2, 0])
+
         # reshape to slightly flatten to 2d array
         inBlockTFlat = inBlockT.reshape((-1, inBlockT.shape[-1]))
 
-        # solve simultaneous functions at each pixel stack
-        # looping and output of new array of all lstsq results
-        def unmixPixel(pixelStack, sigs):
-            solution = np.linalg.lstsq(sigs, pixelStack)
-            results = np.append(solution[0], solution[1][0]) # return endmembers and residual
-            return results
+        # solve simultaneous equations with coefficients and each pixel stack
+        # pixel stacks to solve must be transposed to (M,K) matrix of K columns
+        results = np.linalg.lstsq(self.coefficients, inBlockTFlat.T)
 
-        # np.apply_along_axis seems to be slower than native Python looping
-        outBlock = np.apply_along_axis(unmixPixel, 1, inBlockTFlat, signaturesT)
+        outBlockList = [arr.reshape(-1, inBlock.shape[-1]) for arr in results[0]]
+        outBlockList.append(results[1].reshape(-1, inBlock.shape[-1]))
 
-        # outBlock shape is (n, 4); must reconstruct into endmember bands with values in correct x,y
-        # e.g. you can reconstruct:  inBlockTFlat.reshape((1994,2310,6)) back to inBlockT
-        # here we need (1994,2310,4) without residuals; (1994,2310,5) with residuals
-        outBlockReshaped = outBlock.reshape(-1, inBlock.shape[-1], 5).transpose((2,0,1))
+        pixelBlocks['output_pixels'] = np.array(outBlockList).astype(props['pixelType'])
 
-        pixelBlocks['output_pixels'] = outBlockReshaped.astype(props['pixelType'])
         return pixelBlocks
 
 
@@ -96,7 +97,7 @@ class LinearSpectralUnmixing():
         if bandIndex == -1:
             # dataset level
             keyMetadata['datatype'] = 'Processed'
-        elif bandIndex == len(self.signatures):
+        elif bandIndex == len(self.inputSignatures):
             # residuals raster
             keyMetadata['wavelengthmin'] = None
             keyMetadata['wavelengthmax'] = None
@@ -104,5 +105,5 @@ class LinearSpectralUnmixing():
         else:
             keyMetadata['wavelengthmin'] = None
             keyMetadata['wavelengthmax'] = None
-            keyMetadata['bandname'] = self.signatures.keys()[bandIndex]
+            keyMetadata['bandname'] = self.inputSignatures.keys()[bandIndex]
         return keyMetadata
