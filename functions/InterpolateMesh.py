@@ -89,9 +89,10 @@ class InterpolateMesh():
         self.trace("Trace|InterpolateMesh.updatePixels.1|tlc: {0}|shape: {1}|props: {2}|\n".format(tlc, shape, props))
         self.trace("Trace|InterpolateMesh.updatePixels.2|requestExtent: {0}|\n".format(e))
         self.trace("Trace|InterpolateMesh.updatePixels.3|x: {0}|y: {1}|\n".format(x, y))
-        f = interpolant(x, y)
+        f = self.interpolant(x, y).T
 
         self.trace("Trace|InterpolateMesh.updatePixels.4|f: {0}|\n".format(f))
-        pixelBlocks['output_pixels'] = f.astype(props['pixelType'], copy=False)        
+        pixelBlocks['output_pixels'] = f.astype(props['pixelType'], copy=False)
+        pixelBlocks['output_mask'] = np.ones(shape, dtype='u1')
         return pixelBlocks
 
