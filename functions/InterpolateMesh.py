@@ -1,40 +1,38 @@
 import arcpy
 import numpy as np
-import ctypes
 from scipy import ndimage
 from scipy import interpolate
+import utils
 
 class InterpolateMesh():
 
     def __init__(self):
         self.name = "Interpolate Mesh Function"
         self.description = ""
-        self.X = None
-        self.Y = None
-        self.emit = ctypes.windll.kernel32.OutputDebugStringA
-        self.emit.argtypes = [ctypes.c_char_p]
+        self.interpolant = None
+        self.trace = utils.getTraceFunction()
 
         
     def getParameterInfo(self):
         return [
             {
-                'name': 'v',
-                'dataType': 'raster',
-                'value': None,
+                'name': 'f',
+                'dataType': 'string',
+                'value': r"c:\Users\fero4752\Box Sync\Swap\mesh\temp.tif",
                 'required': True,
-                'displayName': "Value Raster",
-                'description': "",
+                'displayName': "Value File",
+                'description': "Path to the image file containing pixel values at each grid point.",
             },
             {
-                'name': 'xf',
+                'name': 'x',
                 'dataType': 'string',
                 'value': r"c:\Users\fero4752\Box Sync\Swap\mesh\lon_rho.tif",
                 'required': True,
                 'displayName': "X-Coordinates File",
-                'description': "",
+                'description': "First dimension of the XY meshgrid.",
             },
             {
-                'name': 'yf',
+                'name': 'y',
                 'dataType': 'string',
                 'value': r"c:\Users\fero4752\Box Sync\Swap\mesh\lat_rho.tif",
                 'required': True,
@@ -52,60 +50,48 @@ class InterpolateMesh():
         ]
 
 
-    def getConfiguration(self, **scalars): 
-        return {
-          'extractBands': (0, ),                # can only handle a single band raster
-          'inheritProperties': 4 | 8,           # inherit everything but the pixel type (1) and NoData (2)
-          'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
-          'inputMask': True                     # we need the input mask in .updatePixels()
+    def updateRasterInfo(self, **kwargs):
+        X = arcpy.RasterToNumPyArray(kwargs['x'])[0,:]
+        Y = arcpy.RasterToNumPyArray(kwargs['y'])[:,0]
+        F = arcpy.RasterToNumPyArray(kwargs['f'])
+        self.trace("Trace|InterpolateMesh.updateRasterInfo.2|X: {0}|Y: {0}|F: {0}|\n".format(X.shape, Y.shape, F.shape))
+        if len(F.shape) == 3: F = F[0, ...]
+
+        xMin, yMin, xMax, yMax = np.min(X), np.min(Y), np.max(X), np.max(Y)
+        sr = int(kwargs.get('sr', 4326))
+        
+        kwargs['output_info'] = { 
+            'bandCount': 1,
+            'pixelType': F.dtype.str,
+            'nativeExtent': (xMin, yMin, xMax, yMax),
+            'extent': (xMin, yMin, xMax, yMax),
+            'cellSize': ((xMax-xMin)/X.size, (yMax-yMin)/Y.size),
+            'spatialReference': sr,
+            'nativeSpatialReference': sr,
+            'statistics': (),
+            'histogram': (),
+            'colormap': (),
+            'noData': np.array([256], dtype='u1'),
+            'resampling': True
         }
 
-
-    def updateRasterInfo(self, **kwargs):
-        self.X = arcpy.RasterToNumPyArray(kwargs['xf'])[0,:]
-        self.Y = arcpy.RasterToNumPyArray(kwargs['yf'])[:,0]
-        xMin, yMin, xMax, yMax = np.min(self.X), np.min(self.Y), np.max(self.X), np.max(self.Y)
-        kwargs['output_info']['nativeExtent'] = (xMin, yMin, xMax, yMax)
-        kwargs['output_info']['extent'] = (xMin, yMin, xMax, yMax)
-        kwargs['output_info']['cellSize'] = ((xMax-xMin)/self.X.size, (yMax-yMin)/self.Y.size)
-
-        sr = int(kwargs.get('sr', 4326))
-        kwargs['output_info']['nativeSpatialReference'] = sr
-        kwargs['output_info']['spatialReference'] = sr
-        kwargs['output_info']['pixelType'] = 'f4'
-        kwargs['output_info']['resampling'] = False
-
-        self.emit("Trace|InterpolateMesh.updateRasterInfo|{0}\n".format(kwargs))
+        self.trace("Trace|InterpolateMesh.updateRasterInfo.1|{0}\n".format(kwargs))
+        self.interpolant = interpolate.RectBivariateSpline(X, Y, F.T)
         return kwargs
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        self.emit("Trace|InterpolateMesh.updatePixels|tlc={0}|shape={1}|props={2}\n".format(tlc, shape, props))
+        e = utils.computeMapExtents(tlc, shape, props)
+        nRows, nCols = shape if len(shape) == 2 else shape[1:]
+        x = np.linspace(e[0], e[2], nCols)
+        y = np.linspace(e[1], e[3], nRows)
 
-        u = np.array(pixelBlocks['v_pixels'], dtype='f4', copy=False)
-        u = u.T
-        u[u>1000] = 0
+        self.trace("Trace|InterpolateMesh.updatePixels.1|tlc: {0}|shape: {1}|props: {2}|\n".format(tlc, shape, props))
+        self.trace("Trace|InterpolateMesh.updatePixels.2|requestExtent: {0}|\n".format(e))
+        self.trace("Trace|InterpolateMesh.updatePixels.3|x: {0}|y: {1}|\n".format(x, y))
+        f = interpolant(x, y)
 
-        self.emit("Trace|InterpolateMesh.updatePixels|X={0}|Y={1}|Z={2}\n".format(self.X.shape, self.Y.shape, u.shape))
-        interpolator = interpolate.RectBivariateSpline(self.X, self.Y, u)
-
-        if len(u.shape) == 2:
-            nRows, nCols = u.shape
-        else: 
-            nRows, nCols = u.shape[1:]
-
-        xCell, yCell = props['cellSize']
-        xMin, yMin, xMax, yMax = props['extent']
-        xMin += tlc[0] * xCell 
-        yMax -= tlc[1] * yCell 
-
-        self.emit("Trace|InterpolateMesh.updatePixels|{0}|{1}\n".format(xMin, yMax))
-        x = np.linspace(xMin, xMin+nCols*xCell, nCols)
-        y = np.linspace(yMax-nRows*yCell, yMax, nRows)
-        self.emit("Trace|InterpolateMesh.updatePixels|x={0}|y={1}\n".format(x, y))
-        v = interpolator(x, y).T
-
-        self.emit("Trace|InterpolateMesh.updatePixels|v={0}|\n".format(v))
-        pixelBlocks['output_pixels'] = v.astype(props['pixelType'], copy=False)        
+        self.trace("Trace|InterpolateMesh.updatePixels.4|f: {0}|\n".format(f))
+        pixelBlocks['output_pixels'] = f.astype(props['pixelType'], copy=False)        
         return pixelBlocks
 

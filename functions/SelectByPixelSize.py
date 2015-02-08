@@ -1,5 +1,5 @@
 import numpy as np
-import ctypes
+# import utils
 
 
 class SelectByPixelSize():
@@ -9,8 +9,7 @@ class SelectByPixelSize():
         self.description = "This function returns pixels associated with one of two input rasters based on the request resolution."
         self.threshold = 0.0
         self.inBands1, self.inBands2, self.outBands = 1, 1, 1
-        self.emit = ctypes.windll.kernel32.OutputDebugStringA
-        self.emit.argtypes = [ctypes.c_char_p]
+        # self.trace = utils.getTraceFunction()
 
         
     def getParameterInfo(self):
@@ -60,8 +59,8 @@ class SelectByPixelSize():
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
 
-        self.emit("Trace|Threshold cell-size|{0}\n".format(self.threshold))
-        self.emit("Trace|output_info|{0}\n".format(kwargs['output_info']))
+        # self.trace("Trace|Threshold cell-size|{0}\n".format(self.threshold))
+        # self.trace("Trace|output_info|{0}\n".format(kwargs['output_info']))
         return kwargs
         
         
@@ -76,7 +75,7 @@ class SelectByPixelSize():
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         cellSize = props['cellSize']
         v = 0.5 * (cellSize[0] + cellSize[1])
-        self.emit("Trace|Request cell-size|{0}\n".format(v))
+        # self.trace("Trace|Request cell-size|{0}\n".format(v))
         
         if v < self.threshold:
             sPixels = 'r1_pixels'

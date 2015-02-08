@@ -1,7 +1,7 @@
 from scipy import ndimage
 import numpy as np
 import math 
-import Hillshade
+from Hillshade import Hillshade
 
 class TintedHillshade():
 
