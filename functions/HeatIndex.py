@@ -55,11 +55,11 @@ class HeatIndex():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
-        r = np.array(pixelBlocks['rh_pixels'], dtype='f4')
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)
+        r = np.array(pixelBlocks['rh_pixels'], dtype='f4', copy=False)
 
         if self.doConversion:
-            t = (9.0/5.0 * t) + 32.0
+            t = (9./5. * t) + 32.
 
         tr = t * r
         rr = r * r
@@ -69,7 +69,7 @@ class HeatIndex():
         ttrr = ttr * r
 
         outBlock = -42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) + (0.00085282 * trr) - (0.00000199 * ttrr)
-        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
