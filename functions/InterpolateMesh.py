@@ -57,7 +57,7 @@ class InterpolateMesh():
         self.trace("Trace|InterpolateMesh.updateRasterInfo.2|X: {0}|Y: {0}|F: {0}|\n".format(X.shape, Y.shape, F.shape))
         if len(F.shape) == 3: F = F[0, ...]
 
-        xMin, yMin, xMax, yMax = np.min(X), np.min(Y), np.max(X), np.max(Y)
+        xMin, yMin, xMax, yMax = X[0], Y[0], X[-1], Y[-1]
         sr = int(kwargs.get('sr', 4326))
         
         kwargs['output_info'] = { 
@@ -72,7 +72,7 @@ class InterpolateMesh():
             'histogram': (),
             'colormap': (),
             'noData': np.array([256], dtype='u1'),
-            'resampling': True
+            'resampling': False
         }
 
         self.trace("Trace|InterpolateMesh.updateRasterInfo.1|{0}\n".format(kwargs))
