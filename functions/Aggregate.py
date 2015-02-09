@@ -33,41 +33,34 @@ class Aggregate():
 
     def getConfiguration(self, **scalars):
         m = scalars.get('method', 'Sum').lower()
-        if m == 'average':
-            self.operator = np.mean
-        elif m == 'median':
-            self.operator = np.median
-        elif m == 'minimum':
-            self.operator = np.min
-        elif m == 'maximum':
-            self.operator = np.max
-        elif m == 'standard deviation':
-            self.operator = np.std
-        else:
-            self.operator = np.sum
+        if m == 'average':              self.operator = np.mean
+        elif m == 'median':             self.operator = np.median
+        elif m == 'minimum':            self.operator = np.min
+        elif m == 'maximum':            self.operator = np.max
+        elif m == 'standard deviation': self.operator = np.std
+        else:                           self.operator = np.sum
 
         return {
-            'compositeRasters': True,            
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4,          # invalidate histogram and statistics because we are modifying pixel values
-            'inputMask': False                      # Don't need input raster mask in .updatePixels(). 
+            'inputMask': True                       # need raster mask of all input rasters in .updatePixels(). 
         }
 
 
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['pixelType'] = 'f4'   # output pixels are floating-point values
-        kwargs['output_info']['bandCount'] = 1      # output raster is single-band aggregate
+        kwargs['output_info']['noData'] = None      # we'll set the mask updatePixels()
+        kwargs['output_info']['histogram'] = ()     # no statistics/histogram for output raster specified
+        kwargs['output_info']['statistics'] = ()    
         return kwargs
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        inBlock = pixelBlocks['composite_pixels']
-
-        if len(inBlock.shape) <= 2 or inBlock.shape[0] == 1:
-            outBlock = inBlock
-        else:
-            outBlock = self.operator(inBlock, axis=0)
-
-        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
+        # pixelBlocks['rasters_pixels']: tuple of 2-d or 3-d array containing pixel blocks from each input raster
+        # apply the selected operator over each array in the tuple
+        outBlock = self.operator(pixelBlocks['rasters_pixels'], axis=0)  
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)
+        masks = np.array(pixelBlocks['rasters_mask'], copy=False)
+        pixelBlocks['output_mask'] = np.all(masks, axis=0).astype('u1', copy=False)
         return pixelBlocks
 
