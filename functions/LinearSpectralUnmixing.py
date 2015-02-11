@@ -4,8 +4,8 @@ class LinearSpectralUnmixing():
     def __init__(self):
         self.name = 'Linear Spectral Unmixing'
         self.description = 'Performs linear spectral unmixing for a multiband raster.'
-        self.inputSignatures = None # ultimately will be a dict
-        self.coefficients = None    # ultimately will be a transposed np array
+        self.inputSignatures = None     # ultimately will be a dict
+        self.coefficients = None        # ultimately will be a transposed np array
         self.applyScaling = False
 
 
@@ -22,10 +22,10 @@ class LinearSpectralUnmixing():
             {
                 'name': 'inputsignatures',
                 'dataType': 'string',
-                'value': ("{'Veg': [16.91479, 19.83083, 14.53383, 93.16165, 41.97619, 18.11779], "
-                            "'Shadow': [17.78413, 11.62528, 5.50679, 8.22514, 0.72993, 0.14649], "
-                            "'NPV': [17.45967, 17.11275, 16.30269, 26.19254, 40.90807, 45.67303], "
-                            "'Soil': [50.17609, 60.45217, 67.33043,83.83261, 93.41739, 81.16739]}"),
+                'value': ('{"Shadow": [70.05629, 27.24081, 25.31275, 24.17432, 31.77904, 17.82422], '
+                          '"Veg": [65.46086, 30.09995, 26.27376, 117.45741, 76.96012, 26.25062], '
+                          '"NPV": [74.74029, 32.06931, 35.57350, 32.66032,73.63062, 60.51104], '
+                          '"Soil": [143.65580, 79.30271, 102.82176 ,93.60246, 176.57705, 117.49280]}'),
                 'required': True,
                 'displayName': 'Endmember Training Signature Means',
                 'description': ('The training site means for each endmember classification for each band. '
@@ -38,9 +38,9 @@ class LinearSpectralUnmixing():
                 'required': True,
                 'domain': ('Scaled', 'Raw'),
                 'displayName': 'Output Image Type',
-                'description': ('The type of output expected from this function. '
-                                'Specify Scaled for least squares values constrained between 0.0 - 1.0. '
-                                'Choose Raw for unaltered values.')
+                'description': ('The type of output expected from this function. Specify "Scaled" for endmember '
+                                'solution values constrained between 0.0 - 1.0 along with a calculation of r-squared (R2). '
+                                'Choose "Raw" for unaltered endmember solution values and residual sum of squares (RSS).')
             },
         ]
 
@@ -48,8 +48,8 @@ class LinearSpectralUnmixing():
     def getConfiguration(self, **scalars):
         return {
             'compositeRasters': False,
-            'inheritProperties': 1 | 2 | 4 | 8, # inherit all from the raster
-            'invalidateProperties': 2 | 4 | 8,  # reset stats, histogram, key properties
+            'inheritProperties': 1 | 2 | 4 | 8,     # inherit all from the raster
+            'invalidateProperties': 2 | 4 | 8,      # reset stats, histogram, key properties
             'inputMask': False
         }
 
@@ -100,28 +100,32 @@ class LinearSpectralUnmixing():
         # [B, G, R, NIR1, SWIR1, SWIR2] at each pixel
         inBlockT = inBlock.transpose([1, 2, 0])
 
-        # reshape to slightly flatten to 2d array
-        inBlockTFlat = inBlockT.reshape((-1, inBlockT.shape[-1]))
+        # reshape to slightly flatten to 2d array,
+        # and pixel stacks to solve must be transposed to (M,K) matrix of K columns
+        y = inBlockT.reshape(-1, inBlockT.shape[-1]).T
 
         # solve simultaneous equations with coefficients and each pixel stack
-        # pixel stacks to solve must be transposed to (M,K) matrix of K columns
-        results = np.linalg.lstsq(self.coefficients, inBlockTFlat.T)
+        # store the model solution and residual sum of squares (RSS)
+        model, resid = np.linalg.lstsq(self.coefficients, y)[:2]
 
-        outBlockList = []
-        # endmember solutions
+        endmembers = np.array([endmember.reshape(-1, inBlock.shape[-1]) for endmember in model])
         if self.applyScaling:
-            for endmember in results[0]:
-                endmember = endmember.reshape(-1, inBlock.shape[-1])
-                endmember.clip(min=0, out=endmember)
-                endmember *= (1.0 / endmember.max())
-                outBlockList.append(endmember)
+            # clip negative values and scale from 0.0 to 1.0
+            endmembers.clip(min=0, out=endmembers)
+            endmembers *= (1.0 / endmembers.max())
+
+            # calculate R2
+            RSS = resid                                 # without modification, resid is in fact RSS
+            TSS = np.sum((y - y.mean())**2, axis=0)     # total sum of squares
+            R2 = 1 - RSS / TSS
+            resid = R2.reshape(1, -1, inBlock.shape[-1])
         else:
-            outBlockList = [endmember.reshape(-1, inBlock.shape[-1]) for endmember in results[0]]
-        # residuals
-        outBlockList.append(results[1].reshape(-1, inBlock.shape[-1]))
+            resid = resid.reshape(1, -1, inBlock.shape[-1])  # extra dimension to match shape of endmembers
+
+        outBlocks = np.row_stack((endmembers, resid))   # resid can be either RSS or R2
 
         # output pixel arrays of endmembers & residuals
-        pixelBlocks['output_pixels'] = np.array(outBlockList).astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = outBlocks.astype(props['pixelType'])
 
         return pixelBlocks
 
