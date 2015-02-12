@@ -24,8 +24,8 @@ class LinearSpectralUnmixing():
                 'dataType': 'string',
                 'value': ('{"Shadow": [70.05629, 27.24081, 25.31275, 24.17432, 31.77904, 17.82422], '
                           '"Veg": [65.46086, 30.09995, 26.27376, 117.45741, 76.96012, 26.25062], '
-                          '"NPV": [74.74029, 32.06931, 35.57350, 32.66032,73.63062, 60.51104], '
-                          '"Soil": [143.65580, 79.30271, 102.82176 ,93.60246, 176.57705, 117.49280]}'),
+                          '"NPV": [74.74029, 32.06931, 35.57350, 32.66032, 73.63062, 60.51104], '
+                          '"Soil": [143.65580, 79.30271, 102.82176, 93.60246, 176.57705, 117.49280]}'),
                 'required': True,
                 'displayName': 'Endmember Training Signature Means',
                 'description': ('The training site means for each endmember classification for each band. '
