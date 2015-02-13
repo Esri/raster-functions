@@ -26,7 +26,8 @@ class Hillshade():
                 'value': 1.,
                 'required': False,
                 'displayName': "Z Factor",
-                'description': "The multiplicative factor that converts elevation values to the units of the horizontal (xy-) coordinate system.",
+                'description': ("The multiplicative factor that converts elevation values to the units of the horizontal (xy-) coordinate system. "
+                                "Or use larger values to add vertical exaggeration."),
             },
             {
                 'name': 'ce',
@@ -34,7 +35,8 @@ class Hillshade():
                 'value': 0.664,
                 'required': False,
                 'displayName': "Cell Size Exponent",
-                'description': "",
+                'description': ("The exponent (ce) applied to request cell-size towards dynamically adjusting the Z-Factor (zf). "
+                                "zf <- zf + cf*[RequestCellSize^ce]."),
             },
             {
                 'name': 'cf',
@@ -42,7 +44,9 @@ class Hillshade():
                 'value': 0.024,
                 'required': False,
                 'displayName': "Cell Size Factor",
-                'description': "",
+                'description': ("The scaling (cf) applied to request cell-size towards dynamically adjusting the Z-Factor (zf). "
+                                "Specify zero to disable dynamic scaling. "
+                                "zf <- zf + cf*[RequestCellSize^ce]."),
             },
         ]
 
@@ -137,4 +141,19 @@ class Hillshade():
     def computeHillshade(self, dx, dy):
         # cf: http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//009z000000z2000000.htm
         return np.clip(255 * (self.cosZ + dy*self.sinZsinA - dx*self.sinZcosA) / np.sqrt(1. + (dx*dx + dy*dy)), 0., 255.)
+
+
+"""
+References:
+
+    [2]. Esri (2013): ArcGIS Resources. How Hillshade works.
+    http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000004z000000
+
+    [3]. Esri (2013): ArcGIS Resources. Hillshade function.
+    http://resources.arcgis.com/en/help/main/10.2/index.html#//009z000000z2000000
+
+    [4]. Burrough, P. A. and McDonell, R. A., 1998. 
+    Principles of Geographical Information Systems (Oxford University Press, New York), 190 pp.
+
+"""
 
