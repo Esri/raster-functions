@@ -9,28 +9,6 @@ class Hillshade():
         self.description = ""
         self.prepare()   
 
-  
-    def prepare(self, azimuth=315., elevation=45.,
-                zFactor=1., cellSizeExponent=0.664, cellSizeFactor=0.024, cellSize=None, sr=None):
-        Z = (90. - elevation) * math.pi / 180.   # solar _zenith_ angle in radians
-        A = (90. - azimuth) * math.pi / 180.     # solar azimuth _arithmetic_ angle in radians
-        sinZ = math.sin(Z)
-        self.cosZ = math.cos(Z)
-        self.sinZsinA = sinZ * math.sin(A)
-        self.sinZcosA = sinZ * math.cos(A)
-        self.xKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
-        self.yKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
-
-        m = 1.
-        if math.fabs(zFactor - 1.) <= 0.0001 and sr == 4326: 
-            m = 1.11e5  # multiplicative factor for converting cell size in degrees to meters (defaults to 1)
-
-        if not cellSize is None and len(cellSize) == 2:
-            self.xScale = (zFactor + (math.pow(cellSize[0]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[0]*m), 
-            self.yScale = (zFactor + (math.pow(cellSize[1]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[1]*m), 
-        else:
-            self.xScale, self.yScale = 1., 1.
-
 
     def getParameterInfo(self):
         return [
@@ -123,6 +101,31 @@ class Hillshade():
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Hillshade'
         return keyMetadata
+
+
+    ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+    ## other public methods...
+
+    def prepare(self, azimuth=315., elevation=45.,
+                zFactor=1., cellSizeExponent=0.664, cellSizeFactor=0.024, cellSize=None, sr=None):
+        Z = (90. - elevation) * math.pi / 180.   # solar _zenith_ angle in radians
+        A = (90. - azimuth) * math.pi / 180.     # solar azimuth _arithmetic_ angle in radians
+        sinZ = math.sin(Z)
+        self.cosZ = math.cos(Z)
+        self.sinZsinA = sinZ * math.sin(A)
+        self.sinZcosA = sinZ * math.cos(A)
+        self.xKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
+        self.yKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
+
+        m = 1.
+        if math.fabs(zFactor - 1.) <= 0.0001 and sr == 4326: 
+            m = 1.11e5  # multiplicative factor for converting cell size in degrees to meters (defaults to 1)
+
+        if not cellSize is None and len(cellSize) == 2:
+            self.xScale = (zFactor + (math.pow(cellSize[0]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[0]*m), 
+            self.yScale = (zFactor + (math.pow(cellSize[1]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[1]*m), 
+        else:
+            self.xScale, self.yScale = 1., 1.
 
 
     def computeGradients(self, pixelBlock):
