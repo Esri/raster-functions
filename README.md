@@ -5,26 +5,30 @@ Raster functions are *lightweight* and process only the pixels visible on your s
 They are *powerful* because you can chain them together and apply them on huge rasters and mosaics on the fly. 
 
 In this repository, you will find useful **function chains** (*.rft.xml) created by the Esri community. 
-You can create custom raster functions in Python that work seamlessly with the several dozen functions that ship with ArcGIS. 
-
-Jump to the [Resources](#resources) section for links to pages that elaborate on creating function chains and customized functions.
+You can also create custom raster functions in Python that work seamlessly with the several dozen functions that ship with ArcGIS. 
 
 
-## Requirements
+## Getting Started
 
-* ArcGIS 10.3 Pre-release (or higher)
-* Python 2.7
+1. Install [ArcGIS for Desktop 10.3](http://desktop.arcgis.com/en/desktop/) or [ArcGIS Pro 1.0](http://pro.arcgis.com/en/pro-app)
+2. ArcGIS comes with [Python](http://desktop.arcgis.com/en/desktop/latest/analyze/python/what-is-python-.htm)
+3. [Download](https://github.com/Esri/raster-functions/archive/master.zip) the repo
+4. Ready-to-use function templates are in the `templates/` folder. Implementation of raster functions live under `functions/`. 
+5. Use the links under [Resources](#resources) to learn how to apply functions or template and to customize function chains
+6. Create new raster functions using the [Python API for raster functions](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#anatomy-of-a-python-raster-function).
 
 
 ## Resources
 
-* [Wiki](https://github.com/Esri/raster-functions/wiki)
+* [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
 * [Rasters with functions](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000000m000000)
 * [A blog on raster functions](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
-* [Editing function chain templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
 * [Editing functions on a raster dataset](http://resources.arcgis.com/en/help/main/10.2/index.html#/Editing_functions_on_a_raster_dataset/009t000001zs000000/)
 * [Image Analysis window: Processing section](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000000m7000000)
-* [Create new raster function templates using the template editor](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t00000234000000)
+* [Create new raster function templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t00000234000000)
+* [Editing function templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
+* [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
+* [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
 
 
 ## Issues
