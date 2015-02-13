@@ -1,5 +1,5 @@
 import numpy as np
-# import utils
+import utils
 
 
 class SelectByPixelSize():
@@ -8,8 +8,7 @@ class SelectByPixelSize():
         self.name = "Select by Pixel Size"
         self.description = "This function returns pixels associated with one of two input rasters based on the request resolution."
         self.threshold = 0.0
-        self.inBands1, self.inBands2, self.outBands = 1, 1, 1
-        # self.trace = utils.getTraceFunction()
+        self.trace = utils.getTraceFunction()
 
         
     def getParameterInfo(self):
@@ -20,7 +19,8 @@ class SelectByPixelSize():
                 'value': None,
                 'required': True,
                 'displayName': "Raster 1",
-                'description': "The raster that's returned when request cell size is lower than the 'Cell Size Threshold'. A lower cell size value implies finer resolution."
+                'description': ("The raster that's returned when request cell size is lower than the 'Cell Size Threshold'. "
+                                "A lower cell size value implies finer resolution.")
             },
             {
                 'name': 'r2',
@@ -28,7 +28,8 @@ class SelectByPixelSize():
                 'value': None,
                 'required': True,
                 'displayName': "Raster 2",
-                'description': "The raster that's returned when request cell size is higher than or equal to the 'Cell Size Threshold'. A higher cell size value implies coarser resolution."
+                'description': ("The raster that's returned when request cell size is higher than or equal to the 'Cell Size Threshold'. "
+                                "A higher cell size value implies coarser resolution.")
             },
             {
                 'name': 'threshold',
@@ -48,52 +49,47 @@ class SelectByPixelSize():
 
         
     def updateRasterInfo(self, **kwargs):
+        c1, c2 = kwargs['r1_info']['cellSize'], kwargs['r2_info']['cellSize']
         self.threshold = kwargs.get('threshold', 0.0)
         if self.threshold <= 0.0:
-            self.threshold = np.mean((np.mean(kwargs['r1_info']['cellSize']), np.mean(kwargs['r2_info']['cellSize'])))
+            self.threshold = np.mean((np.mean(c1), np.mean(c2)))
 
-        self.inBands1 = kwargs['r1_info']['bandCount']
-        self.inBands2 = kwargs['r2_info']['bandCount']
-        kwargs['output_info']['bandCount'] = min(self.inBands1, self.inBands2)
-        kwargs['output_info']['resampling'] = True
-        kwargs['output_info']['statistics'] = () 
-        kwargs['output_info']['histogram'] = ()
-
-        # self.trace("Trace|Threshold cell-size|{0}\n".format(self.threshold))
-        # self.trace("Trace|output_info|{0}\n".format(kwargs['output_info']))
+        oi = kwargs['output_info']
+        oi['bandCount'] = min(kwargs['r1_info']['bandCount'], kwargs['r2_info']['bandCount'])
+        oi['cellSize'] = (.5*(c1[0]+c2[0]), .5*(c1[1]+c2[1]))
+        oi['resampling'] = True
+        oi['statistics'] = () 
+        oi['histogram'] = ()
         return kwargs
         
         
     def selectRasters(self, tlc, shape, props):
         cellSize = props['cellSize']
         v = 0.5 * (cellSize[0] + cellSize[1])
-        if v < self.threshold:
-            return ('r1',)
-        else: return ('r2',)
-
+        return ('r1', ) if v < self.threshold else ('r2', )
+                
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         cellSize = props['cellSize']
         v = 0.5 * (cellSize[0] + cellSize[1])
-        # self.trace("Trace|Request cell-size|{0}\n".format(v))
-        
-        if v < self.threshold:
-            sPixels = 'r1_pixels'
-            sMask = 'r1_mask'
-            nBands = self.inBands1
-        else:
-            sPixels = 'r2_pixels'
-            sMask = 'r2_mask'
-            nBands = self.inBands2
+        rasterId = 1 + int(v >= self.threshold)
+        p = pixelBlocks['r{0}_pixels'.format(rasterId)].copy()
+        m = pixelBlocks['r{0}_mask'.format(rasterId)].copy()
 
-        if self.outBands == nBands:
-            p = pixelBlocks[sPixels]
-            m = pixelBlocks[sMask]
-        else:
-            p = pixelBlocks[sPixels][0:self.outBands, :, :]
-            m = pixelBlocks[sMask][0:self.outBands, :, :]
+        iB = 1 if p.ndim == 2 else p.shape[0]
+        oB = 1 if len(shape) == 2 else shape[0]
+        if iB < oB:
+            raise Exception("Number of bands of the request exceed that of the input raster.")
 
-        pixelBlocks['output_pixels'] = p.astype(props['pixelType'])
-        pixelBlocks['output_mask'] = m.astype('u1')
+        s = ()
+        if iB > 1: s = (0 if oB == 1 else slice(outBands), )
+        s += (slice(None), slice(None))
+
+        self.trace("Trace|SelectByPixelSize.updatePixels|request-pixel-size: {0}|output-shape: {1}|\n".format(v, s))
+        pixelBlocks['output_pixels'] = p[s].squeeze().astype(props['pixelType'], copy=False)
+        pixelBlocks['output_mask'] = m[s].squeeze().astype('u1', copy=False)
+
+
+        self.trace("Trace|SelectByPixelSize.updatePixels.2|input: {0}|output: {1}|\n".format(p[0], pixelBlocks['output_pixels'][0]))
         return pixelBlocks
 
