@@ -43,8 +43,8 @@ class ConvertPerSecondToPerMonth():
 
 
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['statistics'] = ()        # clear stats.
-        kwargs['output_info']['histogram'] = ()         # clear histogram.
+        kwargs['output_info']['statistics'] = ()
+        kwargs['output_info']['histogram'] = ()
 
         d = ""
         d = kwargs['raster_keyMetadata'].get('acquisitiondate', d)
@@ -68,7 +68,7 @@ class ConvertPerSecondToPerMonth():
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         inBlock = pixelBlocks['raster_pixels']
-        pixelBlocks['output_pixels'] = (inBlock * self.scaleFactor).astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = (inBlock * self.scaleFactor).astype(props['pixelType'], copy=False)
         return pixelBlocks
 
 

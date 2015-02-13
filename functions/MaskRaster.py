@@ -5,7 +5,7 @@ class MaskRaster():
 
     def __init__(self):
         self.name = "Mask Raster Function"
-        self.description = "Apply a raster as the NoData mask of an input raster."
+        self.description = "Applies a raster as the NoData mask of the input raster."
         self.value = 1
 
     def getParameterInfo(self):
