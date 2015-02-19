@@ -1,4 +1,4 @@
-__all__ = ['getTraceFunction']
+__all__ = ['getTraceFunction', 'computeMapExtents', 'isProductVersionOK']
 
 def getTraceFunction():
     ctypes = __import__('ctypes')
@@ -20,6 +20,3 @@ def isProductVersionOK(productInfo, major, minor, build):
     return v >= major*1e+10 + minor*1e+7 + build
 
 
-def getProj():
-    pyproj = __import__('pyproj')
-    pyproj.
