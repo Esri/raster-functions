@@ -9,7 +9,8 @@ class SelectByPixelSize():
         self.description = "This function returns pixels associated with one of two input rasters based on the request resolution."
         self.threshold = 0.0
         self.trace = utils.getTraceFunction()
-
+        self.projection = utils.Projection()
+    
         
     def getParameterInfo(self):
         return [
@@ -36,8 +37,8 @@ class SelectByPixelSize():
                 'dataType': 'numeric',
                 'value': 0.0,
                 'required': True,
-                'displayName': "Cell Size Threshold",
-                'description': "The cell size threshold that controls which of the two input rasters contributes pixels to the output."
+                'displayName': "Cell Size Threshold (meters)",
+                'description': "The cell size threshold (in meters) that controls which of the two input rasters contributes pixels to the output."
             },
         ]
 
@@ -49,29 +50,33 @@ class SelectByPixelSize():
 
         
     def updateRasterInfo(self, **kwargs):
-        c1, c2 = kwargs['r1_info']['cellSize'], kwargs['r2_info']['cellSize']
+        io, ir1, ir2 = kwargs['output_info'], kwargs['r1_info'], kwargs['r2_info']
+
+        c1, c2 = ir1['cellSize'], ir2['cellSize']
         self.threshold = kwargs.get('threshold', 0.0)
         if self.threshold <= 0.0:
             self.threshold = np.mean((np.mean(c1), np.mean(c2)))
 
-        oi = kwargs['output_info']
-        oi['bandCount'] = min(kwargs['r1_info']['bandCount'], kwargs['r2_info']['bandCount'])
-        oi['cellSize'] = (.5*(c1[0]+c2[0]), .5*(c1[1]+c2[1]))
-        oi['resampling'] = True
-        oi['statistics'] = () 
-        oi['histogram'] = ()
+        io['bandCount'] = min(ir1['bandCount'], ir2['bandCount'])
+        io['cellSize'] = (.5*(c1[0]+c2[0]), .5*(c1[1]+c2[1]))
+        io['statistics'] = () 
+        io['histogram'] = ()
+        io['resampling'] = True
         return kwargs
         
         
     def selectRasters(self, tlc, shape, props):
-        cellSize = props['cellSize']
-        v = 0.5 * (cellSize[0] + cellSize[1])
-        return ('r1', ) if v < self.threshold else ('r2', )
+        e, w, h = props['extent'], props['width'], props['height']
+        (e[0], e[2]), (e[1], e[3]) = self.projection(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
+        c = .5*(.5*abs(e[2]-e[0]) + .5*abs(e[3]-e[1]))
+        return ('r1', ) if c < self.threshold else ('r2', )
                 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        cellSize = props['cellSize']
-        v = 0.5 * (cellSize[0] + cellSize[1])
+        e, w, h = props['extent'], props['width'], props['height']
+        (e[0], e[2]), (e[1], e[3]) = self.projection(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
+        c = .5*(.5*abs(e[2]-e[0]) + .5*abs(e[3]-e[1]))
+
         rasterId = 1 + int(v >= self.threshold)
         p = pixelBlocks['r{0}_pixels'.format(rasterId)].copy()
         m = pixelBlocks['r{0}_mask'.format(rasterId)].copy()

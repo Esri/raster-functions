@@ -18,3 +18,24 @@ def computeMapExtents(tlc, shape, props):
 def isProductVersionOK(productInfo, major, minor, build): 
     v = productInfo['major']*1.e+10 + int(0.5+productInfo['minor']*10)*1.e+6 + productInfo['build']
     return v >= major*1e+10 + minor*1e+7 + build
+
+
+class Projection():
+    def __init__(self):
+        pyprojModule = __import__('pyproj')
+        self._inProj, self._outProj = None, None
+        self._inEPSG, self._outEPSG = -1, -1
+
+        self._projClass = getattr(pyprojModule, 'Proj')
+        self._transformFunc = getattr(pyprojModule, 'transform')
+
+    def transform(self, inEPSG, outEPSG, x, y):
+        if inEPSG != self._inEPSG:
+            self._inProj = self._projClass("+init=EPSG:{0}".format(inEPSG))
+            self._inEPSG = inEPSG
+
+        if outEPSG != self._outEPSG:
+            self._outProj = self._projClass("+init=EPSG:{0}".format(outEPSG))
+            self._outEPSG = outEPSG
+
+        return self._transformFunc(self._inProj, self._outProj, x, y)

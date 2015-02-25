@@ -4,6 +4,7 @@ from scipy import ndimage
 from scipy import interpolate
 import utils
 from matplotlib import pyplot as plt
+import pyproj
 
 class InterpolateMesh():
 
@@ -12,6 +13,8 @@ class InterpolateMesh():
         self.description = ""
         self.interpolant = None
         self.trace = utils.getTraceFunction()
+        self.projection = utils.Projection()
+        self.meshSR = 0
 
         
     def getParameterInfo(self):
@@ -86,6 +89,7 @@ class InterpolateMesh():
             'resampling': True
         }
 
+        self.meshSR = sr
         self.trace("Trace|InterpolateMesh.updateRasterInfo.1|{0}|\n".format(kwargs))
         self.interpolant = interpolate.RectBivariateSpline(Y, X, F)
         return kwargs
@@ -96,6 +100,10 @@ class InterpolateMesh():
     
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        rasterSR = props['spatialReference']
+        if rasterSR != self.meshSR:
+            self.projection.transform(self.meshSR, rasterSR, )
+            
         nRows, nCols = shape if len(shape) == 2 else shape[1:]
         e = utils.computeMapExtents(tlc, shape, props)
         f = self.interpolant(np.linspace(e[1], e[3], nRows), np.linspace(e[0], e[2], nCols))
