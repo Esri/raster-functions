@@ -1,0 +1,8 @@
+matplotlib
+numpy
+pyparsing
+pyproj
+python-dateutil
+scikit-learn
+scipy
+six

@@ -46,12 +46,12 @@ class Windchill():
 
 
     def updatePixels(self, tlc, size, props, **pixelBlocks):
-        ws = np.array(pixelBlocks['ws_pixels'], dtype='f4')
-        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
+        ws = np.array(pixelBlocks['ws_pixels'], dtype='f4', copy=False)
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)
 
         ws16 = np.power(ws, 0.16)
         outBlock = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t * ws16)
-        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)
         return pixelBlocks
 
 
