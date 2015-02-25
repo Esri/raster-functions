@@ -67,17 +67,18 @@ class SelectByPixelSize():
         
     def selectRasters(self, tlc, shape, props):
         e, w, h = props['extent'], props['width'], props['height']
-        (e[0], e[2]), (e[1], e[3]) = self.projection(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
-        c = .5*(.5*abs(e[2]-e[0]) + .5*abs(e[3]-e[1]))
+        (x1, x2), (y1, y2) = self.projection.transform(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
+        c = .5*(.5*abs(x2-x1) + .5*abs(y2-y1))
         return ('r1', ) if c < self.threshold else ('r2', )
                 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        self.trace("Trace|SelectByPixelSize.updatePixels.1|request-raster: {0}|\n".format(props))
         e, w, h = props['extent'], props['width'], props['height']
-        (e[0], e[2]), (e[1], e[3]) = self.projection(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
-        c = .5*(.5*abs(e[2]-e[0]) + .5*abs(e[3]-e[1]))
+        (x1, x2), (y1, y2) = self.projection.transform(props['spatialReference'], 3857, (e[0], e[2]), (e[1], e[3]))
+        c = .5*(.5*abs(x2-x1) + .5*abs(y2-y1))
 
-        rasterId = 1 + int(v >= self.threshold)
+        rasterId = 1 + int(c >= self.threshold)
         p = pixelBlocks['r{0}_pixels'.format(rasterId)].copy()
         m = pixelBlocks['r{0}_mask'.format(rasterId)].copy()
 
@@ -87,10 +88,10 @@ class SelectByPixelSize():
             raise Exception("Number of bands of the request exceed that of the input raster.")
 
         s = ()
-        if iB > 1: s = (0 if oB == 1 else slice(outBands), )
+        if iB > 1: s = (0 if oB == 1 else slice(oB), )
         s += (slice(None), slice(None))
 
-        self.trace("Trace|SelectByPixelSize.updatePixels|request-pixel-size: {0}|output-shape: {1}|\n".format(v, s))
+        self.trace("Trace|SelectByPixelSize.updatePixels|request-pixel-size: {0}|output-shape: {1}|\n".format(c, s))
         pixelBlocks['output_pixels'] = p[s].squeeze().astype(props['pixelType'], copy=False)
         pixelBlocks['output_mask'] = m[s].squeeze().astype('u1', copy=False)
 
