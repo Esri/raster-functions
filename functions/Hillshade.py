@@ -8,9 +8,10 @@ class Hillshade():
     def __init__(self):
         self.name = "Hillshade Function"
         self.description = ""
-        self.prepare()   
+        self.prepare()
+        self.proj = utils.Projection()
 
-  
+
     def getParameterInfo(self):
         return [
             {
@@ -126,13 +127,15 @@ class Hillshade():
 
 
     def computeGradients(self, pixelBlock, props):
-        p, sr = props['cellSize'], props['spatialReference']
-        m = 1.11e5 if math.fabs(self.zf - 1.) <= 0.0001 and sr == 4326 else 1.  # conditional degrees to meters conversion
+        # pixel size in input raster SR...
+        p = props['cellSize'] if self.sr is None else utils.computeCellSize(props, self.sr, self.proj)
+        
+        m = 1.11e5 if math.fabs(self.zf - 1.) <= 0.0001 and props['spatialReference'] == 4326 else 1.
         if not p is None and len(p) == 2:
-            p = np.multiply(p, m)
+            p = np.multiply(p, m)   # conditional degrees to meters conversion
             xs, ys = (self.zf + (np.power(p, self.ce) * self.cf)) / (8*p)
         else: 
-            xs, ys = 1., 1.     # degenerate case. shouldn't happen.
+            xs, ys = 1., 1.         # degenerate case. shouldn't happen.
 
         return (ndimage.convolve(pixelBlock, self.xKernel)*xs, ndimage.convolve(pixelBlock, self.yKernel)*ys)
 
