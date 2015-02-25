@@ -88,8 +88,6 @@ class Hillshade():
         dx, dy = self.computeGradients(v, props)
         outBlock = self.computeHillshade(dx, dy)
         pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'], copy=False)
-
-        # cf: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
         pixelBlocks['output_mask'] = \
             m[:-2,:-2]  & m[1:-1,:-2]  & m[2:,:-2]  \
           & m[:-2,1:-1] & m[1:-1,1:-1] & m[2:,1:-1] \
@@ -153,7 +151,10 @@ References:
     [3]. Esri (2013): ArcGIS Resources. Hillshade function.
     http://resources.arcgis.com/en/help/main/10.2/index.html#//009z000000z2000000
 
-    [4]. Burrough, P. A. and McDonell, R. A., 1998. 
+    [4]. SciPy.org: Array Indexing.
+    http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+
+    [5]. Burrough, P. A. and McDonell, R. A., 1998. 
     Principles of Geographical Information Systems (Oxford University Press, New York), 190 pp.
 
 """
