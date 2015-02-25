@@ -1,6 +1,7 @@
 from scipy import ndimage
 import numpy as np
 import math 
+import utils
 
 class Hillshade():
 
@@ -9,7 +10,7 @@ class Hillshade():
         self.description = ""
         self.prepare()   
 
-
+  
     def getParameterInfo(self):
         return [
             {
@@ -35,8 +36,8 @@ class Hillshade():
                 'value': 0.664,
                 'required': False,
                 'displayName': "Cell Size Exponent",
-                'description': ("The exponent (ce) applied to request cell-size towards dynamically adjusting the Z-Factor (zf). "
-                                "zf <- zf + cf*[RequestCellSize^ce]."),
+                'description': ("The exponent (ce) on the cell-size (p) towards dynamically adjusting the Z-Factor (zf). "
+                                "zf <- zf + cf*[p^ce]/8p."),
             },
             {
                 'name': 'cf',
@@ -44,9 +45,9 @@ class Hillshade():
                 'value': 0.024,
                 'required': False,
                 'displayName': "Cell Size Factor",
-                'description': ("The scaling (cf) applied to request cell-size towards dynamically adjusting the Z-Factor (zf). "
+                'description': ("The scaling (cf) applied to the cell-size (p) towards dynamically adjusting the Z-Factor (zf). "
                                 "Specify zero to disable dynamic scaling. "
-                                "zf <- zf + cf*[RequestCellSize^ce]."),
+                                "zf <- zf + cf*[p^ce]/8p."),
             },
         ]
 
@@ -74,8 +75,7 @@ class Hillshade():
 
         self.prepare(zFactor=kwargs.get('zf', 1.), 
                      cellSizeExponent=kwargs.get('ce', 0.664), 
-                     cellSizeFactor=kwargs.get('cf', 0.024), 
-                     cellSize=r['cellSize'],
+                     cellSizeFactor=kwargs.get('cf', 0.024),
                      sr=r['spatialReference'])
         return kwargs
 
@@ -84,7 +84,7 @@ class Hillshade():
         v = np.array(pixelBlocks['raster_pixels'], dtype='f4', copy=False)
         m = np.array(pixelBlocks['raster_mask'], dtype='u1', copy=False)
 
-        dx, dy = self.computeGradients(v)
+        dx, dy = self.computeGradients(v, props)
         outBlock = self.computeHillshade(dx, dy)
         pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'], copy=False)
 
@@ -110,8 +110,7 @@ class Hillshade():
     ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
     ## other public methods...
 
-    def prepare(self, azimuth=315., elevation=45.,
-                zFactor=1., cellSizeExponent=0.664, cellSizeFactor=0.024, cellSize=None, sr=None):
+    def prepare(self, azimuth=315., elevation=45., zFactor=1., cellSizeExponent=0.664, cellSizeFactor=0.024, sr=None):
         Z = (90. - elevation) * math.pi / 180.   # solar _zenith_ angle in radians
         A = (90. - azimuth) * math.pi / 180.     # solar azimuth _arithmetic_ angle in radians
         sinZ = math.sin(Z)
@@ -120,26 +119,25 @@ class Hillshade():
         self.sinZcosA = sinZ * math.cos(A)
         self.xKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
         self.yKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
-
-        m = 1.
-        if math.fabs(zFactor - 1.) <= 0.0001 and sr == 4326: 
-            m = 1.11e5  # multiplicative factor for converting cell size in degrees to meters (defaults to 1)
-
-        if not cellSize is None and len(cellSize) == 2:
-            self.xScale = (zFactor + (math.pow(cellSize[0]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[0]*m), 
-            self.yScale = (zFactor + (math.pow(cellSize[1]*m, cellSizeExponent) * cellSizeFactor)) / (8. * cellSize[1]*m), 
-        else:
-            self.xScale, self.yScale = 1., 1.
+        self.zf = zFactor
+        self.ce = cellSizeExponent
+        self.cf = cellSizeFactor
+        self.sr = sr
 
 
-    def computeGradients(self, pixelBlock):
-        dx = ndimage.convolve(pixelBlock, self.xKernel) * self.xScale
-        dy = ndimage.convolve(pixelBlock, self.yKernel) * self.yScale
-        return (dx, dy)
+    def computeGradients(self, pixelBlock, props):
+        p, sr = props['cellSize'], props['spatialReference']
+        m = 1.11e5 if math.fabs(self.zf - 1.) <= 0.0001 and sr == 4326 else 1.  # conditional degrees to meters conversion
+        if not p is None and len(p) == 2:
+            p = np.multiply(p, m)
+            xs, ys = (self.zf + (np.power(p, self.ce) * self.cf)) / (8*p)
+        else: 
+            xs, ys = 1., 1.     # degenerate case. shouldn't happen.
+
+        return (ndimage.convolve(pixelBlock, self.xKernel)*xs, ndimage.convolve(pixelBlock, self.yKernel)*ys)
 
 
     def computeHillshade(self, dx, dy):
-        # cf: http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//009z000000z2000000.htm
         return np.clip(255 * (self.cosZ + dy*self.sinZsinA - dx*self.sinZcosA) / np.sqrt(1. + (dx*dx + dy*dy)), 0., 255.)
 
 
