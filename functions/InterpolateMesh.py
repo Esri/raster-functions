@@ -4,7 +4,7 @@ from scipy import ndimage
 from scipy import interpolate
 import utils
 from matplotlib import pyplot as plt
-import pyproj
+
 
 class InterpolateMesh():
 
@@ -13,8 +13,8 @@ class InterpolateMesh():
         self.description = ""
         self.interpolant = None
         self.trace = utils.getTraceFunction()
-        self.projection = utils.Projection()
-        self.meshSR = 0
+        self.proj = utils.Projection()
+        self.meshSR = None
 
         
     def getParameterInfo(self):
@@ -73,15 +73,15 @@ class InterpolateMesh():
             noData = noData[0]
             F[F == noData] = -9999
 
-        sr = int(kwargs.get('sr', 4326))
+        self.meshSR = int(kwargs.get('sr', 4326))
         kwargs['output_info'] = { 
             'bandCount': 1,
             'pixelType': F.dtype.str,
             'nativeExtent': (xMin, yMin, xMax, yMax),
             'extent': (xMin, yMin, xMax, yMax),
             'cellSize': ((xMax-xMin)/X.size, (yMax-yMin)/Y.size),
-            'spatialReference': sr,
-            'nativeSpatialReference': sr,
+            'spatialReference': self.meshSR,
+            'nativeSpatialReference': self.meshSR,
             'statistics': (),
             'histogram': (),
             'colormap': (),
@@ -89,7 +89,6 @@ class InterpolateMesh():
             'resampling': True
         }
 
-        self.meshSR = sr
         self.trace("Trace|InterpolateMesh.updateRasterInfo.1|{0}|\n".format(kwargs))
         self.interpolant = interpolate.RectBivariateSpline(Y, X, F)
         return kwargs
@@ -100,21 +99,21 @@ class InterpolateMesh():
     
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        (x1, y1, x2, y2) = utils.computePixelBlockExtents(tlc, shape, props)
         rasterSR = props['spatialReference']
         if rasterSR != self.meshSR:
-            self.projection.transform(self.meshSR, rasterSR, )
+            (x1, x2), (y1, y2) = self.proj.transform(rasterSR, self.meshSR, (x1, x2), (y1, y2))
             
         nRows, nCols = shape if len(shape) == 2 else shape[1:]
-        e = utils.computeMapExtents(tlc, shape, props)
-        f = self.interpolant(np.linspace(e[1], e[3], nRows), np.linspace(e[0], e[2], nCols))
+        f = self.interpolant(np.linspace(y1, y2, nRows), np.linspace(x1, x2, nCols))
         pixelBlocks['output_pixels'] = f.astype(props['pixelType'], copy=False)
         pixelBlocks['output_mask'] = np.ones(shape, dtype='u1')
 
-        #plt.imshow(f, interpolation='nearest')
-        #plt.show()
-        #self.trace("Trace|InterpolateMesh.updatePixels.1|X: {0}|\n".format(np.linspace(e[0], e[2], nCols)))
-        #self.trace("Trace|InterpolateMesh.updatePixels.1|Y: {0}|\n".format(np.linspace(e[1], e[3], nRows)))
-        #self.trace("Trace|InterpolateMesh.updatePixels.1|F: {0}|\n".format(f))
+        plt.imshow(f, interpolation='nearest')
+        plt.show()
+        self.trace("Trace|InterpolateMesh.updatePixels.1|X: {0}|\n".format(np.linspace(x1, x2, nCols)))
+        self.trace("Trace|InterpolateMesh.updatePixels.1|Y: {0}|\n".format(np.linspace(y1, y2, nRows)))
+        self.trace("Trace|InterpolateMesh.updatePixels.1|F: {0}|\n".format(f))
 
         return pixelBlocks
 
