@@ -1,5 +1,5 @@
 <RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
-  <Name>Untitled</Name>
+  <Name>Scale-Adjusted Hillshade</Name>
   <Description>A raster function template.</Description>
   <Function xsi:type='typens:PythonAdapterFunction'>
     <Name>Hillshade Function</Name>
