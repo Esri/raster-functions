@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class LinearSpectralUnmixing():
     def __init__(self):
         self.name = 'Linear Spectral Unmixing'
@@ -7,7 +8,6 @@ class LinearSpectralUnmixing():
         self.inputSignatures = None     # ultimately will be a dict
         self.coefficients = None        # ultimately will be a transposed np array
         self.applyScaling = False
-
 
     def getParameterInfo(self):
         return [
@@ -41,9 +41,8 @@ class LinearSpectralUnmixing():
                 'description': ('The type of output expected from this function. Specify "Scaled" for endmember '
                                 'solution values constrained between 0.0 - 1.0 along with a calculation of r-squared (R2). '
                                 'Choose "Raw" for unaltered endmember solution values and residual sum of squares (RSS).')
-            },
+            }
         ]
-
 
     def getConfiguration(self, **scalars):
         return {
@@ -52,7 +51,6 @@ class LinearSpectralUnmixing():
             'invalidateProperties': 2 | 4 | 8,      # reset stats, histogram, key properties
             'inputMask': False
         }
-
 
     def updateRasterInfo(self, **kwargs):
         # get endmember input string value and convert to dict
@@ -91,7 +89,6 @@ class LinearSpectralUnmixing():
 
         return kwargs
 
-
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         # get the input raster pixel block
         inBlock = pixelBlocks['raster_pixels']
@@ -128,7 +125,6 @@ class LinearSpectralUnmixing():
         pixelBlocks['output_pixels'] = outBlocks.astype(props['pixelType'])
 
         return pixelBlocks
-
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
