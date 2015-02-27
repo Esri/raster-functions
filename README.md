@@ -34,12 +34,61 @@ You can also create custom raster functions in Python that work seamlessly with 
 * [Create new raster function templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t00000234000000)
 * [Editing function templates](http://resources.arcgis.com/en/help/main/10.2/index.html#//009t000001zn000000)
 * [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
+
 * [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
+
+## Featured Raster Functions and Templates
+
+
+* #### NDVI
+
+
+* #### Heat Index
+
+
+* #### Wind Chill
+
+
+* #### Select By Pixel Size
+
+
+* #### Key Metadata
+
+
+* #### Mask Raster
+
+
+* #### Convert Per Second to Per Month
+
+
+* #### Arithmetic
+
+
+* #### Aggregate
+
+
+* #### Deviation from Mean
+
+
+* #### Composite Bands
+
+
+* #### Hillshade
+
+
+* #### Multidirectional Hillshade
+
+
+* #### Vineyard Analysis
+
+
+* #### Fish Habitat Suitability
+
 
 
 ## Issues
 
-Find a bug or want to request a new feature?  Please let us know by submitting an issue.
+Find a bug or want to request a new feature?  Please let us know by [submitting an issue](https://github.com/Esri/raster-functions/issues).
 
 
 ## Contributing
