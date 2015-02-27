@@ -1,6 +1,6 @@
 from scipy import ndimage
 import numpy as np
-import math 
+import math
 import utils
 
 class Hillshade():
@@ -53,7 +53,7 @@ class Hillshade():
         ]
 
 
-    def getConfiguration(self, **scalars): 
+    def getConfiguration(self, **scalars):
         return {
           'extractBands': (0,),                 # we only need the first band.  Comma after zero ensures it's a tuple.
           'inheritProperties': 4 | 8,           # inherit everything but the pixel type (1) and NoData (2)
@@ -68,14 +68,15 @@ class Hillshade():
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ({'minimum': 0., 'maximum': 255.}, )
         kwargs['output_info']['histogram'] = ()
+        kwargs['output_info']['resampling'] = False         # Resampling set explicitly to False
         kwargs['output_info']['colormap'] = ()
 
         r = kwargs['raster_info']
         if r['bandCount'] > 1:
             raise Exception("Input raster has more than one band. Only single-band raster datasets are supported")
 
-        self.prepare(zFactor=kwargs.get('zf', 1.), 
-                     cellSizeExponent=kwargs.get('ce', 0.664), 
+        self.prepare(zFactor=kwargs.get('zf', 1.),
+                     cellSizeExponent=kwargs.get('ce', 0.664),
                      cellSizeFactor=kwargs.get('cf', 0.024),
                      sr=r['spatialReference'])
         return kwargs
@@ -97,10 +98,10 @@ class Hillshade():
 
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == -1:                             # dataset-level properties           
+        if bandIndex == -1:                             # dataset-level properties
             keyMetadata['datatype'] = 'Processed'       # outgoing dataset is now 'Processed'
         elif bandIndex == 0:                            # properties for the first band
-            keyMetadata['wavelengthmin'] = None         # reset inapplicable band-specific key metadata 
+            keyMetadata['wavelengthmin'] = None         # reset inapplicable band-specific key metadata
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Hillshade'
         return keyMetadata
@@ -127,12 +128,12 @@ class Hillshade():
     def computeGradients(self, pixelBlock, props):
         # pixel size in input raster SR...
         p = props['cellSize'] if self.sr is None else utils.computeCellSize(props, self.sr, self.proj)
-        
+
         m = 1.11e5 if math.fabs(self.zf - 1.) <= 0.0001 and props['spatialReference'] == 4326 else 1.
         if not p is None and len(p) == 2:
             p = np.multiply(p, m)   # conditional degrees to meters conversion
             xs, ys = (self.zf + (np.power(p, self.ce) * self.cf)) / (8*p)
-        else: 
+        else:
             xs, ys = 1., 1.         # degenerate case. shouldn't happen.
 
         return (ndimage.convolve(pixelBlock, self.xKernel)*xs, ndimage.convolve(pixelBlock, self.yKernel)*ys)
