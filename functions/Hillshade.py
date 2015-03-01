@@ -146,16 +146,16 @@ class Hillshade():
 """
 References:
 
-    [2]. Esri (2013): ArcGIS Resources. How Hillshade works.
+    [1]. Esri (2013): ArcGIS Resources. How Hillshade works.
     http://resources.arcgis.com/en/help/main/10.2/index.html#//009t0000004z000000
 
-    [3]. Esri (2013): ArcGIS Resources. Hillshade function.
+    [2]. Esri (2013): ArcGIS Resources. Hillshade function.
     http://resources.arcgis.com/en/help/main/10.2/index.html#//009z000000z2000000
 
-    [4]. SciPy.org: Array Indexing.
+    [3]. SciPy.org: Array Indexing.
     http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
 
-    [5]. Burrough, P. A. and McDonell, R. A., 1998. 
+    [4]. Burrough, P. A. and McDonell, R. A., 1998. 
     Principles of Geographical Information Systems (Oxford University Press, New York), 190 pp.
 
 """
