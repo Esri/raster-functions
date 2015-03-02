@@ -199,7 +199,8 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   [Add Rasters to Mosaic Dataset tool](http://desktop.arcgis.com/en/desktop/latest/tools/data-management-toolbox/add-rasters-to-mosaic-dataset.htm) 
   with the [Table raster type](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/files-tables-and-web-services-raster-types.htm#ESRI_SECTION1_D8E60C757CA04174BED580F2101443BD)
   or as a [processing template](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/adding-a-processing-template-to-a-mosaic-dataset.htm) 
-  on a mosaic dataset&#8212;is capable of obtaining the value of the `depth` parameter from a specific field (`StdZ`, if available) in the table.
+  on a mosaic dataset&#8212;is capable of obtaining the value of the `depth` parameter from a [specific field](https://github.com/Esri/raster-functions/blob/master/templates/FishHabitatSuitability.rft.xml#L38-L44)
+  (`StdZ`, if available) in the table.
 
 * #### Vineyard Analysis
 
@@ -209,7 +210,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   and [aspect](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) of the region. 
   
   [VineyardAnalysis.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/VineyardAnalysis.rft.xml) accepts the elevation input raster 
-  and uses built-in raster functions to compute slope and elevation before feeding the input to the Vineyard Analysis Python raster function. 
+  and uses built-in raster functions to compute slope and elevation before feeding the output to the Vineyard Analysis raster function. 
 
 
 ## Licensing
