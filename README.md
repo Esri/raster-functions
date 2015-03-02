@@ -46,7 +46,6 @@ Find a bug or want to request a new feature?  Please let us know by [submitting 
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
-------------
 
 ## Featured Raster Functions and Templates
 
@@ -71,28 +70,43 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 * #### Wind Chill
 
-  TODO
+  [WindChill.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/Windchill.py) computes 
+  wind chill given two rasters representing wind speed in miles-per-hour and ambient air temperature in Fahrenheit.
   
+  [Windchill.rft.xml](https://github.com/Esri/raster-functions/blob/LinearUnmixing/templates/Windchill.rft.xml) is a *grouping* 
+  raster function template.
+
   Learn more about Wind Chill on [Wikipedia](http://en.wikipedia.org/wiki/Wind_chill).
   
 * #### Heat Index
 
   [HeatIndex.py](https://github.com/Esri/raster-functions/blob/LinearUnmixing/functions/HeatIndex.py) computes 
   apparent temperature (as perceived by us) given two rasters corresponding to ambient air temperature and relative humidity. 
-  An additional string parameter 'units' controls whether the air temperature values are assumed to be in Celsius or Fahrenheit.
+  An additional string parameter `units` controls whether the air temperature values are assumed to be in Celsius or Fahrenheit.
   
   [HeatIndex.rft.xml](https://github.com/Esri/raster-functions/blob/LinearUnmixing/templates/HeatIndex.rft.xml) is a *grouping* 
-  raster function template. The 'units' parameter remains unmodified by the template and defaults to `Fahrenheit`. 
+  raster function template. The `units` parameter remains unmodified by the template and defaults to `Fahrenheit`. 
   
   Learn more about Heat Index on [Wikipedia](http://en.wikipedia.org/wiki/Heat_index).
 
 * #### Key Metadata
 
-  TODO
+  [KeyMetadata.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/KeyMetadata.py) demonstrates
+  how [*key metadata*](https://github.com/Esri/raster-functions/wiki/KeyMetadata%23key-metadata#key-metadata) (or property) 
+  can be introduced or overridden by a raster function. It also serves as an example of a function that 
+  doesn't need to implement the [`.updatePixels()`](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#updatepixels) method. 
+
+  In addition to the one input raster, this function accepts two string parameters representing the name and corresponding value 
+  of the dataset-level key property. Another string parameter enables users to specify band names of the outgoing raster as a CSV. 
 
 * #### Mask Raster
 
-  TODO
+  [MaskRaster.py](https://github.com/Esri/raster-functions/blob/master/functions/MaskRaster.py) enables you to apply
+  the input mask raster as the [NoData mask](https://github.com/Esri/raster-functions/wiki/EffectiveFunctions#nodata) 
+  on the primary input raster.
+  
+  [MaskRaster.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/MaskRaster.rft.xml) is a *grouping* 
+  raster function template where the inputs are the primary input and the mask rasters (in that order).
 
 * #### Arithmetic
 
