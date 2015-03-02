@@ -37,56 +37,6 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 * [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
 
-
-## Featured Raster Functions and Templates
-
-
-* #### NDVI
-
-
-* #### Heat Index
-
-
-* #### Wind Chill
-
-
-* #### Select By Pixel Size
-
-
-* #### Key Metadata
-
-
-* #### Mask Raster
-
-
-* #### Convert Per Second to Per Month
-
-
-* #### Arithmetic
-
-
-* #### Aggregate
-
-
-* #### Deviation from Mean
-
-
-* #### Composite Bands
-
-
-* #### Hillshade
-
-
-* #### Multidirectional Hillshade
-
-
-* #### Vineyard Analysis
-
-
-* #### Fish Habitat Suitability
-
-
-
 ## Issues
 
 Find a bug or want to request a new feature?  Please let us know by [submitting an issue](https://github.com/Esri/raster-functions/issues).
@@ -96,6 +46,97 @@ Find a bug or want to request a new feature?  Please let us know by [submitting 
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
+------------
+
+## Featured Raster Functions and Templates
+
+
+* #### Normalized Difference Vegetation Index
+  [NDVI.py](https://github.com/Esri/raster-functions/blob/master/functions/NDVI.py) serves as a reference 
+  Python rendition of the [stock NDVI raster function](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm).
+  It accepts one multi-band raster as input, and one-based indices corresponding to the Red and Infrared bands of 
+  the input raster. An additional `method` parameter controls whether the output NDVI raster contains
+  raw, scaled, or color-mapped values.
+  
+  Supporting templates:
+  - [NDVI-Raw](https://github.com/Esri/raster-functions/blob/master/templates/NDVI.rft.xml):
+    Returns raw NDVI values in the range [-1.0, +1.0] as a one-band, floating-point raster.
+  - [NDVI-Grayscale](https://github.com/Esri/raster-functions/blob/master/templates/NDVI-Grayscale.rft.xml):
+    Returns NDVI values scaled to the range [0, 200] as one-band, 8-bit raster.
+  - [NDVI-Colormap](https://github.com/Esri/raster-functions/blob/master/templates/NDVI-Colormap.rft.xml):
+    Returns *scaled* NDVI values as color-mapped raster.
+
+  Learn more about NDVI on [Wikipedia](http://en.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index) 
+  or in the [Documentation for ArcGIS](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm). 
+
+* #### Wind Chill
+
+  TODO
+  
+  Learn more about Wind Chill on [Wikipedia](http://en.wikipedia.org/wiki/Wind_chill).
+  
+* #### Heat Index
+
+  [HeatIndex.py](https://github.com/Esri/raster-functions/blob/LinearUnmixing/functions/HeatIndex.py) computes 
+  apparent temperature (as perceived by us) given two rasters corresponding to ambient air temperature and relative humidity. 
+  An additional string parameter 'units' controls whether the air temperature values are assumed to be in Celsius or Fahrenheit.
+  
+  [HeatIndex.rft.xml](https://github.com/Esri/raster-functions/blob/LinearUnmixing/templates/HeatIndex.rft.xml) is a *grouping* 
+  raster function template. The 'units' parameter remains unmodified by the template and defaults to `Fahrenheit`. 
+  
+  Learn more about Heat Index on [Wikipedia](http://en.wikipedia.org/wiki/Heat_index).
+
+* #### Key Metadata
+
+  TODO
+
+* #### Mask Raster
+
+  TODO
+
+* #### Arithmetic
+
+  TODO
+
+* #### Aggregate
+
+  TODO
+
+* #### Deviation from Mean
+
+  TODO
+
+* #### Select By Pixel Size
+
+  TODO
+
+
+* #### Convert Per Second to Per Month
+
+  TODO
+
+* #### Composite Bands
+
+  TODO
+
+* #### Hillshade
+
+  TODO
+
+* #### Multidirectional Hillshade
+
+  TODO
+
+* #### Vineyard Analysis
+
+  TODO
+
+* #### Fish Habitat Suitability
+
+  TODO
+
+
+------------
 
 ## Licensing
 Copyright 2014 Esri
