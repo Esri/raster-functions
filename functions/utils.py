@@ -1,10 +1,10 @@
-__all__ = ['getTraceFunction', 
-           'isProductVersionOK', 
-           'computePixelBlockExtents', 
+__all__ = ['getTraceFunction',
+           'isProductVersionOK',
+           'computePixelBlockExtents',
            'computeCellSize',
            'Projection']
 
-## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 
 
 def getTraceFunction():
@@ -14,7 +14,7 @@ def getTraceFunction():
     return trace
 
 
-def isProductVersionOK(productInfo, major, minor, build): 
+def isProductVersionOK(productInfo, major, minor, build):
     v = productInfo['major']*1.e+10 + int(0.5+productInfo['minor']*10)*1.e+6 + productInfo['build']
     return v >= major*1e+10 + minor*1e+7 + build
 
@@ -25,19 +25,19 @@ def computePixelBlockExtents(tlc, shape, props):
     dX, dY = (e[2]-e[0])/w, (e[3]-e[1])/h                       # cell size of parent raster
     xMin, yMax = e[0]+tlc[0]*dX, e[3]-tlc[1]*dY                 # top-left corner of request on map
     return (xMin, yMax-nRows*dY, xMin+nCols*dX, yMax)           # extents of request on map
- 
+
 
 def computeCellSize(props, sr=None, proj=None):
     e, w, h = props['extent'], props['width'], props['height']  # dimensions of parent raster
-    if sr is None:                                              
+    if sr is None:
         return (e[2]-e[0])/w, (e[3]-e[1])/h                     # cell size of parent raster
-    
+
     if proj is None: proj = Projection()                        # reproject extents
     (xMin, xMax), (yMin, yMax) = proj.transform(props['spatialReference'], sr, (e[0], e[2]), (e[1], e[3]))
     return (xMax-xMin)/w, (yMax-yMin)/h                         # cell size of parent raster
-    
 
-## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+
 
 class Projection():
     def __init__(self):
@@ -59,5 +59,4 @@ class Projection():
 
         return self._transformFunc(self._inProj, self._outProj, x, y)
 
-## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
-
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
