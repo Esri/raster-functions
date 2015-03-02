@@ -49,6 +49,9 @@ class Projection():
         self._transformFunc = getattr(pyprojModule, 'transform')
 
     def transform(self, inEPSG, outEPSG, x, y):
+        if inEPSG is None or inEPSG <= 0 or outEPSG is None or outEPSG <= 0:
+            return (x, y)
+
         if inEPSG != self._inEPSG:
             self._inProj = self._projClass("+init=EPSG:{0}".format(inEPSG))
             self._inEPSG = inEPSG
