@@ -26,17 +26,21 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 ## Resources
 
-* [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
-* [Rasters with functions](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/rasters-with-functions.htm)
-* [A blog on raster functions](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
-* [Editing functions on a raster dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-functions-on-a-raster-dataset.htm)
-* [Image Analysis window: Processing section](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/image-analysis-window-processing-section.htm)
-* [Create new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
-* [Editing function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm)
-* [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
+* ##### Fundamentals
+  * [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
+  * [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
 
+* ##### Raster Functions
+  * [What are raster functions?](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
+  * [Rasters with functions](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/rasters-with-functions.htm)
+  * [Editing functions on a raster dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-functions-on-a-raster-dataset.htm)
+  * [Editing function chains in a mosaic dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chains-in-md.htm)
+  * [Image Analysis window: Processing section](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/image-analysis-window-processing-section.htm)
+  * [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
 
-* [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
+* ##### Raster Function Templates
+  * [Create new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
+  * [Editing function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm)
 
 
 ## Issues
