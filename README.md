@@ -39,7 +39,8 @@ You can also create custom raster functions in Python that work seamlessly with 
   * [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
 
 * ##### Raster Function Templates
-  * [Create new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
+  * [Creating new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
+  * [Applying function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/applying-a-function-template.htm)
   * [Editing function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm)
 
 
