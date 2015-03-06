@@ -40,10 +40,13 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 * ##### Raster Function Templates
   * [Creating new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
+  * [Saving a function chain as a raster function template](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm#ESRI_SECTION1_0A062EDFA12B4F07BA04F567C7132C18)
   * [Applying function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/applying-a-function-template.htm)
   * [Editing function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm)
-
-
+  * [Resolving template variables using attribute table](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/wkflw-populating-functions-with-values-from-attrib-table.htm)
+  * [Adding a processing template to a mosaic dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/adding-a-processing-template-to-a-mosaic-dataset.htm)
+  * [Configuring an image service to use a raster function template](http://server.arcgis.com/en/server/latest/publish-services/windows/server-side-raster-functions.htm#ESRI_SECTION1_8E7C2EADF7504674B168453B71F400F2)
+  
 ## Issues
 
 Find a bug or want to request a new feature?  Please let us know by [submitting an issue](https://github.com/Esri/raster-functions/issues).
