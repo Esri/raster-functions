@@ -1,5 +1,5 @@
 import numpy as np
-
+import utils
 
 class LinearSpectralUnmixing():
 
@@ -10,6 +10,7 @@ class LinearSpectralUnmixing():
         self.signatures = None      # ultimately will be a dict
         self.coefficients = None    # ultimately will be a transposed np array
         self.applyScaling = False
+        self.trace = utils.Trace()
 
     def getParameterInfo(self):
         return [
@@ -65,12 +66,13 @@ class LinearSpectralUnmixing():
         # [[vegB, shadowB, npvB, ...], [vegG, shadowG, npvG, ...], [...]]
         # assign to coefficients member var to use in np.linalg.lstsq()
         self.coefficients = np.array(list(self.signatures.values())).T
-
-        # output bandCount is number of endmembers + 1 residuals raster
-        if self.coefficients.shape[0] != kwargs['raster_info']['bandCount']:
-            raise Exception("Incoming raster has {0} bands; endmember signatures "
-                            "indicate {1} input bands.".format(
-                                kwargs['raster_info']['bandCount'], self.coefficients.shape[0]))
+        P = self.coefficients.shape
+        outBandCount = 1 + P[1]             # endmembers + residuals
+        self.trace.log(str(kwargs['raster_info']))
+        inBandCount = kwargs['raster_info']['bandCount']
+        if P[0] != inBandCount:
+            raise Exception(("Incoming raster has {0} bands; endmember signatures "
+                             "indicate {1} input bands.").format(inBandCount, P[0]))
 
         # determine output pixel value method
         self.applyScaling = kwargs['method'].lower() == 'scaled'
@@ -82,7 +84,6 @@ class LinearSpectralUnmixing():
         }
 
         # repeat stats for all output raster bands
-        outBandCount = 1 + self.coefficients.shape[1]
         kwargs['output_info']['statistics'] = tuple(outStats for i in range(outBandCount))
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['bandCount'] = outBandCount
