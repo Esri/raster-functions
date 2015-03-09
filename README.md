@@ -46,6 +46,10 @@ You can also create custom raster functions in Python that work seamlessly with 
   * [Resolving template variables using attribute table](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/wkflw-populating-functions-with-values-from-attrib-table.htm)
   * [Adding a processing template to a mosaic dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/adding-a-processing-template-to-a-mosaic-dataset.htm)
   * [Configuring an image service to use a raster function template](http://server.arcgis.com/en/server/latest/publish-services/windows/server-side-raster-functions.htm#ESRI_SECTION1_8E7C2EADF7504674B168453B71F400F2)
+
+* ##### Scientific Computing in Python
+  * [Scientific Computing Tools for Python](http://www.scipy.org/about.html)
+  * [Python Scientific Lecture Notes](http://scipy-lectures.github.io/)
   
 ## Issues
 
