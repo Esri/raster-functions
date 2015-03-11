@@ -1,6 +1,5 @@
 import numpy as np
-import ctypes
-
+import utils
 
 class SelectByPixelSize():
 
@@ -9,9 +8,7 @@ class SelectByPixelSize():
         self.description = "This function returns pixels associated with one of two input rasters based on the request resolution."
         self.threshold = 0.0
         self.inBands1, self.inBands2, self.outBands = 1, 1, 1
-        self.emit = ctypes.windll.kernel32.OutputDebugStringA
-        self.emit.argtypes = [ctypes.c_char_p]
-
+        self.trace = utils.Trace()
         
     def getParameterInfo(self):
         return [
@@ -21,7 +18,8 @@ class SelectByPixelSize():
                 'value': None,
                 'required': True,
                 'displayName': "Raster 1",
-                'description': "The raster that's returned when request cell size is lower than the 'Cell Size Threshold'. A lower cell size value implies finer resolution."
+                'description': ("The raster that's returned when request cell size is lower than "
+                                "the 'Cell Size Threshold'. A lower cell size value implies finer resolution.")
             },
             {
                 'name': 'r2',
@@ -29,7 +27,8 @@ class SelectByPixelSize():
                 'value': None,
                 'required': True,
                 'displayName': "Raster 2",
-                'description': "The raster that's returned when request cell size is higher than or equal to the 'Cell Size Threshold'. A higher cell size value implies coarser resolution."
+                'description': ("The raster that's returned when request cell size is higher than or equal to "
+                                "the 'Cell Size Threshold'. A higher cell size value implies coarser resolution.")
             },
             {
                 'name': 'threshold',
@@ -37,16 +36,15 @@ class SelectByPixelSize():
                 'value': 0.0,
                 'required': True,
                 'displayName': "Cell Size Threshold",
-                'description': "The cell size threshold that controls which of the two input rasters contributes pixels to the output."
+                'description': ("The cell size threshold that controls which of the two input "
+                                "rasters contributes pixels to the output.")
             },
         ]
-
 
     def getConfiguration(self, **scalars):
         return { 
             'inputMask': True 
         }
-
         
     def updateRasterInfo(self, **kwargs):
         self.threshold = kwargs.get('threshold', 0.0)
@@ -60,11 +58,10 @@ class SelectByPixelSize():
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
 
-        self.emit("Trace|Threshold cell-size|{0}\n".format(self.threshold))
-        self.emit("Trace|output_info|{0}\n".format(kwargs['output_info']))
+        self.trace.log("Trace|Threshold cell-size|{0}\n".format(self.threshold))
+        self.trace.log("Trace|output_info|{0}\n".format(kwargs['output_info']))
         return kwargs
-        
-        
+       
     def selectRasters(self, tlc, shape, props):
         cellSize = props['cellSize']
         v = 0.5 * (cellSize[0] + cellSize[1])
@@ -72,11 +69,10 @@ class SelectByPixelSize():
             return ('r1',)
         else: return ('r2',)
 
-
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         cellSize = props['cellSize']
         v = 0.5 * (cellSize[0] + cellSize[1])
-        self.emit("Trace|Request cell-size|{0}\n".format(v))
+        self.trace.log("Trace|Request cell-size|{0}\n".format(v))
         
         if v < self.threshold:
             sPixels = 'r1_pixels'
@@ -97,4 +93,3 @@ class SelectByPixelSize():
         pixelBlocks['output_pixels'] = p.astype(props['pixelType'])
         pixelBlocks['output_mask'] = m.astype('u1')
         return pixelBlocks
-
