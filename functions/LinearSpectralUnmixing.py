@@ -1,5 +1,4 @@
 import numpy as np
-import utils
 
 class LinearSpectralUnmixing():
 
@@ -10,7 +9,6 @@ class LinearSpectralUnmixing():
         self.signatures = None      # ultimately will be a dict
         self.coefficients = None    # ultimately will be a transposed np array
         self.applyScaling = False
-        self.trace = utils.Trace()
 
     def getParameterInfo(self):
         return [
@@ -66,13 +64,12 @@ class LinearSpectralUnmixing():
         # [[vegB, shadowB, npvB, ...], [vegG, shadowG, npvG, ...], [...]]
         # assign to coefficients member var to use in np.linalg.lstsq()
         self.coefficients = np.array(list(self.signatures.values())).T
-        P = self.coefficients.shape
-        outBandCount = 1 + P[1]             # endmembers + residuals
-        self.trace.log(str(kwargs['raster_info']))
-        inBandCount = kwargs['raster_info']['bandCount']
-        if P[0] != inBandCount:
-            raise Exception(("Incoming raster has {0} bands; endmember signatures "
-                             "indicate {1} input bands.").format(inBandCount, P[0]))
+
+        outBandCount = 1 + self.coefficients.shape[1]             # endmembers + residuals
+        # inBandCount = kwargs['raster_info']['bandCount']
+        # if P[0] != inBandCount:
+            # raise Exception(("Incoming raster has {0} bands; endmember signatures "
+                             # "indicate {1} input bands.").format(inBandCount, P[0]))
 
         # determine output pixel value method
         self.applyScaling = kwargs['method'].lower() == 'scaled'
@@ -118,7 +115,7 @@ class LinearSpectralUnmixing():
             R2 = 1 - RSS / TSS
             resid = R2.reshape(1, -1, inBlock.shape[-1])
         else:
-            resid = resid.reshape(1, -1, inBlock.shape[-1]) # extra dimension to match shape of endmembers
+            resid = resid.reshape(1, -1, inBlock.shape[-1])  # extra dimension to match shape of endmembers
 
         outBlocks = np.row_stack((endmembers, resid))       # resid can be either RSS or R2
 
@@ -144,8 +141,8 @@ class LinearSpectralUnmixing():
 
 """
 References:
-    [1]. Adams, J.B., Sabol, D.E., Kapos, V., Filho, R.A., Roberts, D.A., Smith, M.O., 
-         Gillespie, A.R., 1995. Classification of multispectral images based on fractions 
+    [1]. Adams, J.B., Sabol, D.E., Kapos, V., Filho, R.A., Roberts, D.A., Smith, M.O.,
+         Gillespie, A.R., 1995. Classification of multispectral images based on fractions
          of endmembers: application to land cover change in the Brazilian Amazon.
          Remote Sensing of Environment 52 (2), 137-154.
 """
