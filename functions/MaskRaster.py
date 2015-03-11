@@ -6,12 +6,11 @@ class MaskRaster():
     def __init__(self):
         self.name = "Mask Raster Function"
         self.description = "Applies a raster as the NoData mask of the input raster."
-        self.value = 1
 
     def getParameterInfo(self):
         return [
             {
-                'name': 'raster',
+                'name': 'r',
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
@@ -19,7 +18,7 @@ class MaskRaster():
                 'description': "The primary input raster."
             },
             {
-                'name': 'mask',
+                'name': 'm',
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
@@ -28,14 +27,8 @@ class MaskRaster():
             },
         ]
 
-
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        pixelBlocks['output_pixels'] = pixelBlocks['raster_pixels']
-        m = pixelBlocks['mask_pixels'].astype('u1') > 0
-
-        outMask = np.zeros(shape, 'u1')
-        np.putmask(outMask, m, 1)
-
-        pixelBlocks['output_mask'] = outMask
+        pixelBlocks['output_pixels'] = pixelBlocks['r_pixels'].astype(props['pixelType'], copy=False)
+        m = pixelBlocks['m_pixels'].astype('u1', copy=False) > 0
+        pixelBlocks['output_mask'] = np.putmask(np.zeros(shape, 'u1'), m, 1)
         return pixelBlocks
-
