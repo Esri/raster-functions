@@ -22,7 +22,7 @@ def computePixelBlockExtents(tlc, shape, props):
 
 def computeCellSize(props, sr=None, proj=None):
     e, w, h = props['extent'], props['width'], props['height']  # dimensions of parent raster
-    if sr is None:                                              
+    if sr is None:
         return (e[2]-e[0])/w, (e[3]-e[1])/h                     # cell size of parent raster
     
     if proj is None: proj = Projection()                        # reproject extents
