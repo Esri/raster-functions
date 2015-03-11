@@ -1,5 +1,5 @@
 import numpy as np
-import ctypes
+import utils
 
 
 class FocalStatistics():
@@ -8,8 +8,7 @@ class FocalStatistics():
         self.name = "Focal Statistics"
         self.description = ""
         self.factor = 1.0
-        self.emit = ctypes.windll.kernel32.OutputDebugStringA
-        self.emit.argtypes = [ctypes.c_char_p]
+        self.trace = utils.Trace()
 
     def getParameterInfo(self):
         return [
@@ -47,7 +46,7 @@ class FocalStatistics():
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
 
-        self.emit("Trace|FocalStatistics.updateRasterInfo|{0}\n".format(kwargs))
+        self.trace.log("Trace|FocalStatistics.updateRasterInfo|{0}\n".format(kwargs))
         return kwargs
         
 
@@ -66,7 +65,7 @@ class FocalStatistics():
         pixelBlocks['output_pixels'] = outP.astype(props['pixelType'])
         pixelBlocks['output_mask'] = outM.astype('u1')
 
-        self.emit("Trace|FocalStatistics.updatePixels|Request Raster|{0}\n".format(props))
-        self.emit("Trace|FocalStatistics.updatePixels|Request Size|{0}\n".format(shape))
+        self.trace.log("Trace|FocalStatistics.updatePixels|Request Raster|{0}\n".format(props))
+        self.trace.log("Trace|FocalStatistics.updatePixels|Request Size|{0}\n".format(shape))
         return pixelBlocks
 
