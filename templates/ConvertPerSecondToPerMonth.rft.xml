@@ -12,7 +12,6 @@
       <String>ClassName</String>
       <String>raster</String>
       <String>units</String>
-      <String>dt</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
       <AnyType xsi:type='xs:string'>..\functions\ConvertPerSecondToPerMonth.py</AnyType>
@@ -27,15 +26,6 @@
         <Name>units</Name>
         <Description></Description>
         <Value xsi:type='xs:string'>per month</Value>
-        <IsDataset>false</IsDataset>
-      </AnyType>
-      <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>dt</Name>
-        <Description></Description>
-        <Value xsi:type='xs:string'></Value>
-        <Aliases xsi:type='typens:ArrayOfString'>
-          <String>@Field.StdTime</String>
-        </Aliases>
         <IsDataset>false</IsDataset>
       </AnyType>
     </Values>

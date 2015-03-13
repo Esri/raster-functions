@@ -22,16 +22,6 @@ class ConvertPerSecondToPerMonth():
                 'description': "The primary input raster."
             },
             {
-                'name': 'dt',
-                'dataType': 'string',
-                'value': None,
-                'required': False,
-                'displayName': "Date-Time",
-                'description': ("Optional date-time string (in XML time format, YYYY-MM-ddThh:mm:ss) associated "
-                                "with the input raster. In unspecified, the function uses `StdTime` or `AcquisitionDate` "
-                                "key metatadata associated with the raster.")
-            },
-            {
                 'name': 'units',
                 'dataType': 'string',
                 'value': "per month",
@@ -56,11 +46,8 @@ class ConvertPerSecondToPerMonth():
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
-        d = kwargs.get('dt', None)          # try and get it from the user (or from the function template)
-        if d is None or len(d) == 0:        # ... otherwise, try and get it from the raster's key metadata
-            d = kwargs['raster_keyMetadata'].get('acquisitiondate', None)
-            d = kwargs['raster_keyMetadata'].get('stdtime', d)
-
+        d = kwargs['raster_keyMetadata'].get('acquisitiondate', None)
+        d = kwargs['raster_keyMetadata'].get('stdtime', d)
         if d is None:
             raise Exception("Unable to obtain date-time associated with the input raster using "
                             "key metadata 'AcquisitionDate' or 'StdTime'.")
