@@ -2,6 +2,7 @@ import numpy as np
 from datetime import datetime
 from calendar import monthrange
 
+
 class ConvertPerSecondToPerMonth():
 
     def __init__(self):
@@ -34,17 +35,16 @@ class ConvertPerSecondToPerMonth():
     def getConfiguration(self, **scalars):
         return {
             'compositeRasters': False,              # input is a single raster, band compositing doesn't apply.
-            'inheritProperties': 1 | 2 | 4 | 8,     # inherit everything
+            'inheritProperties': 2 | 4 | 8,         # inherit all but the pixel type
             'invalidateProperties': 2 | 4 | 8,      # reset statistics and histogram
             'keyMetadata': ('stdtime', 'acquisitiondate'),  # we can use this key property in .updateRasterInfo()
         }
 
     def updateRasterInfo(self, **kwargs):
-        if kwargs['raster_info']['pixelType'] != 'f8':
-            kwargs['output_info']['pixelType'] = 'f4'
-
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
+        if kwargs['raster_info']['pixelType'] != 'f8':
+            kwargs['output_info']['pixelType'] = 'f4'
 
         d = kwargs['raster_keyMetadata'].get('acquisitiondate', None)
         d = kwargs['raster_keyMetadata'].get('stdtime', d)
