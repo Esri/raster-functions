@@ -71,7 +71,7 @@ class ConvertPerSecondToPerMonth():
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         inBlock = pixelBlocks['raster_pixels']
-        pixelBlocks['output_pixels'] = (inBlock * self.scaleFactor).astype(props['pixelType'], copy=False)
+        pixelBlocks['output_pixels'] = np.round(inBlock * self.scaleFactor).astype(props['pixelType'], copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
