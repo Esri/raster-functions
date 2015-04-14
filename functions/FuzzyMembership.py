@@ -2,6 +2,7 @@ import numpy as np
 import math
 import utils
 
+
 class FuzzyMembership():
 
     def __init__(self):
@@ -31,7 +32,7 @@ class FuzzyMembership():
                 'required': False,
                 'domain': ('Linear','Gaussian','Small','Large','Near','MSSmall','MSLarge'),
                 'displayName': "Fuzzy Membership Type",
-                'description': "Fuzzy Membership type."
+                'description': "Select Fuzzy Membership type."
             },
             {
                 'name': 'par1',
@@ -67,6 +68,7 @@ class FuzzyMembership():
 
     def getConfiguration(self, **scalars):
         return {
+          'extractBands': (0,),                 # we only need the first band.  Comma after zero ensures it's a tuple.
           'inheritProperties': 2 | 4 | 8,       # inherit everything but the pixel type (1)
           'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
           'padding': 0,                         # no padding of the input pixel block
@@ -111,7 +113,7 @@ class FuzzyMembership():
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         r = np.array(pixelBlocks['raster_pixels'], dtype='f8', copy=False)
-        self.trace.log("Trace|Extent: {0} \n".format(str(props['extent'])))
+
         if self.op == 'linear':
             r = (r - self.min) / (self.max - self.min)             # fuzzy linear membership.
 
@@ -119,7 +121,8 @@ class FuzzyMembership():
             r = (np.e)**((-self.spreadA)*((r-self.mid)**2))        # fuzzy gaussian membership.
 
         elif self.op == 'large':
-            r = (1/(1+((r/self.mid)**(-self.spreadB))))            # fuzzy large membership.
+            r = (1/(1+((r/self.mid )**(-self.spreadB))))           # fuzzy large membership.
+            self.trace.log("Trace|Mid: {0}|SpreadB: {1}".format(self.mid,self.spreadB))
 
         elif self.op == 'small':
             r = (1/(1+((r/self.mid)**(self.spreadB))))             # fuzzy small membership.
@@ -127,15 +130,17 @@ class FuzzyMembership():
         elif self.op == 'near':
             r = (1/(1+(self.spreadA*(r-self.mid)**2)))             # fuzzy near membership.
 
-        elif self.op == 'mssmall':         # fuzzy mssmall membership.
-            r2 = (self.stdM * self.std) / (r - (self.meanM * self.mean) + (self.stdM * self.std))
-            np.putmask(r, r <=(self.mean*self.meanM), 1.0)
-            np.putmask(r, r >(self.mean*self.meanM),r2)
+        elif self.op == 'mssmall':                                 # fuzzy mssmall membership.
+            self.trace.log("Trace|StdM: {0}|MeanM: {1}|Std: {2}|Mean: {3}".format(self.stdM,self.meanM,self.std,self.mean))
 
-        else:                             # fuzzy mslarge membership.
-            r2 = 1- (self.stdM * self.std) / (r - (self.meanM * self.mean) + (self.stdM * self.std))
+            rtemp = (self.stdM * self.std) / (r - (self.meanM * self.mean) + (self.stdM * self.std))
+            np.putmask(r, r <=(self.mean*self.meanM), 1.0)
+            np.putmask(r, r >(self.mean*self.meanM),rtemp)
+
+        else:                                                      # fuzzy mslarge membership.
+            rtemp = 1- (self.stdM * self.std) / (r - (self.meanM * self.mean) + (self.stdM * self.std))
             np.putmask(r, r <=(self.mean*self.meanM), 0.0)
-            np.putmask(r, r >(self.mean*self.meanM),r2)
+            np.putmask(r, r >(self.mean*self.meanM),rtemp)
 
         np.putmask(r, r < 0.0, 0.0)
         np.putmask(r, r > 1.0, 1.0)
@@ -145,10 +150,7 @@ class FuzzyMembership():
         elif (self.hedge == "VERY"):
             r = r ** 2
 
-        if len(r.shape) > 2 :
-            pixelBlocks['output_pixels'] = r[0].astype(props['pixelType'], copy=False)     # multi band raster
-        else:
-            pixelBlocks['output_pixels'] = r.astype(props['pixelType'], copy=False)        # single band raster
+        pixelBlocks['output_pixels'] = r.astype(props['pixelType'], copy=False)        # single band output raster
 
         return pixelBlocks
 
