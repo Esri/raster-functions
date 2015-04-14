@@ -1,7 +1,5 @@
 import numpy as np
 import math
-import utils
-
 
 class FuzzyMembership():
 
@@ -11,7 +9,6 @@ class FuzzyMembership():
         self.max, self.min = 1. , 1.                          # default values for fuzzy membership functions.
         self.spreadA, self.spreadB = 0.1 , 5.
         self.meanM, self.stdM = 1. , 1.
-        self.trace = utils.Trace()
 
     def getParameterInfo(self):
         return [
@@ -122,7 +119,6 @@ class FuzzyMembership():
 
         elif self.op == 'large':
             r = (1/(1+((r/self.mid )**(-self.spreadB))))           # fuzzy large membership.
-            self.trace.log("Trace|Mid: {0}|SpreadB: {1}".format(self.mid,self.spreadB))
 
         elif self.op == 'small':
             r = (1/(1+((r/self.mid)**(self.spreadB))))             # fuzzy small membership.
@@ -131,8 +127,6 @@ class FuzzyMembership():
             r = (1/(1+(self.spreadA*(r-self.mid)**2)))             # fuzzy near membership.
 
         elif self.op == 'mssmall':                                 # fuzzy mssmall membership.
-            self.trace.log("Trace|StdM: {0}|MeanM: {1}|Std: {2}|Mean: {3}".format(self.stdM,self.meanM,self.std,self.mean))
-
             rtemp = (self.stdM * self.std) / (r - (self.meanM * self.mean) + (self.stdM * self.std))
             np.putmask(r, r <=(self.mean*self.meanM), 1.0)
             np.putmask(r, r >(self.mean*self.meanM),rtemp)
