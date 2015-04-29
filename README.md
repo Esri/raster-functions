@@ -197,7 +197,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 * #### Multidirectional Hillshade
 
-  [MultidirectionalHillshade.pyc](https://github.com/Esri/raster-functions/blob/master/functions/MultidirectionalHillshade.pyc)
+  [MultidirectionalHillshade.pyd](https://github.com/Esri/raster-functions/blob/master/functions/MultidirectionalHillshade.pyd)
   and the accompanying [MultidirectionalHillshade.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/MultidirectionalHillshade.rft.xml)
   raster function template applies Hillshading from multiple directions for improved visualization. 
   Learn more [here](http://blogs.esri.com/esri/arcgis/2014/07/14/introducing-esris-next-generation-hillshade/).
