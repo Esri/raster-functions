@@ -15,9 +15,9 @@ You can also create custom raster functions in Python that work seamlessly with 
 3. [Download](https://github.com/Esri/raster-functions/archive/master.zip) and unzip this repo.
 4. Install Python dependencies:
 ```
-    $ cd scripts
-    $ python get-pip.py
-    $ pip install -r requirements.txt
+    $ cd {raster-functions}/scripts
+    $ {python-home}/python get-pip.py
+    $ {python-home}/Scripts/pip install -r requirements.txt
 ```
 4. Ready-to-use function templates are in the `templates/` folder. Implementation of raster functions live under `functions/`. 
 5. Learn about functions, function chains, and templates by browsing the links under [Resources](#resources).

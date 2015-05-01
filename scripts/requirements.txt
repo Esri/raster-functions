@@ -4,7 +4,7 @@ pyparsing
 pyproj
 python-dateutil
 pytz
-scikit-learn
-scipy
 six
+scipy
+scikit-learn
 Cython
