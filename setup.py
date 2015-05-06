@@ -45,6 +45,16 @@ def main(ver):
 
         print ("Microsoft Visual C++ Compiler for Python 2.7 successfully installed.")
 
+    # Install scipy externally
+##    print ("\nInstall Scipy Scientific Library for Python (y/n) ?")
+##    choice = str(raw_input())
+##    if choice.lower == "y":
+##        print ("Downloading Scipy Scientific Library for Python")
+##        URL_Scipy = "http://downloads.sourceforge.net/project/scipy/scipy/0.15.1/scipy-0.15.1-win32-superpack-python2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscipy%2F&ts=1430904154&use_mirror=liquidtelecom"
+##        urllib.urlretrieve(URL_Scipy, "ScipyPython27.exe")
+##       time.sleep(2)
+##        os.system('ScipyPython27.exe')
+
     print ("\nInstalling Python Dependencies using pip.")
     time.sleep(1)
 
