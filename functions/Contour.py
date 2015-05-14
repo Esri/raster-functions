@@ -8,7 +8,6 @@ class Contour():
         self.name = "Contour Function"
         self.description = "Contour Raster Function generates contour lines i.e. line joining the points with the same elevation from the given DEM raster."
 
-
     def getParameterInfo(self):
         return [
              {
