@@ -1,14 +1,12 @@
 import numpy as np
 from scipy import ndimage as ndi
 import math
-import utils
 
 class Contour():
 
     def __init__(self):
         self.name = "Contour Function"
         self.description = "Contour Raster Function generates contour lines i.e. line joining the points with the same elevation from the given DEM raster."
-        self.trace = utils.Trace()
 
     def getParameterInfo(self):
         return [
@@ -57,10 +55,8 @@ class Contour():
             },
             {
                 'name': 'indexcontour',
-                'dataType': 'string',
-                'value': 'False',
-                'required': True,
-                'domain': ('True','False'),
+                'dataType': 'boolean',
+                'value': True,
                 'displayName': "Index Contour",
                 'description': "If enabled, every 5th contour line is thicker than the rest."
             },
@@ -133,7 +129,7 @@ class Contour():
         self.contourChoice    = kwargs.get('values','No. of Contours')
         self.interval         = kwargs.get('interval',10.0)
         self.originalInterval = self.interval
-        self.indexC           = kwargs.get('indexcontour','False')
+        self.indexC           = kwargs.get('indexcontour')
         self.base             = kwargs.get('base',0.0)
 
         ## smoothing parameters ##
@@ -144,7 +140,7 @@ class Contour():
         self.radIncr          = kwargs.get('radinc',0.0)
         self.maxRad           = math.ceil(kwargs.get('maxrad',6.0))
 
-        if self.indexC == "True":  self.indexContourFactor = 5 # if enabled, every 5th contour line is thicker than the rest.
+        if self.indexC == True:  self.indexContourFactor = 5 # if enabled, every 5th contour line is thicker than the rest.
 
         self.maximumRadius = int(math.ceil(max(max(self.avgRad,self.maxRad),self.slopeRad))) # padding width over input block
 
@@ -170,11 +166,14 @@ class Contour():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        r = np.array(pixelBlocks['raster_pixels'], dtype = props['pixelType'], copy=False)
+        r = np.array(pixelBlocks['raster_pixels'], dtype = 'f8', copy=False)
         m = np.array(pixelBlocks['raster_mask'], dtype = 'u1',copy=False)
 
         self.pixelType, self.noData = props['pixelType'] , props['noData'] # raster properties
         if self.noData  == None: self.noData = self.assignNoData(self.pixelType)
+        self.min = self.calculateRasterMin(r)   # minimum of raster for smoothening
+
+        noDataPos = np.equal(r, self.noData) # get noData positions
 
         if self.contourChoice == "No. of Contours":  self.dynamicContouring(r)  # enable dynamic contouring
 
@@ -184,6 +183,8 @@ class Contour():
         elif self.mode == "Fill":            r = self.fillMode(r)
         elif self.mode == "Smooth Fill":     r = self.smoothRaster(r)
         else:                                r = self.smoothRaster(r)
+
+        r = np.where(noDataPos, self.noData, r) # replace noData positions
 
         pixelBlocks['output_pixels'] = r.astype(props['pixelType'], copy=False)
         pixelBlocks['output_mask']   = m.astype('u1',copy = False)
@@ -198,6 +199,12 @@ class Contour():
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = self.mode
         return keyMetadata
+
+    # get minimum of raster
+    def calculateRasterMin(self, r):
+        r = np.ma.array(r, mask= r == self.noData) # mask noData values in raster
+        minR  = np.ma.min(r)    # minimum value
+        return minR
 
     # assign noData value
     def assignNoData(self, pixelType):
@@ -248,13 +255,9 @@ class Contour():
 
     ## FILL MODE ##
     def fillMode(self, temp):
-        intermediateContourValue  = self.calculateContourIntermediate(temp)             # calculate intermediate contour values
+        intermediateContourValue  = self.calculateContourIntermediate(temp)          # calculate intermediate contour values
         finalFillValue            = self.finalContourValue(intermediateContourValue) # calculate final contour values
         r                         = np.where((finalFillValue - self.base) <= 0 , self.noData , finalFillValue)
-
-        # release memory
-        del intermediateContourValue
-        del finalFillValue
 
         return r
 
@@ -288,16 +291,15 @@ class Contour():
 
         ####### SET CONTOUR LINES #######
 
-        r = np.where(np.logical_and(c1, np.not_equal(r,self.noData)), finalContourValue, r)
-        r = np.where(np.logical_and(c2, np.not_equal(r,self.noData)), finalContourValue, r)
-        r = np.where(np.logical_and(c3, np.not_equal(r,self.noData)), finalContourValue, r)
+        r = np.where(np.logical_and(c1, np.not_equal(r,self.noData)), 1, r)
+        r = np.where(np.logical_and(c2, np.not_equal(r,self.noData)), 1, r)
+        r = np.where(np.logical_and(c3, np.not_equal(r,self.noData)), 1, r)
 
         ####### INDEX CONTOUR LINES - DARKEN EVERY 5th CONTOUR LINE #######
 
-        if self.indexC == "True":
-
-            intTemp       = temp.astype(int)
-            intTempIncBy1 = (temp + 1).astype(int)
+        if self.indexC == True:
+            intTemp       = temp.astype('int32')
+            intTempIncBy1 = (temp + 1).astype('int32')
 
             ####### CONDITIONS FOR INDEX CONTOUR LINES #######
 
@@ -306,22 +308,36 @@ class Contour():
             # Condition 6. hereOutput > topOutput
             # Condition 7. hereOutput > rightOutput
 
-            c4 = np.equal(intTemp % self.indexContourFactor , 0)
-            c5 = np.equal(intTempIncBy1 % self.indexContourFactor , 0)
-            c6 = np.greater(temp, topNeighbors)
-            c7 = np.greater(temp, rightNeighbors)
+            cond1 = np.logical_and(c1, np.not_equal(r,self.noData))
+            cond2 = np.logical_and(np.logical_and(np.less(temp, topNeighbors),np.greater_equal(topNeighbors, 0)), np.not_equal(r,self.noData))
+            cond3 = np.logical_and(np.logical_and(np.less(temp, rightNeighbors),np.greater_equal(rightNeighbors, 0)), np.not_equal(r,self.noData))
 
-            c_146 = np.roll(np.logical_and(np.logical_and(c1, c4), c6), -1, axis = 0)  # Combine c1 & c4 & c6
-            c_147 = np.roll(np.logical_and(np.logical_and(c1, c4), c7), 1, axis = 1)   # Combine c1 & c4 & c7
-            c_15  = np.logical_and(np.logical_not(c1), c5) # Combine c1 & c5
+            cond4 = np.equal(intTemp % self.indexContourFactor, 0)
+            cond6 = np.logical_and(np.greater(temp, topNeighbors), np.greater_equal(topNeighbors,0))
+            cond7 = np.logical_and(np.greater(temp, rightNeighbors), np.greater_equal(rightNeighbors,0))
 
-            ####### SET INDEX CONTOUR LINES #######
+            cond_14  = np.logical_and(cond1, cond4)                           # Combine c1 & c4
+            cond_146 = np.roll(np.logical_and(cond_14, cond6), -1, axis = 0)  # Combine c1 , c4 & c6
+            cond_147 = np.roll(np.logical_and(cond_14, cond7), 1, axis = 1)   # Combine c1 , c7 & c4
 
-            r = np.where(c_146, finalContourValue * 2, r)
-            r = np.where(c_147, finalContourValue * 2, r)
-            r = np.where(c_15, finalContourValue * 2, r)
+            combinedCond1 = np.logical_or(np.logical_or(cond_14,cond_146),cond_147)
 
-        if self.mode == "Smooth Contour":   r = self.dynamicScaling(r) # dynamic contouring scale to 8 bit
+            ####### SET CONTOUR LINES #######
+            r = np.where(combinedCond1, 2, r)
+
+            ####### CONDITIONS FOR INDEX CONTOUR LINES #######
+            cond5 = np.equal(intTempIncBy1 % self.indexContourFactor, 0)
+            cond_25 = np.logical_and(cond2, cond5)   # Combine c2 & c5
+            cond_35 = np.logical_and(cond3, cond5)   # Combine c3 & c5
+
+            cond_25Top   = np.roll(cond_25, -1, axis = 0)
+            cond_35Right = np.roll(cond_35, 1, axis = 1)
+
+            combinedCond2 = np.logical_or(np.logical_or(cond_25, cond_35),np.logical_or(cond_25Top, cond_35Right ))
+
+            ####### SET CONTOUR LINES #######
+            r = np.where(combinedCond2, 2, r)
+
 
         r[0] = r[-1] = r[:,-1] = r[:,0] = self.noData # omitting boundary effects
 
@@ -331,8 +347,7 @@ class Contour():
     def dynamicScaling(self, temp):
 
         temp       = np.ma.array(temp, mask= temp == self.noData)
-        maxR       = np.ma.max(temp)
-        minR       = np.ma.min(temp)
+        maxR, minR = np.ma.max(temp), np.ma.min(temp)
         scaledTemp = np.array((((temp - minR) / (maxR - minR)) * 255.)).astype(self.pixelType)
 
         return scaledTemp
@@ -355,7 +370,7 @@ class Contour():
 
         m_SlopeRad   = int(math.ceil(self.slopeRad))
         kernelSlope  = np.zeros((2 * m_SlopeRad + 1, 2 * m_SlopeRad + 1))
-        y , x          = np.ogrid[-m_SlopeRad:m_SlopeRad+1, -m_SlopeRad:m_SlopeRad+1]
+        y , x        = np.ogrid[-m_SlopeRad:m_SlopeRad+1, -m_SlopeRad:m_SlopeRad+1]
         mask         = x**2 + y**2 <= m_SlopeRad**2
         kernelSlope[mask] = 1
 
@@ -376,16 +391,14 @@ class Contour():
 
         r = self.smoothenDEM(temp, radGrid)
 
-        if self.mode == "Smooth Contour":   r = self.generateContour(r)
+        if   self.mode == "Smooth Contour": r = self.generateContour(r)
         elif self.mode == "Smooth Fill":    r = self.fillMode(r)
         else:                               r = r
-
 
         return r
 
     ## INITIALIZE GRID FOR SMOOTHENING ##
     def initializeGrid(self, temp):
-
         temp    = np.where(np.not_equal(temp ,self.noData), temp * self.zfactor, temp) # applying Z-Factor before any Smoothing
 
         # obtaining the slope of each pixel within the block
@@ -420,8 +433,8 @@ class Contour():
             kernel  = np.zeros((2 * grid + 1, 2 * grid + 1))
             y,x     = np.ogrid[-grid:grid+1, -grid:grid+1]
             mask    = x**2 + y**2 <= grid**2
-            kernel[mask] = 1
-            noOfPixels   = len(kernel[kernel==1])
+            kernel[mask]   = 1
+            noOfPixels     = len(kernel[kernel==1])
             avg_temp[grid] = ndi.convolve(temp, kernel) / noOfPixels
 
         for radius in xrange(int(self.maximumRadius + 1)):
@@ -443,5 +456,6 @@ class Contour():
 
         r = np.where(np.not_equal(r,self.noData), r / self.zfactor, r) # rescaling back to original value
 
-        return r
+        r = np.where(np.less(r,self.min), self.noData, r)   # limit minimum value of smoothening
 
+        return r
