@@ -52,9 +52,8 @@ def downloadFile(url, filePath):
         die("Unable to load specified URL: {0}".format(url), 2)
 
     try:
-        fileDownload = open(installLoc, 'wb')
-        fileDownload.write(urlFile.read())      # Download file
-        fileDownload.close()
+        with open(filePath, 'wb') as f:
+            f.write(urlFile.read())
     except:
         die("File could not be downloaded.", 3)
 
