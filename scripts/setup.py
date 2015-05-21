@@ -32,11 +32,8 @@ import platform
         7 - Requirements.txt file not found.
 '''
 
-
-# URLs
-
 def log(s):
-    print(". {0}\n".format(s))
+    print(">>> {0}".format(s))
 
 
 def die(errorLog, errorCode):

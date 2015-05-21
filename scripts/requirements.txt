@@ -1,4 +1,3 @@
-matplotlib
 pyparsing
 pyproj
 python-dateutil
