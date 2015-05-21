@@ -11,15 +11,16 @@ You can also create custom raster functions in Python that work seamlessly with 
 ## Getting Started
 
 * Install [ArcGIS for Desktop 10.3.1](http://desktop.arcgis.com/en/desktop/) or [ArcGIS Pro 1.0](http://pro.arcgis.com/en/pro-app). 
-   ArcGIS comes with [Python](http://desktop.arcgis.com/en/desktop/latest/analyze/python/what-is-python-.htm).
-* [Download](https://github.com/Esri/raster-functions/archive/master.zip) and unzip this repo.
-* Install Python dependencies:
+  ArcGIS comes with [Python](http://desktop.arcgis.com/en/desktop/latest/analyze/python/what-is-python-.htm).
+* Download the [zipped binaries](https://github.com/Esri/raster-functions/releases/download/v0.1.0-alpha/raster-functions-v0.1.0-alpha.zip) 
+from the [latest release](https://github.com/Esri/raster-functions/releases/latest) and unzip the contents to a local folder. 
+* Install dependencies using Python:
 ```
-  $ {python-home}/python.exe  {raster-functions}/setup.py
+  $ <python-path>/python.exe  <local-folder>/raster-functions/setup.py
 ```
-* Ready-to-use function templates are in the `templates/` folder. Implementation of raster functions live under `functions/`. 
-* Learn about functions, function chains, and templates by browsing the links under [Resources](#resources).
-* Learn how to create new raster functions using the [Python API](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#anatomy-of-a-python-raster-function).
+* Ready-to-use `templates` and `functions` live in their own subfolders under `raster-functions`. 
+* Learn more about raster functions, function chains, and templates using the [Resources](#resources) below.
+* Learn how you can create new raster functions using the [Python API](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#anatomy-of-a-python-raster-function).
 
 
 ## Resources
