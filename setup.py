@@ -25,9 +25,8 @@ import platform
         2  :    HTTP 404 Error URL cannot be found.
         3  :    File cannot be downloaded.
         4  :    VC++ Compiler for Python installation failed.
-        5  :    Python Window Binary installation failed.
+        5  :    Requirements.txt file not found.
         6  :    Python package installation failed.
-        7  :    Requirements.txt file not found.
         99 :    ArcGIS 10.3.1 or above not found.
 '''
 
@@ -36,8 +35,10 @@ def log(s):
 
 
 def die(errorLog, errorCode):
+    print("\n\n")
     logging.error(errorLog)
-    time.sleep(5)
+    print("\n")
+    time.sleep(2)
     exit(errorCode)
     
 
@@ -67,6 +68,7 @@ def main():
 
     pipExePath = os.path.join(os.path.dirname(sys.executable), r"Scripts\pip.exe")
     setupHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "scripts")
+    distHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "dist")
 
     try:
         arcpy = __import__('arcpy')
@@ -86,17 +88,20 @@ def main():
             log("PIP installed successfully")
         else:
             raise Exception("PIP failed")
+
+        subprocess.call([pipExePath, "install", "--upgrade", "pip"])
+        subprocess.call([pipExePath, "install", "--upgrade", "wheel"])
     except:
         die("PIP installation failed!", 1)
     
     try:           
         if sys.version_info[0] == 2:
             log("Installing Microsoft Visual C++ Compiler")
-            vcSetupPath = os.path.join(setupHome, "VCForPython.msi")
+            vcSetupPath = os.path.join(distHome, "VCForPython27.msi")
             locateFile(vcURL, vcSetupPath)
-            c = "msiexec /i {0} /qb".format(vcSetupPath)
-            log("Executing: {0}".format(c))
-            subprocess.call(["msiexec", "/i", vcSetupPath, "/qb"])
+            c = ["msiexec", "/i", vcSetupPath, "/qb-"]
+            log("Executing: {0}".format(" ".join(c)))
+            subprocess.call(c)
             log("C++ Compiler for Python installed successfully")
     except:
         die("VC++ Compiler for Python installation failed!.", 4)
@@ -104,20 +109,19 @@ def main():
     try:
         log("Installing Python dependencies")
         reqFilePath = os.path.join(setupHome, "requirements.txt")
-        if os.path.isfile(reqFilePath):
-            reqItems = [line.strip() for line in open(reqFilePath)]
-            for r in reqItems:
-                log("Installing package: {0}".format(r))
-                subprocess.call([pipExePath, 'install', '-U', '--upgrade', r])
-        else:
-            die("Dependency listing file not found: {0}".format(reqFilePath), 7)
+        if not os.path.isfile(reqFilePath):
+            die("Dependency listing file not found: {0}".format(reqFilePath), 5)
+
+        c = [pipExePath, "install", "--find-links={0}".format(distHome), "-r", reqFilePath]
+        log("Executing: {0}".format(" ".join(c)))
+        subprocess.call(c)
     except:
         die("Dependency installation failed!", 6)
     
     print("\n\n")
     log("Python Raster Function dependencies installed successfully.")
     log("Done.")
-    time.sleep(5)
+    time.sleep(2)
     exit(0)
 
 

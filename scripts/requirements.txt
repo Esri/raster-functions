@@ -3,5 +3,8 @@ pyproj
 python-dateutil
 pytz
 six
+numpy
+scipy
+matplotlib 
 scikit-learn
 Cython
