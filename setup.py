@@ -10,13 +10,13 @@ To execute **setup.py** within the package directory run:
   $ python setup.py
 '''
 
-import os
 import sys
-import subprocess
-import time
-import urllib2
 import logging
-import platform
+import urllib2
+from os import path, makedirs
+from subprocess import call
+from time import sleep
+
 
 '''
     ErrorLevel on exit:
@@ -38,17 +38,22 @@ def die(errorLog, errorCode):
     print("\n\n")
     logging.error(errorLog)
     print("\n")
-    time.sleep(2)
+    sleep(2)
     exit(errorCode)
     
 
 def downloadFile(url, filePath):
     try:
+        log("Downloading: {0} to {1}".format(url, filePath))
         urlFile = urllib2.urlopen(urllib2.Request(url, headers={'User-Agent': 'Mozilla/5.0'}))
     except urllib2.HTTPError:
         die("Unable to load specified URL: {0}".format(url), 2)
 
     try:
+        d = path.dirname(filePath)
+        if not path.exists(d):
+            makedirs(d)
+
         with open(filePath, 'wb') as f:
             f.write(urlFile.read())
     except:
@@ -56,8 +61,7 @@ def downloadFile(url, filePath):
 
 
 def locateFile(url, filePath):
-    if not os.path.isfile(filePath):
-        log("Downloading: {0}".format(url))
+    if not path.isfile(filePath):
         downloadFile(url, filePath)
     log("Located: {0}".format(filePath))
 
@@ -66,64 +70,68 @@ def main():
     pipURL = "http://bootstrap.pypa.io/get-pip.py"
     vcURL = "http://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi"
 
-    pipExePath = os.path.join(os.path.dirname(sys.executable), r"Scripts\pip.exe")
-    setupHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "scripts")
-    distHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "dist")
-
-    try:
-        arcpy = __import__('arcpy')
-        info = arcpy.GetInstallInfo()
-        if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
-            raise Exception("No ArcGIS")
-    except:
-        die("Unable to find ArcGIS 10.3.1 or above. Cannot proceed.", 99)
+    pipExePath = path.join(path.dirname(sys.executable), r"Scripts\pip.exe")
+    setupHome = path.join(path.abspath(path.dirname(__file__)), "scripts")
+    distHome = path.join(path.abspath(path.dirname(__file__)), "dist")
 
     try:
         log("Installing PIP")
-        pipPyPath = os.path.join(setupHome, "get-pip.py")
+        pipPyPath = path.join(setupHome, "get-pip.py")
         locateFile(pipURL, pipPyPath)
-        subprocess.call([sys.executable, pipPyPath])
+        call([sys.executable, pipPyPath])
 
-        if os.path.isfile(pipExePath):
+        if path.isfile(pipExePath):
             log("PIP installed successfully")
         else:
             raise Exception("PIP failed")
 
-        subprocess.call([pipExePath, "install", "--upgrade", "pip"])
-        subprocess.call([pipExePath, "install", "--upgrade", "wheel"])
+        call([pipExePath, "install", "--upgrade", "--no-index", "--find-links={0}".format(distHome), "pip"])
+        call([pipExePath, "install", "--upgrade", "--no-index", "--find-links={0}".format(distHome), "wheel"])
     except:
         die("PIP installation failed!", 1)
     
     try:           
         if sys.version_info[0] == 2:
             log("Installing Microsoft Visual C++ Compiler")
-            vcSetupPath = os.path.join(distHome, "VCForPython27.msi")
+            vcSetupPath = path.join(distHome, "VCForPython27.msi")
             locateFile(vcURL, vcSetupPath)
             c = ["msiexec", "/i", vcSetupPath, "/qb-"]
             log("Executing: {0}".format(" ".join(c)))
-            subprocess.call(c)
+            call(c)
             log("C++ Compiler for Python installed successfully")
     except:
         die("VC++ Compiler for Python installation failed!.", 4)
 
     try:
         log("Installing Python dependencies")
-        reqFilePath = os.path.join(setupHome, "requirements.txt")
-        if not os.path.isfile(reqFilePath):
+        reqFilePath = path.join(setupHome, "requirements.txt")
+        if not path.isfile(reqFilePath):
             die("Dependency listing file not found: {0}".format(reqFilePath), 5)
 
-        c = [pipExePath, "install", "--find-links={0}".format(distHome), "-r", reqFilePath]
+        c = [pipExePath, "install", "--no-index", "--find-links={0}".format(distHome), "-r", reqFilePath]
         log("Executing: {0}".format(" ".join(c)))
-        subprocess.call(c)
+        call(c)
     except:
         die("Dependency installation failed!", 6)
     
     print("\n\n")
     log("Python Raster Function dependencies installed successfully.")
+
+    #try:
+    #   arcpy = __import__('arcpy')
+    #   info = arcpy.GetInstallInfo()
+    #   if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
+    #       raise Exception("No ArcGIS")
+    #except:
+    #   logging.warn("Unable to find ArcGIS 10.3.1 or above.")
+
     log("Done.")
-    time.sleep(2)
+    sleep(2)
     exit(0)
 
 
 if __name__ == '__main__':
     main()
+
+
+# Uninstall using: pip uninstall --yes -r requirements.txt
