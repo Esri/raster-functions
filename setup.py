@@ -65,7 +65,7 @@ def main():
     pipURL = "http://bootstrap.pypa.io/get-pip.py"
     vcURL = "http://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi"
 
-    pipPath = os.path.join(os.path.dirname(sys.executable), r"Scripts\pip.exe")
+    pipExePath = os.path.join(os.path.dirname(sys.executable), r"Scripts\pip.exe")
     setupHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "scripts")
 
     try:
@@ -78,11 +78,11 @@ def main():
 
     try:
         log("Installing PIP")
-        getpipPath = os.path.join(setupHome, "get-pip.py")
-        locateFile(pipURL, getpipPath)
-        subprocess.call([sys.executable, getpipPath])
+        pipPyPath = os.path.join(setupHome, "get-pip.py")
+        locateFile(pipURL, pipPyPath)
+        subprocess.call([sys.executable, pipPyPath])
 
-        if os.path.isfile(pipPath):
+        if os.path.isfile(pipExePath):
             log("PIP installed successfully")
         else:
             raise Exception("PIP failed")
@@ -92,7 +92,7 @@ def main():
     try:           
         if sys.version_info[0] == 2:
             log("Installing Microsoft Visual C++ Compiler")
-            vcSetupPath = os.path.join(setupHome + "VCForPython.msi")
+            vcSetupPath = os.path.join(setupHome, "VCForPython.msi")
             locateFile(vcURL, vcSetupPath)
             os.system("msiexec /i {0} /qb".format(vcSetupPath))
             log("C++ Compiler for Python installed successfully")
@@ -106,7 +106,7 @@ def main():
             reqItems = [line.strip() for line in open(reqFilePath)]
             for r in reqItems:
                 log("Installing package: {0}".format(r))
-                subprocess.call([pipPath, 'install', '-U', '--upgrade', r])
+                subprocess.call([pipExePath, 'install', '-U', '--upgrade', r])
         else:
             die("Dependency listing file not found: {0}".format(reqFilePath), 7)
     except:
