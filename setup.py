@@ -94,7 +94,9 @@ def main():
             log("Installing Microsoft Visual C++ Compiler")
             vcSetupPath = os.path.join(setupHome, "VCForPython.msi")
             locateFile(vcURL, vcSetupPath)
-            os.system("msiexec /i {0} /qb".format(vcSetupPath))
+            c = "msiexec /i {0} /qb".format(vcSetupPath)
+            log("Executing: {0}".format(c))
+            subprocess.call(["msiexec", "/i", vcSetupPath, "/qb"])
             log("C++ Compiler for Python installed successfully")
     except:
         die("VC++ Compiler for Python installation failed!.", 4)

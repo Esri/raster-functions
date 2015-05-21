@@ -1,6 +1,6 @@
 """
-  cythonize.py build_ext --inplace
-  cythonize.py clean
+  Cythonize.py build_ext --inplace
+  Cythonize.py clean
 
 """
 
