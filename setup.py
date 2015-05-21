@@ -1,12 +1,10 @@
 '''
-=========================================================
-setup.py: Automate installation of dependencies required for Python raster function
-=========================================================
+====================================================================================
+setup.py: Automated installation of dependencies required for Python raster function
+====================================================================================
 
 Installation
 ------------
-**setup.py** has no external library dependencies and should compile on 
-most systems that are running Python 2.7, or 3.4.
 
 To execute **setup.py** within the package directory run:
   $ python setup.py
@@ -21,15 +19,16 @@ import logging
 import platform
 
 '''
-    ERRORLEVEL
-        0 - Installation successful.
-        1 - PIP installation unsuccessful.
-        2 - HTTP 404 Error URL cannot be found.
-        3 - File cannot be downloaded.
-        4 - VC++ Compiler for Python installation failed.
-        5 - Python Window Binary installation failed.
-        6 - Python package installation failed.
-        7 - Requirements.txt file not found.
+    ErrorLevel on exit:
+        0  :    Installation successful.
+        1  :    PIP installation unsuccessful.
+        2  :    HTTP 404 Error URL cannot be found.
+        3  :    File cannot be downloaded.
+        4  :    VC++ Compiler for Python installation failed.
+        5  :    Python Window Binary installation failed.
+        6  :    Python package installation failed.
+        7  :    Requirements.txt file not found.
+        99 :    ArcGIS 10.3.1 or above not found.
 '''
 
 def log(s):
@@ -67,7 +66,15 @@ def main():
     vcURL = "http://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi"
 
     pipPath = os.path.join(os.path.dirname(sys.executable), r"Scripts\pip.exe")
-    setupHome = os.path.abspath(os.path.dirname(__file__))
+    setupHome = os.path.join(os.path.abspath(os.path.dirname(__file__)), "scripts")
+
+    try:
+        arcpy = __import__('arcpy')
+        info = arcpy.GetInstallInfo()
+        if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
+            raise Exception("No ArcGIS")
+    except:
+        die("Unable to find ArcGIS 10.3.1 or above. Cannot proceed.", 99)
 
     try:
         log("Installing PIP")
@@ -78,7 +85,7 @@ def main():
         if os.path.isfile(pipPath):
             log("PIP installed successfully")
         else:
-            die("PIP installation failed!", 1)
+            raise Exception("PIP failed")
     except:
         die("PIP installation failed!", 1)
     
@@ -105,7 +112,9 @@ def main():
     except:
         die("Dependency installation failed!", 6)
     
+    print("\n\n")
     log("Python Raster Function dependencies installed successfully.")
+    log("Done.")
     time.sleep(5)
     exit(0)
 

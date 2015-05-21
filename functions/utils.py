@@ -9,7 +9,7 @@ __all__ = ['isProductVersionOK',
 
 def isProductVersionOK(productInfo, major, minor, build):
     v = productInfo['major']*1.e+10 + int(0.5+productInfo['minor']*10)*1.e+6 + productInfo['build']
-    return v >= major*1e+10 + minor*1e+7 + build
+    return v >= major*1e+10 + int(0.5+minor*10)*1.e+6 + build
 
 
 def computePixelBlockExtents(tlc, shape, props):
