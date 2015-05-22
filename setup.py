@@ -119,7 +119,7 @@ def main():
     try:
        arcpy = __import__('arcpy')
        info = arcpy.GetInstallInfo()
-       if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.5".split(".")))):
+       if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
            raise Exception("No ArcGIS")
     except:
        logging.warn("Unable to find ArcGIS 10.3.1 or above.")
