@@ -12,7 +12,6 @@ To execute **setup.py** within the package directory run:
 
 import sys
 import logging
-import urllib2
 from os import path, makedirs
 from subprocess import call
 from time import sleep
@@ -22,8 +21,7 @@ from time import sleep
     ErrorLevel on exit:
         0  :    Installation successful.
         1  :    PIP installation unsuccessful.
-        2  :    HTTP 404 Error URL cannot be found.
-        3  :    File cannot be downloaded.
+        2  :    File cannot be downloaded.
         4  :    VC++ Compiler for Python installation failed.
         5  :    Requirements.txt file not found.
         6  :    Python package installation failed.
@@ -45,19 +43,20 @@ def die(errorLog, errorCode):
 def downloadFile(url, filePath):
     try:
         log("Downloading: {0} to {1}".format(url, filePath))
-        urlFile = urllib2.urlopen(urllib2.Request(url, headers={'User-Agent': 'Mozilla/5.0'}))
-    except urllib2.HTTPError:
-        die("Unable to load specified URL: {0}".format(url), 2)
 
-    try:
+        try:
+            from urllib2 import urlopen
+        except: 
+            from urllib.request import urlopen
+
         d = path.dirname(filePath)
         if not path.exists(d):
             makedirs(d)
 
         with open(filePath, 'wb') as f:
-            f.write(urlFile.read())
+            f.write(urlopen(url).read())
     except:
-        die("File could not be downloaded.", 3)
+        die("Unable to download URL", 2)
 
 
 def locateFile(url, filePath):
@@ -117,13 +116,13 @@ def main():
     print("\n\n")
     log("Python Raster Function dependencies installed successfully.")
 
-    #try:
-    #   arcpy = __import__('arcpy')
-    #   info = arcpy.GetInstallInfo()
-    #   if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
-    #       raise Exception("No ArcGIS")
-    #except:
-    #   logging.warn("Unable to find ArcGIS 10.3.1 or above.")
+    try:
+       arcpy = __import__('arcpy')
+       info = arcpy.GetInstallInfo()
+       if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.5".split(".")))):
+           raise Exception("No ArcGIS")
+    except:
+       logging.warn("Unable to find ArcGIS 10.3.1 or above.")
 
     log("Done.")
     sleep(2)
