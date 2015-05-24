@@ -465,8 +465,8 @@ class FMask():
 
         # full scene covered in cloud return everything as masked
         if ptm <= 0.1 or ptmRevised >= .90:
-            cloudMask[cloudTest] = 1
-            shadowMask[np.logical_not(cloudTest)] = 1
+            cloudCal[cloudTest] = 1
+            shadowCal[np.logical_not(cloudTest)] = 1
             similarity = -1
 
         else:
