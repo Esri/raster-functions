@@ -30,7 +30,6 @@
     <Compile Include="HeatIndex.py" />
     <Compile Include="Hillshade.py" />
     <Compile Include="KeyMetadata.py" />
-    <Compile Include="KeyMetadataFromJson.py" />
     <Compile Include="LinearSpectralUnmixing.py" />
     <Compile Include="MaskRaster.py" />
     <Compile Include="NDVI.py" />

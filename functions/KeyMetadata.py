@@ -1,4 +1,4 @@
-import json
+import ast
 from utils import Trace
 
 
@@ -9,7 +9,6 @@ class KeyMetadata():
         self.description = "Override key metadata in a function chain."
         self.props = None
         self.trace = Trace()
-
 
     def getParameterInfo(self):
         return [
@@ -56,12 +55,15 @@ class KeyMetadata():
     ]
 
     def getConfiguration(self, **scalars):
-        return { 
+        return {
             'invalidateProperties': 8,          # reset any key properties held by the parent function raster dataset
         }
 
     def updateRasterInfo(self, **kwargs):
-        self.props = json.loads(kwargs.get('json', ""))
+        jsonInput = kwargs.get('json', "")
+        if len(jsonInput) > 0:
+            self.props = ast.literal_eval(jsonInput)
+
         if self.props is None:
             self.props = {}
 
@@ -70,15 +72,14 @@ class KeyMetadata():
             self.props[p] = kwargs.get('value', "")
 
         if not 'bandproperties' in self.props.keys():
-            self.props['bandproperties'] = []   # 
+            self.props['bandproperties'] = []
 
         bandCount = kwargs['raster_info']['bandCount']
         bandProps = self.props['bandproperties']
-        bandProps.append([{} for k in range(0, bandCount-len(bandProps))])
+        bandProps.extend([{} for k in range(0, bandCount-len(bandProps))])
 
         b = kwargs.get('bands', "").strip()
         if len(b) > 0:
-            k = 0
             bandNames = b.split(',')
             for k in range(0, min(len(bandProps), len(bandNames))):
                 bandProps[k]['bandname'] = bandNames[k]
@@ -89,19 +90,20 @@ class KeyMetadata():
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if self.props is None:
             return keyMetadata
-        
-        props = self.props
+
+        properties = self.props
         if bandIndex != -1:
-            if 'bandproperties' not in self.props.keys():
+            if 'bandproperties' not in properties.keys():
                 return keyMetadata
             bandProps = self.props['bandproperties']
+
             if not bandProps or len(bandProps) < bandIndex + 1:
                 return keyMetadata
-            props = bandProps[bandIndex]
+            properties = bandProps[bandIndex]
 
         for name in names:
-            if name in props.keys():
-                v = props[name]
+            if name in properties.keys():
+                v = properties[name]
                 keyMetadata[name] = str(v) if isinstance(v, unicode) else v
         
         self.trace.log("{0}|{1}".format("KeyMetadata.updateKeyMetadata", keyMetadata))
