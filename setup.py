@@ -107,7 +107,7 @@ def main():
         if not path.isfile(reqFilePath):
             die("Dependency listing file not found: {0}".format(reqFilePath), 5)
 
-        c = [pipExePath, "install", "--no-index", "--find-links={0}".format(distHome), "-r", reqFilePath]
+        c = [pipExePath, "install", "--upgrade", "--no-index", "--find-links={0}".format(distHome), "-r", reqFilePath]
         log("Executing: {0}".format(" ".join(c)))
         call(c)
     except:
