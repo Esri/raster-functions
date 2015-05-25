@@ -105,4 +105,4 @@ class KeyMetadata():
                 keyMetadata[name] = str(v) if isinstance(v, unicode) else v
         
         self.trace.log("{0}|{1}".format("KeyMetadata.updateKeyMetadata", keyMetadata))
-        return keyMetadatafor 
+        return keyMetadata
