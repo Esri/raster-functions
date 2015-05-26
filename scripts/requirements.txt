@@ -6,5 +6,6 @@ six
 numpy
 scipy
 matplotlib 
+scikit-image
 scikit-learn
 Cython
