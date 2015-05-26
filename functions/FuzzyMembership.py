@@ -108,7 +108,7 @@ class FuzzyMembership():
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         # get the input raster pixel block
-        raster = np.array(pixelBlocks['raster_pixels'], dtype='f8', copy=False)
+        r = np.array(pixelBlocks['raster_pixels'], dtype='f8', copy=False)
 
         # fuzzy linear membership
         if self.mode == "linear":
