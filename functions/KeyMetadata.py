@@ -1,4 +1,4 @@
-import ast
+import json
 from utils import Trace
 
 
@@ -7,7 +7,8 @@ class KeyMetadata():
     def __init__(self):
         self.name = "Key Metadata Function"
         self.description = "Override key metadata in a function chain."
-        self.props = None
+        self.datasetProps = {}
+        self.bandProps = []
         self.trace = Trace()
 
     def getParameterInfo(self):
@@ -60,49 +61,47 @@ class KeyMetadata():
         }
 
     def updateRasterInfo(self, **kwargs):
-        jsonInput = kwargs.get('json', "")
-        if len(jsonInput) > 0:
-            self.props = ast.literal_eval(jsonInput)
+        try:
+            allProps = json.loads(kwargs.get('json', "{}"))
+        except ValueError as e:
+            raise Exception(e.message)
+             
+        self.datasetProps = { k.lower(): v for k, v in allProps.items() }
 
-        if self.props is None:
-            self.props = {}
+        self.bandProps = []
+        for d in allProps.get('bandproperties', []):
+            self.bandProps.append({ k.lower(): v for k, v in d.items() } if isinstance(d, dict) else None)
 
+        # inject name-value pair into bag of properties
         p = kwargs.get('property', "").lower()
-        if len(p) > 0:                          # inject name-value pair into bag of properties
-            self.props[p] = kwargs.get('value', "")
+        if len(p) > 0:
+            self.datasetProps[p] = kwargs.get('value', None)
 
-        if not 'bandproperties' in self.props.keys():
-            self.props['bandproperties'] = []
-
+        # ensure size of bandProps matches input band count
         bandCount = kwargs['raster_info']['bandCount']
-        bandProps = self.props['bandproperties']
-        bandProps.extend([{} for k in range(0, bandCount-len(bandProps))])
+        self.bandProps.extend([{} for k in range(0, bandCount-len(self.bandProps))])
 
+        # inject band names into the bandProps dictionary
         b = kwargs.get('bands', "").strip()
         if len(b) > 0:
             bandNames = b.split(',')
-            for k in range(0, min(len(bandProps), len(bandNames))):
-                bandProps[k]['bandname'] = bandNames[k]
+            for k in range(0, min(len(self.bandProps), len(bandNames))):
+                self.bandProps[k]['bandname'] = bandNames[k]
         
-        self.trace.log("{0}|{1}".format("KeyMetadata.updateRasterInfo", self.props))
+        self.trace.log("{0}|{1}|{2}".format("KeyMetadata.updateRasterInfo", "dataset", self.datasetProps))
+        self.trace.log("{0}|{1}|{2}".format("KeyMetadata.updateRasterInfo", "bands", self.bandProps))
         return kwargs
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if self.props is None:
+        properties = self.datasetProps
+        if bandIndex != -1:
+            properties = None if not self.bandProps or len(self.bandProps) < bandIndex + 1 else self.bandProps[bandIndex]
+
+        if properties is None:
             return keyMetadata
 
-        properties = self.props
-        if bandIndex != -1:
-            if 'bandproperties' not in properties.keys():
-                return keyMetadata
-            bandProps = self.props['bandproperties']
-
-            if not bandProps or len(bandProps) < bandIndex + 1:
-                return keyMetadata
-            properties = bandProps[bandIndex]
-
         for name in names:
-            if name in properties.keys():
+            if properties.has_key(name):
                 v = properties[name]
                 keyMetadata[name] = str(v) if isinstance(v, unicode) else v
         
