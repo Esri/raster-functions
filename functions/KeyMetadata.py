@@ -1,12 +1,13 @@
-import ast
+import json
 
 
 class KeyMetadata():
 
     def __init__(self):
         self.name = "Key Metadata Function"
-        self.description = "Override key metadata in a function chain."
-        self.props = None
+        self.description = "Override or insert key-metadata of a raster in a function chain."
+        self.datasetProps = {}
+        self.bandProps = []
 
     def getParameterInfo(self):
         return [
@@ -24,7 +25,7 @@ class KeyMetadata():
                 'value': '',
                 'displayName': "Property Name",
                 'required': False,
-                'description': "The name of the optional key metadata to override."
+                'description': "The name of the optional dataset-level key property to override."
             },
             {
                 'name': 'value',
@@ -32,7 +33,7 @@ class KeyMetadata():
                 'value': None,
                 'displayName': "Property Value",
                 'required': False,
-                'description': "The overriding new value of the key metadata."
+                'description': "The overriding new value of the dataset-level key property."
             },
             {
                 'name': 'bands',
@@ -48,7 +49,8 @@ class KeyMetadata():
                 'value': '',
                 'displayName': "Metadata JSON",
                 'required': False,
-                'description': ""
+                'description': ("Key metadata to be injected into the outgoing raster described as a JSON string representing a collection of key-value pairs. "
+                                "Learn more by searching for 'Raster Key Properties' at http://resources.arcgis.com.")
             },
     ]
 
@@ -58,65 +60,49 @@ class KeyMetadata():
         }
 
     def updateRasterInfo(self, **kwargs):
-        jsonInput = kwargs.get('json', "")
-
-        # band specific metadata properties
-        bandSpecificProperties = ["wavelengthmin", "wavelengthmax", "reflectancebias", "sourcebandindex",
-                                  "reflectancegain", "radiancegain", "radiancebias", "solarirradiance"]
-
+        jsonInput = kwargs.get('json', "{}")
+        allProps = {}
         if len(jsonInput) > 0:
-            self.props = ast.literal_eval(kwargs.get('json', ""))
+            try:
+                allProps = json.loads(jsonInput)
+            except ValueError as e:
+                raise Exception(e.message)
 
-        if self.props is None:
-            self.props = {}
+        self.datasetProps = { k.lower(): v for k, v in allProps.items() }
 
-        if not 'bandproperties' in self.props.keys():
-            self.props['bandproperties'] = []
+        # inject name-value pair into bag of properties
+        p = kwargs.get('property', "").lower()
+        if len(p) > 0:
+            self.datasetProps[p] = kwargs.get('value', None)
 
+        # get bandproperties array from original JSON as a list of dictionaries...
+        self.bandProps = []
+        for d in allProps.get('bandproperties', []):
+            self.bandProps.append(
+                { k.lower(): v for k, v in d.items() } if isinstance(d, dict) else None)
+
+        # ensure size of bandProps matches input band count
         bandCount = kwargs['raster_info']['bandCount']
-        bandProps = self.props['bandproperties']
-        bandProps.extend([{} for k in range(0, bandCount-len(bandProps))])
+        self.bandProps.extend([{} for k in range(0, bandCount-len(self.bandProps))])
 
-        # band names
-        bandNamesTemp = kwargs.get('bands', "").strip()
-
-        if len(bandNamesTemp) > 0:
-            bandNames = bandNamesTemp.split(',')
-            for x in range(0, min(len(bandProps), len(bandNames))):
-                bandProps[x]['bandname'] = bandNames[x]
-
-        propertyName = kwargs.get('property', "").lower().strip()
-
-        if len(propertyName) > 0:              # inject name-value pair into bag of properties
-            # band specific properties (per band)
-            if propertyName in bandSpecificProperties:
-                propertyValues = kwargs.get('value', "").split(",")
-                for x in range(0, min(len(propertyValues), len(bandNames))):
-                    bandProps[x][propertyName] = propertyValues[x]
-
-            # raster specific properties
-            else:
-                self.props[propertyName] = kwargs.get('value', "")
+        # inject band names into the bandProps dictionary
+        b = kwargs.get('bands', "").strip()
+        if len(b) > 0:
+            bandNames = b.split(',')
+            for k in range(0, min(len(self.bandProps), len(bandNames))):
+                self.bandProps[k]['bandname'] = bandNames[k]
 
         return kwargs
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if self.props is None:
+        # return keyMetadata dictionary with updated values for entries in [names]...
+        properties = self.datasetProps if bandIndex == -1  else self.bandProps[bandIndex]
+        if properties is None:
             return keyMetadata
 
-        properties = self.props
-        if bandIndex != -1:
-            if 'bandproperties' not in properties.keys():
-                return keyMetadata
-            bandProps = self.props['bandproperties']
-
-            if not bandProps or len(bandProps) < bandIndex + 1:
-                return keyMetadata
-            properties = bandProps[bandIndex]
-
         for name in names:
-           if name in properties.keys():
-                assign = properties[name]
-                keyMetadata[name] = str(assign) if isinstance(assign, unicode) else assign
+            if properties.has_key(name):
+                v = properties[name]
+                keyMetadata[name] = str(v) if isinstance(v, unicode) else v
 
         return keyMetadata
