@@ -70,7 +70,8 @@ class KeyMetadata():
 
         self.bandProps = []
         for d in allProps.get('bandproperties', []):
-            self.bandProps.append({ k.lower(): v for k, v in d.items() } if isinstance(d, dict) else None)
+            self.bandProps.append(
+                { k.lower(): v for k, v in d.items() } if isinstance(d, dict) else None)
 
         # inject name-value pair into bag of properties
         p = kwargs.get('property', "").lower()
