@@ -61,7 +61,8 @@ class KeyMetadata():
 
     def updateRasterInfo(self, **kwargs):
         try:
-            allProps = json.loads(kwargs.get('json', "{}"))
+            jsonInput = kwargs.get('json', "{}").strip()
+            allProps = json.loads(jsonInput) if len(jsonInput) > 0 else {}
         except ValueError as e:
             raise Exception(e.message)
              
