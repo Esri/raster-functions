@@ -1,6 +1,6 @@
+import math
 import numpy as np
 import scipy as sp
-import math
 from skimage import morphology, measure, segmentation
 
 
@@ -8,8 +8,10 @@ class FMask():
 
     def __init__(self):
         self.name = "FMask Function"
-        self.description = ("Used for cloud & cloud shadow detection"
-                            "in Landsat imagery")
+        self.description = "Performs masking of Clouds, Clouds Shadow & Snow in Landsat imagery"
+        self.sunElevation = None  # sun elevation angle
+        self.sunAzimuth = None  # sun azimuth angle
+        self.sensorName = None  # satellite sensor name
 
     def getParameterInfo(self):
         return [
@@ -18,47 +20,59 @@ class FMask():
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Top of Atmosphere Reflectances",
-                'description': ("TOA Reflectance values multispectral bands.")
+                'displayName': "Reflectance Raster",
+                'description': ("Top of Atmosphere Reflectance Raster. "
+                                "(Landsat 5 and 7: bands 1, 2, 3, 4, 5 and 7; "
+                                "Landsat 8: bands 1, 2, 3, 4, 5, 6, 7 and 9)")
             },
             {
                 'name': 'r2',
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Thermal Band",
-                'description': ("Thermal band of Landsat scene. (Landsat 8: Band 10, Landsat 5-7: Band 6)")
+                'displayName': "Thermal Raster",
+                'description': ("Thermal Raster. "
+                                "(Landsat 5 and 7: band 6; "
+                                "Landsat 8: band 10)")
             },
             {
-                'name': 'mode',
+                'name': 'mask',
                 'dataType': 'string',
                 'value': 'Mask Cloud',
                 'required': True,
                 'domain': ('Mask Cloud', 'Mask Cloud & Cloud Shadow',
                            'Mask Snow', 'Mask Cloud, Cloud Shadow & Snow'),
                 'displayName': "Masking Feature",
-                'description': "Select masking feature for Landsat Scene"
+                'description': "Select masking feature to apply on Landsat imagery."
             },
         ]
 
     def getConfiguration(self, **scalars):
         return {
-          'inheritProperties': 4 | 8,                                   # inherit everything but the pixel type (1) and no Data (2)
+          'inheritProperties': 2 | 4 | 8,                               # inherit everything but the pixel type (1)
           'invalidateProperties': 2 | 4 | 8,                            # invalidate these aspects because we are modifying pixel values and updating key properties.
           'padding': 0,                                                 # no padding on each of the input pixel block
-          'inputMask': False,                                           # we don't need the input mask in .updatePixels()
+          'inputMask': True,                                            # we need the input mask in .updatePixels()
           'keyMetadata': ('sensorname', 'sunazimuth', 'sunelevation'),  # key property used in cloud shadow detection
         }
 
     def updateRasterInfo(self, **kwargs):
         # get masking feature
-        self.mode = kwargs['mode']
+        self.mask = kwargs['mask']
 
         # get key metadata from input raster
         # used for cloud shadow detection
         self.sunElevation = kwargs['r1_keyMetadata'].get("sunelevation")
         self.sunAzimuth = kwargs['r1_keyMetadata'].get("sunazimuth")
-        self.scene = kwargs['r1_keyMetadata'].get('sensorname')
+        self.sensorName = kwargs['r1_keyMetadata'].get('sensorname')
+
+        # check key metadata values
+        if (self.sunAzimuth is None or self.sunElevation is None or self.sensorName is None or
+           not(isinstance(self.sunAzimuth, float)) or not(isinstance(self.sunElevation, float)) or not(isinstance(self.sensorName, str))):
+            raise Exception("Error: Key Metadata values not valid.")
+
+        if self.sensorName != "Landsat 8" and self.sensorName != "Landsat 7" and self.sensorName != "Landsat-5-TM":
+            raise Exception("Error: FMask function only works on Landsat 8, 7 and 5 imagery.")
 
         # get resolution of the input raster
         # used for calculating steps of iterations in cloud shadow detection
@@ -68,32 +82,24 @@ class FMask():
         kwargs['output_info']['bandCount'] = kwargs['r1_info']['bandCount']
         kwargs['output_info']['pixelType'] = kwargs['r1_info']['pixelType']
         kwargs['output_info']['resampling'] = False
-        kwargs['output_info']['noData'] = np.array([0, ])
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         # get input TOA reflectance multispectral bands
-        pixels = np.array(pixelBlocks['r1_pixels'], dtype='f4')
+        pixels = np.array(pixelBlocks['r1_pixels'], dtype='f4', copy=False)
 
         # get input thermal band of landsat scene
-        thermalBand = np.array(pixelBlocks['r2_pixels'], dtype='f4')
-
         # convert thermal band values to brightness temperature
-        # get bandIDs depending on landsat scene
-        thermalBand, bandId = self.convertThermalBand(thermalBand)
+        temperature = self.getScaledTemperature(np.array(pixelBlocks['r2_pixels'], dtype='f4', copy=False))
 
-        # perform masking operation
-        ptm, temp, tempLow, tempHigh, water, snow, cloud, shadow, dim = self.potentialCloudShadowSnowMask(pixels, thermalBand, bandId)
-
-        # object matching & dilation of mask
-        fmask = self.objectCloudShadowMatch(ptm, temp, tempLow, tempHigh, water, snow, cloud, shadow, dim)
-
-        # replace masking feature with noData value
-        for band in xrange(pixels.shape[0]):
-            pixels[band] = np.where(fmask, 0, pixels[band])
+        # calculate potential cloud, cloud shadow, snow masks - getPotentialMasks
+        # cloud object matching for cloud shadow detection - matchCloudObjects
+        ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow = self.getPotentialMasks(pixels, temperature)
+        fmask = self.matchCloudObjects(ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow)
 
         # output pixel arrays of multispectral bands with masked features
-        pixelBlocks['output_pixels'] = pixels.astype('f4')
+        pixelBlocks['output_pixels'] = pixels.astype('f4', copy=False)
+        pixelBlocks['output_mask'] = np.array([np.logical_not(fmask)] * shape[0]).astype('u1', copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
@@ -108,222 +114,195 @@ class FMask():
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 # public methods...
 
-    def convertThermalBand(self, thermalBand):
-        # assign properties depending on sensor name
-        if self.scene == "Landsat 8":
-            k1 = 774.89      # thermal conversion constant K1
-            k2 = 1321.08     # thermal conversion constant K2
+    def getScaledTemperature(self, temperature):
+        # assign thermal band properties depending on sensor name
+        if self.sensorName == "Landsat 8":
+            k1 = 774.89  # thermal conversion constant K1
+            k2 = 1321.08  # thermal conversion constant K2
             lmax = 22.00180  # thermal band MAX_RADIANCE
-            lmin = 0.10033   # thermal band MIN_RADIANCE
-            dn = 65534       # digital number limit
-            bandId = [1, 2, 3, 4, 5, 6, 7]  # band IDs
-
-        elif self.scene == "Landsat 7":
+            lmin = 0.10033  # thermal band MIN_RADIANCE
+            dn = 65534  # digital number limit
+        elif self.sensorName == "Landsat 7":
             k1 = 666.09
             k2 = 1282.71
             lmax = 17.04
             lmin = 0.0
             dn = 244
-            bandId = [0, 1, 2, 3, 4, 5]
-
         else:
             k1 = 607.76
             k2 = 1260.56
             lmax = 15.303
             lmin = 1.238
             dn = 244
-            bandId = [0, 1, 2, 3, 4, 5]
 
         # convert thermal band value to brightness temperature
-        thermalBand = ((lmax - lmin)/dn) * thermalBand + lmin
+        temperature = ((lmax - lmin)/dn) * temperature + lmin
 
         # calculate deg. celsius difference
-        thermalBand = 100 * (((k2/np.log((k1/thermalBand)+1))) - 273.15)
+        temperature = 100 * ((k2 / np.log((k1 / temperature) + 1)) - 273.15)
 
-        return thermalBand, bandId
+        return temperature
 
-    # Identify the cloud pixels, snow pixels, water pixels,
-    # clear land pixels, and potential shadow pixels
-    def potentialCloudShadowSnowMask(self, pixels, thermalBand, bandId):
-        # dimensions of scene
-        dim = pixels[0].shape
+    # assign bandIDs for reference in multispectral bands
+    def getBandIDs(self):
+        if self.sensorName == "Landsat 8": return [1, 2, 3, 4, 5, 6, 7]
+        else: return [0, 1, 2, 3, 4, 5]
 
-        # cirrus band probability for landsat 8
-        if self.scene != "Landsat 8":
-            thinProb = 0
-        else:
-            thinProb = (10**4) * pixels[-1] / 400
+    # Identify the potential cloud pixels, snow pixels, water pixels,
+    # clear land pixels, and shadow pixels
+    def getPotentialMasks(self, pixels, temperature):
+        dim = pixels[0].shape  # dimensions of imagery
+        bandIDs = self.getBandIDs()  # get bandIDs depending on landsat scene
 
-        cloud = np.zeros(dim, 'uint8')   # Cloud mask
-        snow = np.zeros(dim, 'uint8')    # Snow mask
-        water = np.zeros(dim, 'uint8')   # Water mask
-        shadow = np.zeros(dim, 'uint8')  # Shadow mask
+        # cirrus band probability for Landsat 8 imagery
+        if self.sensorName == "Landsat 8": thinProb = (10**4) * pixels[-1] / 400
+        else:                              thinProb = 0
+
+        cloud = np.zeros(dim, 'uint8')  # cloud mask
+        snow = np.zeros(dim, 'uint8')  # snow mask
+        water = np.zeros(dim, 'uint8')  # water mask
+        shadow = np.zeros(dim, 'uint8')  # shadow mask
 
         # assignment of Landsat bands to temporary variables
         mulFactor = (10**4)
-        data1 = mulFactor * pixels[bandId[0]]
-        data2 = mulFactor * pixels[bandId[1]]
-        data3 = mulFactor * pixels[bandId[2]]
-        data4 = mulFactor * pixels[bandId[3]]
-        data5 = mulFactor * pixels[bandId[4]]
-        data6 = mulFactor * pixels[bandId[5]]
+        band1 = mulFactor * pixels[bandIDs[0]]
+        band2 = mulFactor * pixels[bandIDs[1]]
+        band3 = mulFactor * pixels[bandIDs[2]]
+        band4 = mulFactor * pixels[bandIDs[3]]
+        band5 = mulFactor * pixels[bandIDs[4]]
+        band6 = mulFactor * pixels[bandIDs[5]]
 
-        # assignment of thermal band to temporary variable
-        temp = thermalBand
+        NDSI = (band2 - band5)/(band2 + band5)  # normalized difference snow index (NDSI)
+        NDSI[np.equal((band2 + band5), 0)] = 0.01
 
-        # calculate NDSI
-        NDSI = self.calculateNDSI(pixels, bandId)
-
-        # calculate NDVI
-        NDVI = self.calculateNDVI(pixels, bandId)
+        NDVI = (band4 - band3)/(band4 + band3)  # normalized difference vegetation index (NDVI)
+        NDVI[np.equal((band4 + band3), 0)] = 0.01
 
         # release memory
         del pixels
-        del thermalBand
+        del bandIDs
 
-        # overlapping region of thermal band and multispectral bands
-        mask = np.greater(temp, -9999)
+        mask = np.greater(temperature, -9999)  # overlapping region of thermal band and multispectral bands
 
-        # saturation test for visible bands B1, B2 & B3
-        satuBands = np.logical_or(np.less(data1, 0), np.logical_or(np.less(data2, 0), np.less(data3, 0)))
+        # saturation test for visible bands 1, 2 and 3
+        saturatedBands = np.logical_or(np.less(band1, 0), np.logical_or(np.less(band2, 0), np.less(band3, 0)))
 
         # PASS 1 #
         # POTENTIAL CLOUD PIXELS #
         # perform multiple spectral tests to obtain potential cloud pixels
 
         # basic test
-        # condition : Band 7 > 0:03 and BT < 27 and NDSI < 0.8 and NDVI < 0.8
+        # condition : band 7 > 0:03 and Brightness Temperature < 27 and NDSI < 0.8 and NDVI < 0.8
         pCloudPixels = np.logical_and(np.logical_and(np.less(NDSI, 0.8), np.less(NDVI, 0.8)),
-                                      np.logical_and(np.greater(data6, 300), np.less(temp, 2700)))
+                                      np.logical_and(np.greater(band6, 300), np.less(temperature, 2700)))
 
         # snow test
-        # condition: NDSI > 0.15 and BT < 3.8 and Band4 > 0.11 and Band 2 > 0.1
+        # condition: NDSI > 0.15 and Brightness Temperature < 3.8 and band 4 > 0.11 and band 2 > 0.1
         # OR condition used to include all pixels between thin / thick clouds
-        snowCondition = np.logical_or(np.logical_and(np.greater(NDSI, 0.15), np.logical_and(np.greater(data4, 1100),
-                                      np.greater(data2, 1000))), np.less(temp, 400))
+        snowCondition = np.logical_or(np.logical_and(np.greater(NDSI, 0.15), np.logical_and(np.greater(band4, 1100),
+                                      np.greater(band2, 1000))), np.less(temperature, 400))
 
         # mask snow in array
         snow[snowCondition] = 1
         snow[mask == 0] = 255
 
         # water test
-        # condition : (NDVI < 0.01 and Band4 < 0.11) or (NDVI < 0.1 and NDVI > 0 and Band4 < 0.05)
-        waterCondition = np.logical_or(np.logical_and(np.less(NDVI, 0.01), np.less(data4, 1100)),
+        # condition : (NDVI < 0.01 and band 4 < 0.11) or (NDVI < 0.1 and NDVI > 0 and band 4 < 0.05)
+        waterCondition = np.logical_or(np.logical_and(np.less(NDVI, 0.01), np.less(band4, 1100)),
                                        np.logical_and(np.logical_and(np.less(NDVI, 0.1), np.greater(NDVI, 0)),
-                                       np.less(data4, 500)))
+                                       np.less(band4, 500)))
 
         # mask water in array
         water[waterCondition] = 1
         water[mask == 0] = 255
 
         # whiteness test
-        # condition : (Sum(Band (1, 2, 3) - mean)/ mean) < 0.7
-        # mean of visible bands B1, B2 & B3
-        visiMean = (data1 + data2 + data3)/3
-        whiteness = (np.abs(data1 - visiMean) + np.abs(data2 - visiMean) + np.abs(data3 - visiMean)) / visiMean
-        whiteness[satuBands] = 0
+        # condition : (Sum(band (1, 2, 3) - mean)/ mean) < 0.7
+        # mean of visible bands 1, 2, 3
+        intensity = (band1 + band2 + band3)/3
+        whiteness = (np.abs(band1 - intensity) + np.abs(band2 - intensity) + np.abs(band3 - intensity)) / intensity
+        whiteness[saturatedBands] = 0
 
-        # release memory
-        del visiMean
+        del intensity  # release memory
 
         # update potential cloud pixels
         pCloudPixels = np.logical_and(pCloudPixels, np.less(whiteness, 0.7))
 
         # hot (haze optimized transformation) test
-        # condition : Band1 - 0.5 * Band3 - 0.08 > 0
-        hot = (np.logical_or(np.greater((data1 - 0.5 * data3 - 800), 0), satuBands))
+        # condition : band 1 - 0.5 * band 3 - 0.08 > 0
+        hot = (np.logical_or(np.greater((band1 - 0.5 * band3 - 800), 0), saturatedBands))
 
-        # update potential cloud pixels
-        pCloudPixels = np.logical_and(pCloudPixels, hot)
+        pCloudPixels = np.logical_and(pCloudPixels, hot)  # update potential cloud pixels
 
-        # release memory
-        del hot
+        del hot  # release memory
 
         # swirnir test
-        # condition : Band4/Band5 > 0.75
-        swirnir = np.greater((data4/data5), 0.75)
+        # condition : band 4 / band 5 > 0.75
+        swirnir = np.greater((band4 / band5), 0.75)
 
         # update potential cloud pixels
         pCloudPixels = np.logical_and(pCloudPixels, swirnir)
 
-        # release memory
-        del swirnir
+        del swirnir  # release memory
 
         # cirrcus test
         # condition : thinProbability (Cirrus Band / 0.04)  > 0.25
         cirrcus = np.greater(thinProb, 0.25)
 
-        # update potential cloud pixels
-        pCloudPixels = np.logical_or(pCloudPixels, cirrcus)
+        pCloudPixels = np.logical_or(pCloudPixels, cirrcus)  # update potential cloud pixels
 
-        # release memory
-        del cirrcus
+        del cirrcus  # release memory
+
+        # END OF PASS 1 #
+        # POTENTIAL CLOUD LAYER #
+        # compute cloud probability using PCPs and separate water / land clouds
 
         # percentile constants
         lPercentile = 0.175
         hPercentile = 1 - lPercentile
 
-        # END OF PASS 1 #
-
-        # PASS 2 #
-        # POTENTIAL CLOUD LAYER #
-        # compute cloud probability using PCPs and separate water / land clouds
-
         clearPixels = np.logical_and(np.logical_not(pCloudPixels), mask == 1)  # clear pixels
-        ptm = 100 * clearPixels.sum() / mask.sum()  # percentage of clear pixels
+        ptm = 100. * clearPixels.sum() / mask.sum()  # percentage of clear pixels
         landPixels = np.logical_and(clearPixels, np.logical_not(water))  # clear lands pixels
         waterPixels = np.logical_and(clearPixels, water)  # clear water pixels
-        landptm = 100 * landPixels.sum() / mask.sum()  # percentage of clear land pixels
+        landptm = 100. * landPixels.sum() / mask.sum()  # percentage of clear land pixels
 
         # check percentage of clear pixels in scene
         if ptm <= 0.001:
             # all cloud no clear pixel move to object matching
-            cloud[pCloudPixels] = 1
+            cloud[:] = 1
             cloud[np.logical_not(mask)] = 0
             shadow[cloud == 0] = 1
-            temp = -1
+            temperature = -1
 
             # temperature interval for clear-sky land pixels
             tempLow = -1
             tempHigh = -1
-
         else:
             # if clear-land pixels cover less than 0.1 %
             # take temperature probability of all clear pixels
-            if landptm >= 0.1:
-                tempLand = temp[landPixels]
-
-            else:
-                tempLand = temp[clearPixels]
+            if landptm >= 0.1:  tempLand = temperature[landPixels]
+            else:               tempLand = temperature[clearPixels]
 
             # water probability #
             # temperature test
-
-            tempWater = temp[waterPixels]  # temperature of clear water pixels
+            # temperature of clear water pixels
+            tempWater = temperature[waterPixels]
 
             # calculate estimated clear water temperature
-            if len(tempWater) == 0:
-                estWaterTemp = 0
-
-            else:
-                estWaterTemp = sp.stats.scoreatpercentile(tempWater, 100 * hPercentile)
+            if len(tempWater) == 0:  estWaterTemp = 0
+            else:                    estWaterTemp = sp.stats.scoreatpercentile(tempWater, 100 * hPercentile)
 
             # clear water temperature probability
-            waterTempProb = (estWaterTemp - temp) / 400
+            waterTempProb = (estWaterTemp - temperature) / 400
             waterTempProb[np.less(waterTempProb, 0)] = 0
 
-            # brightness test
-            # condition : min(Band5, 0.11) /  .11
-            brightnessProb = np.clip((data5/1100), 0, 1)
+            # brightness test # condition : min(Band5, 0.11) /  .11
+            brightnessProb = np.clip((band5 / 1100), 0, 1)
 
-            cloudProb = 0.125  # cloud probability 12.5 % - can be a user input
-
-            # final water probability
+            cloudProb = 0.125  # cloud probability 12.5 %
             finalWaterProb = 100 * waterTempProb * brightnessProb + 100 * thinProb
-
-            # water dynamic threshold limit
             waterThreshold = sp.stats.scoreatpercentile(finalWaterProb[waterPixels], 100 * hPercentile) + cloudProb
-            # waterThreshold = 50 # old threshold limit static
 
             # release memory
             del waterTempProb
@@ -331,35 +310,28 @@ class FMask():
 
             # land probability #
             # temperature test
-
             # calculate estimated clear land temperature interval
             if len(tempLand) != 0:
                 tempLow = sp.stats.scoreatpercentile(tempLand, 100 * lPercentile)  # 0.175 percentile background temperature
                 tempHigh = sp.stats.scoreatpercentile(tempLand, 100 * hPercentile)  # 0.825 percentile background temperature
-
             else:
                 tempLow = 0
                 tempHigh = 0
 
             # clear land temperature probability
             templ = (tempHigh + 400) - (tempLow - 400)
-            landTempProb = ((tempHigh + 400) - temp) / (templ)
+            landTempProb = ((tempHigh + 400) - temperature) / (templ)
             landTempProb[np.less(landTempProb, 0)] = 0
 
             # modified NDSI and NDVI
-            NDSI[np.logical_and(np.less(data2, 0), np.less(NDSI, 0))] = 0
-            NDVI[np.logical_and(np.less(data3, 0), np.greater(NDSI, 0))] = 0
+            NDSI[np.logical_and(np.less(band2, 0), np.less(NDSI, 0))] = 0
+            NDVI[np.logical_and(np.less(band3, 0), np.greater(NDSI, 0))] = 0
 
-            # variability probability
-            varProb = 1 - np.maximum(np.maximum(np.abs(NDSI), np.abs(NDVI)), whiteness)
+            varProb = 1 - np.maximum(np.maximum(np.abs(NDSI), np.abs(NDVI)), whiteness)  # variability probability
 
-            # release memory
-            del whiteness
+            del whiteness  # release memory
 
-            # final land probability
             finalLandProb = 100 * landTempProb * varProb + 100 * thinProb
-
-            # land dynamic threshold limit
             landThreshold = sp.stats.scoreatpercentile(finalLandProb[landPixels], 100 * hPercentile) + cloudProb
 
             # release memory
@@ -368,21 +340,19 @@ class FMask():
             del thinProb
 
             # calculate Potential Cloud Layer #
-            # Condition 1   : (PCP & (finalLandProb > landThreshold) & (water == 0)) OR
-            # Condition 2   : (PCP & (finalWaterProb > waterThreshold) & (water == 1)) OR
-            # Condition 3   : (temp < tempLow - 3500) OR
-            # Condition 4   : (finalLandProb > 99.0) & (water == 0) Small clouds don't get masked out
+            # C1 : (PCP & (finalLandProb > landThreshold) & (water == 0)) OR
+            # C2 : (PCP & (finalWaterProb > waterThreshold) & (water == 1)) OR
+            # C3 : (temperature < tempLow - 3500) OR
+            # C4 : (finalLandProb > 99.0) & (water == 0) small clouds don't get masked out
 
-            condition1 = np.logical_and(np.logical_and(pCloudPixels, np.greater(finalLandProb, landThreshold)), np.logical_not(water))
-            condition2 = np.logical_and(np.logical_and(pCloudPixels, np.greater(finalWaterProb, waterThreshold)), water)
-            condition3 = np.less(temp, tempLow - 3500)
-            condition4 = np.logical_and(np.greater(finalLandProb, 99.0), np.logical_not(water))
+            c1 = np.logical_and(np.logical_and(pCloudPixels, np.greater(finalLandProb, landThreshold)), np.logical_not(water))
+            c2 = np.logical_and(np.logical_and(pCloudPixels, np.greater(finalWaterProb, waterThreshold)), water)
+            c3 = np.less(temperature, tempLow - 3500)
+            c4 = np.logical_and(np.greater(finalLandProb, 99.0), np.logical_not(water))
 
-            # potential cloud layer
-            pCloudLayer = np.logical_or(np.logical_or(condition1, condition2), condition3)
+            pCloudLayer = np.logical_or(np.logical_or(c1, c2), c3)  # potential cloud layer
 
-            # potential cloud mask
-            cloud[pCloudLayer] = 1
+            cloud[pCloudLayer] = 1  # potential cloud mask
 
             # release memory
             del finalLandProb
@@ -395,8 +365,8 @@ class FMask():
         # POTENTIAL CLOUD SHADOW LAYER #
         # flood fill transformation for band 4 and band 5
 
-            nir = data4.astype('float32', copy=False)
-            swir = data5.astype('float32', copy=False)
+            nir = band4.astype('float32', copy=False)
+            swir = band5.astype('float32', copy=False)
 
             # estimate background for Band 4 & Band 5
             nirBkgrd = sp.stats.scoreatpercentile(nir[landPixels], 100.0 * lPercentile)
@@ -409,8 +379,8 @@ class FMask():
             # perform imfill operation for both bands
             nir = self.imfill(nir)
             swir = self.imfill(swir)
-            nir = nir - data4
-            swir = swir - data5
+            nir = nir - band4
+            swir = swir - band5
 
             # cloud shadow probability
             shadowProb = np.minimum(nir, swir)
@@ -428,14 +398,13 @@ class FMask():
         cloud[mask == 0] = 255
         shadow[mask == 0] = 255
 
-        return ptm, temp, tempLow, tempHigh, water, snow, cloud, shadow, dim
-    # End of potentialCloudShadowSnowMask #
+        return ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow
 
     # Object matching of cloud shadow layer and dilation of output mask
-    def objectCloudShadowMatch(self, ptm, temp, tempLow, tempHigh, water, snow, cloud, shadow, dim):
-        # final output mask to return back
-        maskOutput = np.zeros(dim, 'uint8')
+    def matchCloudObjects(self, ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow):
 
+        dim = cloud.shape  # dimensions of single band
+        fmask = np.zeros(dim, 'uint8')  # final output mask to return back
         sunElevationRad = math.radians(self.sunElevation)  # solar elevation angle radians
         sunAzimuthRad = math.radians(self.sunAzimuth - 90.0)  # solar azimuth angle radians
 
@@ -452,23 +421,19 @@ class FMask():
         shadowCal = np.zeros(dim, 'uint8')
         cloudCal = np.zeros(dim, 'uint8')
         boundaryTest = np.zeros(dim, 'uint8')
+        snowCal = np.zeros(dim, 'uint8')
 
         boundaryTest[cloud < 255] = 1
         shadowTest[shadow == 1] = 1
         cloudTest[cloud == 1] = 1
 
-        # release memory
-        del shadow
-        del cloud
-
-        ptmRevised = np.sum(cloudTest) / np.sum(boundaryTest)
+        ptmRevised = float(np.sum(cloudTest)) / np.sum(boundaryTest)  # revised percentage of cloud pixels
 
         # full scene covered in cloud return everything as masked
-        if ptm <= 0.1 or ptmRevised >= .90:
-            cloudCal[cloudTest] = 1
-            shadowCal[np.logical_not(cloudTest)] = 1
+        if ptm <= 0.001 or ptmRevised >= .90:
+            cloudCal[:] = 1
+            shadowCal[:] = 1
             similarity = -1
-
         else:
             # CLOUD SHADOW MATCHING #
             # constants for object matching
@@ -480,31 +445,18 @@ class FMask():
 
             # enviromental lapse rate 6.5 degrees/km
             # dry adiabatic lapse rate 9.8 degrees/km
-
             rateELapse = 6.5
             rateDLapse = 9.8
 
             step = 2 * float(cellSize) * math.tan(sunElevationRad)  # move 2 pixels at a time for object matching
-            if step < (2 * cellSize):
-                step = 2 * cellSize  # make step = 2 for polar large solar zenith angle cases
+            if step < (2 * cellSize):   step = 2 * cellSize  # make step = 2 for polar large solar zenith angle cases
 
             # get moving direction for object matching
-            (rows, cols) = np.nonzero(boundaryTest)
-            (yUpperLeft, num) = (rows.min(), rows.argmin())
-            xUpperLeft = cols[num]
-
-            (yLowerRight, num) = (rows.max(), rows.argmax())
-            xLowerRight = cols[num]
-
-            (xLowerLeft, num) = (cols.min(), cols.argmin())
-            yLowerLeft = rows[num]
-
-            (xUpperRight, num) = (cols.max(), cols.argmax())
-            yUpperRight = rows[num]
+            (xUpperLeft, yUpperLeft, yLowerRight, xLowerRight, xLowerLeft, yLowerLeft, xUpperRight, yUpperRight) = self.getMovingDirection(boundaryTest)
 
             # calculate view angle geometry
-            (A, B, C, omigaPar, omigaPer) = self.viewgeo(float(xUpperLeft), float(yUpperLeft), float(xUpperRight), float(yUpperRight),
-                                                         float(xLowerLeft), float(yLowerLeft), float(xLowerRight), float(yLowerRight))
+            (A, B, C, omegaPara, omegaPerp) = self.viewgeo(float(xUpperLeft), float(yUpperLeft), float(xUpperRight), float(yUpperRight),
+                                                           float(xLowerLeft), float(yLowerLeft), float(xLowerRight), float(yLowerRight))
 
             # segmentation of each cloud object
             (segmCloud, segmCloudFeatures) = sp.ndimage.measurements.label(cloudTest, sp.ndimage.morphology.generate_binary_structure(2, 2))
@@ -513,7 +465,7 @@ class FMask():
             morphology.remove_small_objects(segmCloud, numCloudObj, in_place=True)
             segmCloud, fm, invm = segmentation.relabel_sequential(segmCloud)
 
-            num = np.max(segmCloud)  # Number of cloud objects
+            num = np.max(segmCloud)  # number of cloud objects
             cloudProp = measure.regionprops(segmCloud)  # properties of each cloud object
             similarity = np.zeros(num)  # cloud shadow match similarity
 
@@ -527,8 +479,8 @@ class FMask():
                 tempxyType = np.zeros((2, numCloudPixels), dtype='uint32')  # record the max threshold moving cloud xy
                 tempxys = np.zeros((2, numCloudPixels))  # corrected for view angle xy
 
-                cloudCoord = (cloudObj['Coordinates'][:,0], cloudObj['Coordinates'][:, 1])  # cloud pixellist coordinates (x,y)
-                tempObj = temp[cloudCoord]  # temperature of the cloud object
+                cloudCoord = (cloudObj['Coordinates'][:, 0], cloudObj['Coordinates'][:, 1])  # cloud pixellist coordinates (x,y)
+                tempObj = temperature[cloudCoord]  # temperature of the cloud object
                 rObj = math.sqrt(cloudArea / 2 * math.pi)  # used for getting influenced cloud BT
 
                 tempCloudBase = math.pow(rObj - 8, 2) / math.pow(rObj, 2)
@@ -540,10 +492,6 @@ class FMask():
                 maxCloudHeight = 12000  # maximum cloud base height (m)
                 minCloudHeight = 200  # minimum cloud base height (m)
 
-                # refined cloud height range (m) dynamic
-                # minCloudHeight = max(minCloudHeight, int(10 *(tempLow - 400 - baseThreshold) / rateDLapse)) # Removed from Matlab code
-                # maxCloudHeight = min(maxCloudHeight, int(10 *(tempHigh + 400 - baseThreshold)))  # Removed from Matlab code
-
                 # height and similarity variable
                 recordHeight = 0.0
                 recordThreshold = 0.0
@@ -551,21 +499,18 @@ class FMask():
                 # iterate cloud base height from predicted min to max
                 # check if cloud base height less than predicted max
                 for baseHeight in np.arange(minCloudHeight, maxCloudHeight, step):
-
                     # get the true postion of the cloud
                     # calculate cloud DEM with initial base height
                     h = baseHeight
-                    # height = (10 * (baseThreshold - tempObj) / rateELapse + baseHeight)  # removed from Matlab code
 
                     # Return turn (x, y) coordinates of cloud
-                    tempxys[1, :], tempxys[0, :] = self.matTrueCloud(cloudCoord[1], cloudCoord[0], h, A, B, C, omigaPar, omigaPer)
+                    tempxys[1, :], tempxys[0, :] = self.calcTrueCloudSegment(cloudCoord[1], cloudCoord[0], h, A, B, C, omegaPara, omegaPerp)
 
                     xyMove = h / (cellSize * math.tan(sunElevationRad))
 
                     if self.sunAzimuth < 180:
                         xyType[1, :] = np.round(tempxys[1, :] - xyMove * math.cos(sunAzimuthRad))  # X is for j, 1
                         xyType[0, :] = np.round(tempxys[0, :] - xyMove * math.sin(sunAzimuthRad))  # Y is for i, 0
-
                     else:
                         xyType[1, :] = np.round(tempxys[1, :] + xyMove * math.cos(sunAzimuthRad))  # X is for j, 1
                         xyType[0, :] = np.round(tempxys[0, :] + xyMove * math.sin(sunAzimuthRad))  # Y is for i, 0
@@ -604,9 +549,7 @@ class FMask():
                         if self.sunAzimuth < 180:
                             tempxyType[1, :] = np.round(tempxys[1, :] - moveThreshold * math.cos(sunAzimuthRad))  # X is for col j,2
                             tempxyType[0, :] = np.round(tempxys[0, :] - moveThreshold * math.sin(sunAzimuthRad))  # Y is for row i,1
-
                         else:
-
                             tempxyType[1, :] = np.round(tempxys[1, :] + moveThreshold * math.cos(sunAzimuthRad))  # X is for col j,2
                             tempxyType[0, :] = np.round(tempxys[0, :] + moveThreshold * math.sin(sunAzimuthRad))  # Y is for row i,1
 
@@ -618,59 +561,65 @@ class FMask():
                         tempSRow[tempSRow >= height] = height - 1
                         tempSCol[tempSCol < 0] = 0
                         tempSCol[tempSCol >= width] = width - 1
-
                         tempSId = [tempSRow, tempSCol]
-                        shadowCal[tempSId] = 1
 
+                        shadowCal[tempSId] = 1  # mask shadow in array
                         break
-
                     else:
                         recordThreshold = 0.0
-                        # End of Similarity Threshold Calculation #
+
+                    # End of Similarity Threshold Calculation #
 
             # dilate final output masks
             dilateKernel = np.ones((3, 3), 'uint8')
 
             shadowCal = sp.ndimage.morphology.binary_dilation(shadowCal, structure=dilateKernel)  # dilate shadow layer
-            segmCloudTemp = (segmCloud != 0)
-            cloudCal = sp.ndimage.morphology.binary_dilation(segmCloudTemp, structure=dilateKernel)  # dilate Cloud layer
-            snow = sp.ndimage.morphology.binary_dilation(snow, structure=dilateKernel)  # dilate Snow layer
+            cloudCal = sp.ndimage.morphology.binary_dilation((segmCloud != 0), structure=dilateKernel)  # dilate cloud layer
+            snow = sp.ndimage.morphology.binary_dilation(snow, structure=dilateKernel)  # dilate snow layer
 
-        maskOutput[boundaryTest == 0] = 255
+        fmask[boundaryTest == 0] = 255
 
-        if self.mode == "Mask Snow":
-            maskOutput[snow == 1] = 1
+        if self.mask == "Mask Snow":                    fmask[snow == 1] = 1
+        elif self.mask == "Mask Cloud & Cloud Shadow":  fmask[np.logical_or(shadowCal == 1, cloudCal == 1)] = 1
+        elif self.mask == "Mask Cloud":                 fmask[cloudCal == 1] = 1
+        else:                                           fmask[np.logical_or(np.logical_or(cloudCal == 1, shadowCal == 1), snow == 1)] = 1
 
-        elif self.mode == "Mask Cloud & Cloud Shadow":
-            maskOutput[shadowCal == 1] = 1
-            maskOutput[cloudCal == 1] = 1
+        return fmask
 
-        elif self.mode == "Mask Cloud":
-            maskOutput[cloudCal == 1] = 1
+    # getMovingDirection - moving direction for cloud object matching
+    def getMovingDirection(self, boundaryTest):
 
-        else:
-            maskOutput[cloudCal == 1] = 1
-            maskOutput[shadowCal == 1] = 1
-            maskOutput[snow == 1] = 1
+        (rows, cols) = np.nonzero(boundaryTest)
+        (yUpperLeft, num) = (rows.min(), rows.argmin())
+        xUpperLeft = cols[num]
 
-        return maskOutput
+        (yLowerRight, num) = (rows.max(), rows.argmax())
+        xLowerRight = cols[num]
 
-    # matTrueCloud - calculate shadow pixel locations of a true cloud segment
-    def matTrueCloud(self, x, y, h, A, B, C, omigaPar, omigaPer):
+        (xLowerLeft, num) = (cols.min(), cols.argmin())
+        yLowerLeft = rows[num]
+
+        (xUpperRight, num) = (cols.max(), cols.argmax())
+        yUpperRight = rows[num]
+
+        return (xUpperLeft, yUpperLeft, yLowerRight, xLowerRight, xLowerLeft, yLowerLeft, xUpperRight, yUpperRight)
+
+    # calcTrueCloudSegment - calculate shadow pixel locations of a true cloud segment
+    def calcTrueCloudSegment(self, x, y, h, A, B, C, omegaPara, omegaPerp):
 
         avgHeight = 705000  # average Landsat height (m)
         dist = (A * x + B * y + C) / math.sqrt(A * A + B * B)
-        distPar = dist / math.cos(omigaPer - omigaPar)
-        distMove = distPar * h / avgHeight  # cloud move distance (m)
-        deltX = distMove * math.cos(omigaPar)
-        deltY = distMove * math.sin(omigaPar)
+        distPara = dist / math.cos(omegaPerp - omegaPara)
+        distMove = distPara * h / avgHeight  # cloud move distance (m)
+        deltaX = distMove * math.cos(omegaPara)
+        deltaY = distMove * math.sin(omegaPara)
 
-        xNew = x + deltX  # new x, j
-        yNew = y + deltY  # new y, i
+        xNew = x + deltaX  # new x, j
+        yNew = y + deltaY  # new y, i
 
         return (xNew, yNew)
 
-    # viewgeo - Calculate the geometric parameters needed for the cloud/shadow match
+    # viewgeo - calculate the geometric parameters needed for the cloud/shadow match
     def viewgeo(self, xUpperLeft, yUpperLeft, xUpperRight, yUpperRight, xLowerLeft, yLowerLeft, xLowerRight, yLowerRight):
 
         xUpper = (xUpperLeft + xUpperRight) / 2
@@ -679,48 +628,28 @@ class FMask():
         yLower = (yLowerLeft + yLowerRight) / 2
 
         # get k of the upper left and right points
-        if (xUpperLeft != xUpperRight):
-            kUpper = (yUpperLeft - yUpperRight) / (xUpperLeft - xUpperRight)
-
-        else:
-            kUpper = 0.0
+        if (xUpperLeft != xUpperRight):  kUpper = (yUpperLeft - yUpperRight) / (xUpperLeft - xUpperRight)
+        else:                            kUpper = 0.0
 
         # get k of the lower left and right points
-        if (xLowerLeft != xLowerRight):
-            kLower = (yLowerLeft - yLowerRight) / (xLowerLeft - xLowerRight)
-
-        else:
-            kLower = 0.0
+        if (xLowerLeft != xLowerRight):  kLower = (yLowerLeft - yLowerRight) / (xLowerLeft - xLowerRight)
+        else:                            kLower = 0.0
 
         kAverage = (kUpper + kLower) / 2
-        omigaPar = math.atan(kAverage)  # get the angle of parallel lines
+        omegaPara = math.atan(kAverage)  # get the angle of parallel lines
 
         A = yUpper - yLower
         B = xLower - xUpper
         C = yLower * xUpper - xLower * yUpper
 
-        omigaPer = math.atan(B / A)  # get the angle which is perpendicular to the trace line
+        omegaPerp = math.atan(B / A)  # get the angle which is perpendicular to the trace line
 
-        return (A, B, C, omigaPar, omigaPer)
-
-    # calculate NDVI
-    def calculateNDVI(self, pixels, bandId):
-        NDVI = (pixels[bandId[3]] - pixels[bandId[2]])/(pixels[bandId[3]] + pixels[bandId[2]])
-        NDVI[(pixels[bandId[3]] + pixels[bandId[2]]) == 0] = 0.01
-
-        return NDVI
-
-    # calculate NDSI
-    def calculateNDSI(self, pixels, bandId):
-        NDSI = (pixels[bandId[1]] - pixels[bandId[4]])/(pixels[bandId[1]] + pixels[bandId[4]])
-        NDSI[(pixels[bandId[1]] + pixels[bandId[4]]) == 0] = 0.01
-
-        return NDSI
+        return (A, B, C, omegaPara, omegaPerp)
 
     # imfill - flood-fill transformation : fills image regions and holes
     def imfill(self, band):
         seed = band.copy()
-        seed[1:-1, 1:-1] = band.max()   # borders masked with maximum value of image
+        seed[1:-1, 1:-1] = band.max()  # borders masked with maximum value of image
         filled = morphology.reconstruction(seed, band, method='erosion')  # fill the holes - Equivalent to imfill
 
         return filled
