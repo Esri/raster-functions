@@ -62,7 +62,7 @@ class KeyMetadata():
     def updateRasterInfo(self, **kwargs):
         try:
             jsonInput = kwargs.get('json', "{}").strip()
-            allProps = json.loads(jsonInput) if len(jsonInput) > 0 else {}
+            allProps = json.loads(jsonInput) if jsonInput else {}
         except ValueError as e:
             raise Exception(e.message)
              
@@ -70,8 +70,7 @@ class KeyMetadata():
 
         # inject name-value pair into bag of properties
         p = kwargs.get('property', "").lower()
-        if len(p) > 0:
-            self.datasetProps[p] = kwargs.get('value', None)
+        if p: self.datasetProps[p] = kwargs.get('value', None)
 
         # get bandproperties array from original JSON as a list of dictionaries...
         self.bandProps = []
@@ -84,18 +83,19 @@ class KeyMetadata():
         self.bandProps.extend([{} for k in range(0, bandCount-len(self.bandProps))])
 
         # inject band names into the bandProps dictionary
-        b = kwargs.get('bands', "").strip()
-        if len(b) > 0:
-            bandNames = b.split(',')
+        bands = kwargs.get('bands', "").strip()
+        if bands:
+            bandNames = bands.split(',')
             for k in range(0, min(len(self.bandProps), len(bandNames))):
-                self.bandProps[k]['bandname'] = bandNames[k]
+                b = bandNames[k].strip()
+                if b: self.bandProps[k]['bandname'] = b
         
         return kwargs
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         # return keyMetadata dictionary with updated values for entries in [names]...
         properties = self.datasetProps if bandIndex == -1  else self.bandProps[bandIndex]
-        if properties is None:
+        if not properties:
             return keyMetadata
 
         for name in names:
