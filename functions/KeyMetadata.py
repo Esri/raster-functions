@@ -99,7 +99,7 @@ class KeyMetadata():
             return keyMetadata
 
         for name in names:
-            if properties.has_key(name):
+            if name in properties:
                 v = properties[name]
                 keyMetadata[name] = str(v) if isinstance(v, unicode) else v
         

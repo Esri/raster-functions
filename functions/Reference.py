@@ -225,7 +225,7 @@ class Reference():
             optionally, an array representing the mask in the 'output_mask' key. The shape of both arrays
             must match the 'shape' argument. 
         """
-        if not pixelBlocks.has_key("raster_pixels"):
+        if not 'raster_pixels' in pixelBlocks:
             raise Exception("No input raster was provided.")
 
         raise Exception("{0}".format(shape))
