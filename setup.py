@@ -113,16 +113,19 @@ def main():
     except:
         die("Dependency installation failed!", 6)
     
-    print("\n\n")
-    log("Python Raster Function dependencies installed successfully.")
-
     try:
-       arcpy = __import__('arcpy')
-       info = arcpy.GetInstallInfo()
-       if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, ("10.3.1".split(".")))):
-           raise Exception("No ArcGIS")
+        arcpy = __import__('arcpy')
+        info = arcpy.GetInstallInfo()
+
+        minVersion = '10.3.1'
+        if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, (minVersion.split(".")))):
+            raise Exception("No ArcGIS")
+
+        print("\n\n")
+        log("Python extensions for raster functions in ArcGIS {} {} build {} successfully installed.".format(
+            info['ProductName'], info['Version'], info['BuildNumber']))
     except:
-       logging.warn("Unable to find ArcGIS 10.3.1 or above.")
+        logging.warn("Unable to find ArcGIS 10.3.1 or above.")
 
     log("Done.")
     sleep(2)
