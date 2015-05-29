@@ -19,9 +19,7 @@ def loadFile(filePath):
     return (rd[:,0], rd[:,1]*1e-3)
 
 def estimateCoefficients(distances, distortions, nK=5):
-    """ returns K using that solves: D[N,1] = X[N,nK] * K[nK,1] using least-squares regression
-    
-    """
+    """ returns K using that solves: D[N,1] = X[N,nK] * K[nK,1] using least-squares regression"""
     z = np.max(np.abs(distances))
     r = distances / z
     X = np.vstack([np.power(r, (i*2)-1) for i in range(1, nK+1)]).T
@@ -31,6 +29,8 @@ def estimateCoefficients(distances, distortions, nK=5):
 
 def log(message):
     print("> {0}".format(message))
+
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 
 if __name__=="__main__":
     try:
@@ -63,9 +63,10 @@ if __name__=="__main__":
         exit(100)
 
     log("Loaded {0} data points".format(r.size))
-    (K, Kz, residuals, X) = estimateCoefficients(r, d, nK=3)
-    log("Coefficients [mm-based]: {0}".format("   ".join([str(k) for k in Kz])))
-    log("Residuals: {0}".format(residuals))
+    (K, Kz, sqError, X) = estimateCoefficients(r, d, nK=3)
+    log("Coefficients [mm-based]: {0:10}".format("   ".join([str(k) for k in Kz])))
+    log("RMSE: {0:10}".format(sqError ** 0.5))
+    log("Residuals: {0:10}".format(np.abs(d - X.dot(K))))
     #log("Design matrix: \n{0}".format(X))
 
     if args.plot:    
@@ -73,7 +74,11 @@ if __name__=="__main__":
         plt.plot(r, X.dot(K), c="red")
         plt.show()
 
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+
 """
 References:
-    https://calval.cr.usgs.gov/osl/smaccompen.pdf
+
+    [1]. https://calval.cr.usgs.gov/osl/smaccompen.pdf
+
 """
