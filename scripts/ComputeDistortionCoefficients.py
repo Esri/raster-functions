@@ -64,9 +64,16 @@ if __name__=="__main__":
 
     log("Loaded {0} data points".format(r.size))
     (K, Kz, sqError, X) = estimateCoefficients(r, d, nK=3)
-    log("Coefficients [mm-based]: {0:10}".format("   ".join([str(k) for k in Kz])))
-    log("RMSE: {0:10}".format(sqError ** 0.5))
-    log("Residuals: {0:10}".format(np.abs(d - X.dot(K))))
+    residuals = np.abs(d - X.dot(K))
+    sFormat = "{0:>20} {1:>20} {2:>20}"
+
+    log("Coefficients [mm-based]: {}".format("   ".join([str(k) for k in Kz])))
+    log("RMSE: {}".format((sqError**0.5)[0]))
+    log("Residuals (mm)...")
+    log(sFormat.format("Distance", "Distortion", "Residual"))
+    for m in [sFormat.format(u, v, w) for (u, v, w) in zip(r, d, residuals)]:
+        log(m)
+   
     #log("Design matrix: \n{0}".format(X))
 
     if args.plot:    
