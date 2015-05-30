@@ -28,7 +28,7 @@ def estimateCoefficients(distances, distortions, nK=5):
     return (K, K/Z, residuals, X)
 
 def log(message):
-    print("> {0}".format(message))
+    print("{0}".format(message))
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 
