@@ -65,8 +65,8 @@ class KeyMetadata():
             allProps = json.loads(jsonInput) if jsonInput else {}
         except ValueError as e:
             raise Exception(e.message)
-             
-        self.datasetProps = { k.lower(): v for k, v in allProps.items() }
+
+        self.datasetProps = { k.lower(): v for k, v in allProps.items() if k != 'bandproperties' }
 
         # inject name-value pair into bag of properties
         p = kwargs.get('property', "").lower()
@@ -89,7 +89,7 @@ class KeyMetadata():
             for k in range(0, min(len(self.bandProps), len(bandNames))):
                 b = bandNames[k].strip()
                 if b: self.bandProps[k]['bandname'] = b
-        
+
         return kwargs
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
@@ -98,9 +98,8 @@ class KeyMetadata():
         if not properties:
             return keyMetadata
 
-        for name in names:
-            if name in properties:
-                v = properties[name]
-                keyMetadata[name] = str(v) if isinstance(v, unicode) else v
-        
+        for key in properties:
+            v = properties[key]
+            keyMetadata[str(key)] = str(v) if isinstance(v, unicode) else v
+
         return keyMetadata
