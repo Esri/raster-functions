@@ -69,7 +69,7 @@ if __name__=="__main__":
     residuals = np.abs(d - Y)
 
     log("Coefficients [mm-based]: {}".format(" ".join(["{0:>20e}".format(k) for k in Kz])))
-    log("RMSE: {:e}".format((sqError**0.5)[0]))
+    log("RMSE: {:e} mm".format((sqError**0.5)[0]))
     log("")
     log("Residuals (mm)...")
     log("{0:>10} {1:>30} {2:>30} {3:>20}".format("Distance", "Distortion (observed)", "Distortion (estimated)", "Residual"))
