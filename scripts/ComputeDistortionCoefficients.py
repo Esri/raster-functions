@@ -52,6 +52,7 @@ if __name__=="__main__":
     print("\n")
     if not args.distances is None and len(args.distances) > 0 and not args.distortions is None and len(args.distortions) > 0:
         r, d = loadString(args.distances, args.distortions)
+        log("Loading radial distortion vales from command-line")
     elif not args.distortionFile is None and len(args.distortionFile) > 0:
         log("Loading radial distortion vales from file: {0}".format(args.distortionFile))
         if not os.path.exists(args.distortionFile):
@@ -64,21 +65,25 @@ if __name__=="__main__":
 
     log("Loaded {0} data points".format(r.size))
     (K, Kz, sqError, X) = estimateCoefficients(r, d, nK=3)
-    residuals = np.abs(d - X.dot(K))
-    sFormat = "{0:>20} {1:>20} {2:>20}"
+    Y = X.dot(K)
+    residuals = np.abs(d - Y)
 
-    log("Coefficients [mm-based]: {}".format("   ".join([str(k) for k in Kz])))
-    log("RMSE: {}".format((sqError**0.5)[0]))
+    log("Coefficients [mm-based]: {}".format(" ".join(["{0:>20e}".format(k) for k in Kz])))
+    log("RMSE: {:e}".format((sqError**0.5)[0]))
+    log("")
     log("Residuals (mm)...")
-    log(sFormat.format("Distance", "Distortion", "Residual"))
-    for m in [sFormat.format(u, v, w) for (u, v, w) in zip(r, d, residuals)]:
+    log("{0:>10} {1:>30} {2:>30} {3:>20}".format("Distance", "Distortion (observed)", "Distortion (estimated)", "Residual"))
+    for m in ["{0:>10} {1:>30e} {2:>30e} {3:>20e}".format(v1, v2, v3, v4) for (v1, v2, v3, v4) in zip(r, d, Y, residuals)]:
         log(m)
    
-    #log("Design matrix: \n{0}".format(X))
+    log("Design matrix: \n{0}".format(X))
 
     if args.plot:    
         plt.scatter(r, d)
         plt.plot(r, X.dot(K), c="red")
+        plt.xlabel("Radial distance [mm]")
+        plt.ylabel("Distortion [mm]")
+        plt.legend(['Estimated', 'Observed'])
         plt.show()
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
