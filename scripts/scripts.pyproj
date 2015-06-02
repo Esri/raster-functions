@@ -13,8 +13,10 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId />
     <InterpreterVersion />
-    <CommandLineArguments>--distances=0;2;4;6;8;10;12;14;16;18;20 --distortions=0;-0.3;-2.2;-7.6;-18.2;-36.2;-63.9;-104;-159.6;-234.7;-333.6 e:\raster-functions\scripts\distortions_PBEmm.txt</CommandLineArguments>
+    <CommandLineArguments>
+    </CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />

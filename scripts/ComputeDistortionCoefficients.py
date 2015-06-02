@@ -1,5 +1,29 @@
-""" 
-    Compute symmetric radial distortion coefficients given radial distance-distortion pairs.
+"""
+    ComputeDistortionCoefficients.py [-h] [--distances R] [--distortions D]
+                                     [--coefficients nK] [-p] [-v]
+                                     [distortionFile]
+
+    Estimate coefficients of symmetric radial distortion based on the Brown-
+    Conrady model given a set of distortion values at corresponding radial
+    distances.
+
+    positional arguments:
+      distortionFile     text file containing radial distance to distortion
+                         mapping
+
+    optional arguments:
+      -h, --help         show this help message and exit
+      --distances R      semicolon- or space-delimited string containing radial
+                         distances in millimeters
+      --distortions D    semicolon- or space-delimited string containing
+                         distortion values in microns corresponding to each radial
+                         distance value
+      --coefficients nK  Number of coefficients in the estimated Brown-Conrady
+                         model for symmetric radial distortion. Defaults to 3.
+      -p, --plot         display the distance-distortion relationship using
+                         observed data-points and the predictor function.
+      -v, --verbose      Turn on verbose messages. Outputs design matrix and
+                         residuals associated with the least-squares regression.
 """
 
 import numpy as np
@@ -7,53 +31,89 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 import os
+import re
 
 
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 def loadString(distances="", distortions=""):
-    r = [float(v) for v in distances.split(";")]
-    d = [float(v)*1e-3 for v in distortions.split(";")]
+    """Parse semicolon- or space-delimited distances and distortions and return a tuple of two floating-point arrays.
+
+    - Radial distances are presumed to be in millimeters.
+    - Distortions are presumed to be in microns and are converted to millimeters.
+    """
+    r = [float(v) for v in re.split(";| ", distances)]            # distances are in mm
+    d = [float(v)*1e-3 for v in re.split(";| ", distortions)]     # distortions: from microns to mm
     return (np.array(r, np.float), np.array(d, np.float))
 
+
 def loadFile(filePath):
+    """Parse the first two columns of a file for distance-distortion pairs and return a tuple of two floating-point arrays.
+
+    - Radial distances are presumed to be in millimeters.
+    - Distortions are presumed to be in microns and are converted to millimeters.
+    """
     rd = np.loadtxt(filePath, ndmin=2)
-    return (rd[:,0], rd[:,1]*1e-3)
+    return (rd[:, 0], rd[:, 1]*1e-3)
+
 
 def estimateCoefficients(distances, distortions, nK=5):
-    """ returns K using that solves: D[N,1] = X[N,nK] * K[nK,1] using least-squares regression"""
-    z = np.max(np.abs(distances))
-    r = distances / z
-    X = np.vstack([np.power(r, (i*2)-1) for i in range(1, nK+1)]).T
-    Z = [np.power(z, (i*2)-1) for i in range(1, nK+1)]
-    (K, residuals, _, _) = np.linalg.lstsq(X, distortions)
-    return (K, K/Z, residuals, X)
+    """ Estimate coefficients of symmetric radial distortion given distances and distortions
+
+        Arguments:
+        - distances: radial distances in mm.
+        - distortions: distortion values in mm corresponding to the each specified distance.
+        - nK: nummber of coefficients in the model.
+
+        Returns:
+        - K: an array of size nK containing the coefficients estimated using LLS.
+        - RMSE: root-mean-square deviation of the estimator defined by K.
+        - R: the design (power) matrix derived using input radial distances.
+        - D: the relative radial distortion corresponding to each data point.
+    """
+    R = np.vstack([np.power(distances, 2*i) for i in range(0, nK)]).T
+    D = np.array([d/r if r else 0 for (r, d) in zip(distances.tolist(), distortions.tolist())])
+    (K, sqError, _, _) = np.linalg.lstsq(R, D)
+    return (K, (sqError**0.5)[0] if sqError else 0.0, R, D)
+
+
+def predictDistortion(distances, K):
+    """ Apply the distortion model defined by the coefficients in K to the specified distances (in mm)
+        and return predicted (absolute) distortion values.
+    """
+    R = np.vstack([np.power(distances, 2*i) for i in range(0, K.size)]).T
+    return R.dot(K) * distances
+
 
 def log(message):
     print("{0}".format(message))
 
-# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 
-if __name__=="__main__":
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+def main():
     try:
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(description=("Estimate coefficients of symmetric radial distortion based on the Brown-Conrady model "
+                                                      "given a set of distortion values at corresponding radial distances."))
         parser.add_argument('distortionFile', nargs='?',
                            help="text file containing radial distance to distortion mapping")
-        parser.add_argument('--distances', 
-                           help="semicolon delimited string containing radial distances in millimeters")
-        parser.add_argument('--distortions',
-                           help="semicolon delimited string containing distortion values in microns corresponding to each radial distance value")
+        parser.add_argument('--distances', metavar='R',
+                           help="semicolon- or space-delimited string containing radial distances in millimeters")
+        parser.add_argument('--distortions', metavar='D',
+                           help="semicolon- or space-delimited string containing distortion values in microns corresponding to each radial distance value")
+        parser.add_argument('--coefficients', metavar='nK', type=int, default=3, choices=range(1, 8),
+                           help="Number of coefficients in the estimated Brown-Conrady model for symmetric radial distortion. Defaults to 3.")
         parser.add_argument('-p', '--plot', action='store_true',
-                           help="displays a plot")        
+                           help="display the distance-distortion relationship using observed data-points and the predictor function.")
         parser.add_argument('-v', '--verbose', action='store_true',
-                           help="verbose")        
+                           help="Turn on verbose messages. Outputs design matrix and residuals associated with the least-squares regression.")
         args = parser.parse_args()
     except Exception as e:
         print(e.message)
 
     print("\n")
-    if not args.distances is None and len(args.distances) > 0 and not args.distortions is None and len(args.distortions) > 0:
+    if args.distances and args.distortions:
         r, d = loadString(args.distances, args.distortions)
         log("Loading radial distortion vales from command-line")
-    elif not args.distortionFile is None and len(args.distortionFile) > 0:
+    elif args.distortionFile:
         log("Loading radial distortion vales from file: {0}".format(args.distortionFile))
         if not os.path.exists(args.distortionFile):
             print("")
@@ -63,28 +123,36 @@ if __name__=="__main__":
         parser.print_help()
         exit(100)
 
+    nK = args.coefficients
     log("Loaded {0} data points".format(r.size))
-    (K, Kz, sqError, X) = estimateCoefficients(r, d, nK=3)
-    Y = X.dot(K)
+    (K, rmse, R, D) = estimateCoefficients(r, d, nK=nK)
+    Y = predictDistortion(r, K)
     residuals = np.abs(d - Y)
 
-    log("Coefficients [mm-based]: {}".format(" ".join(["{0:>20e}".format(k) for k in Kz])))
-    log("RMSE: {:e} mm".format((sqError**0.5)[0]))
-    log("")
-    log("Residuals (mm)...")
-    log("{0:>10} {1:>30} {2:>30} {3:>20}".format("Distance", "Distortion (observed)", "Distortion (estimated)", "Residual"))
-    for m in ["{0:>10} {1:>30e} {2:>30e} {3:>20e}".format(v1, v2, v3, v4) for (v1, v2, v3, v4) in zip(r, d, Y, residuals)]:
-        log(m)
-   
-    log("Design matrix: \n{0}".format(X))
+    log("Estimated coefficients [mm-based]: {}".format(" ".join(["{0:>20e}".format(k) for k in K])))
+    log("RMSE: {:e} mm".format(rmse))
+    log("Normalized RMSE: {:.2}%".format(100. * rmse / np.ptp(D)))
 
-    if args.plot:    
+    if args.verbose:
+        log("")
+        log("Residuals (mm)...")
+        log("{0:>10} {1:>30} {2:>30} {3:>20}".format("Distance", "Distortion (observed)", "Distortion (predicted)", "Residual"))
+        for m in ["{0:>10} {1:>30e} {2:>30e} {3:>20e}".format(v1, v2, v3, v4) for (v1, v2, v3, v4) in zip(r, d, Y, residuals)]:
+            log(m)
+        log("")
+        log("Design matrix: \n{0}".format(R))
+
+    U = np.linspace(np.min(r), np.max(r), 100)
+    if args.plot:
         plt.scatter(r, d)
-        plt.plot(r, X.dot(K), c="red")
+        plt.plot(U, predictDistortion(U, K), c="red")
         plt.xlabel("Radial distance [mm]")
         plt.ylabel("Distortion [mm]")
-        plt.legend(['Estimated', 'Observed'])
+        plt.legend(['Predicted', 'Observed'])
         plt.show()
+
+if __name__=="__main__":
+    main()
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
 
@@ -92,5 +160,6 @@ if __name__=="__main__":
 References:
 
     [1]. https://calval.cr.usgs.gov/osl/smaccompen.pdf
+    [2]. http://en.wikipedia.org/wiki/Distortion_(optics)
 
 """
