@@ -47,10 +47,10 @@ def loadString(distances="", distortions=""):
 
 
 def loadFile(filePath):
-    """Parse the first two columns of a file for distance-distortion pairs and return a tuple of two floating-point arrays.
+    """ Parse the first two columns of a file for distance-distortion pairs and return a tuple of two floating-point arrays.
 
-    - Radial distances are presumed to be in millimeters.
-    - Distortions are presumed to be in microns and are converted to millimeters.
+        - Radial distances are presumed to be in millimeters.
+        - Distortions are presumed to be in microns and are converted to millimeters.
     """
     rd = np.loadtxt(filePath, ndmin=2)
     return (rd[:, 0], rd[:, 1]*1e-3)
@@ -70,18 +70,22 @@ def estimateCoefficients(distances, distortions, nK=5):
         - R: the design (power) matrix derived using input radial distances.
         - D: the relative radial distortion corresponding to each data point.
     """
-    R = np.vstack([np.power(distances, 2*i) for i in range(0, nK)]).T
+    R = getDesignMatrix(distances, nK)
     D = np.array([d/r if r else 0 for (r, d) in zip(distances.tolist(), distortions.tolist())])
     (K, sqError, _, _) = np.linalg.lstsq(R, D)
     return (K, (sqError**0.5)[0] if sqError else 0.0, R, D)
+
+
+def getDesignMatrix(distances, nK):
+    """ Return the design (power) matrix associated with the model"""
+    return np.vstack([np.power(distances, 2*i) for i in range(0, nK)]).T
 
 
 def predictDistortion(distances, K):
     """ Apply the distortion model defined by the coefficients in K to the specified distances (in mm)
         and return predicted (absolute) distortion values.
     """
-    R = np.vstack([np.power(distances, 2*i) for i in range(0, K.size)]).T
-    return R.dot(K) * distances
+    return getDesignMatrix(distances, K.size).dot(K) * distances
 
 
 def log(message):
@@ -95,11 +99,11 @@ def main():
                                                       "given a set of distortion values at corresponding radial distances."))
         parser.add_argument('distortionFile', nargs='?',
                            help="text file containing radial distance to distortion mapping")
-        parser.add_argument('--distances', metavar='R',
+        parser.add_argument('--distances', metavar='R', 
                            help="semicolon- or space-delimited string containing radial distances in millimeters")
         parser.add_argument('--distortions', metavar='D',
                            help="semicolon- or space-delimited string containing distortion values in microns corresponding to each radial distance value")
-        parser.add_argument('--coefficients', metavar='nK', type=int, default=3, choices=range(1, 8),
+        parser.add_argument('--K', metavar='nK', type=int, default=3, choices=range(1, 8),
                            help="Number of coefficients in the estimated Brown-Conrady model for symmetric radial distortion. Defaults to 3.")
         parser.add_argument('-p', '--plot', action='store_true',
                            help="display the distance-distortion relationship using observed data-points and the predictor function.")
@@ -123,7 +127,7 @@ def main():
         parser.print_help()
         exit(100)
 
-    nK = args.coefficients
+    nK = args.K
     log("Loaded {0} data points".format(r.size))
     (K, rmse, R, D) = estimateCoefficients(r, d, nK=nK)
     Y = predictDistortion(r, K)
@@ -144,10 +148,13 @@ def main():
 
     U = np.linspace(np.min(r), np.max(r), 100)
     if args.plot:
+        f = plt.figure()
+        f.suptitle("Radial Distance vs. Radial Distortion", fontsize=14, fontweight='bold')
         plt.scatter(r, d)
         plt.plot(U, predictDistortion(U, K), c="red")
         plt.xlabel("Radial distance [mm]")
         plt.ylabel("Distortion [mm]")
+        plt.gca().grid(True)
         plt.legend(['Predicted', 'Observed'])
         plt.show()
 
@@ -161,5 +168,5 @@ References:
 
     [1]. https://calval.cr.usgs.gov/osl/smaccompen.pdf
     [2]. http://en.wikipedia.org/wiki/Distortion_(optics)
-
+    
 """
