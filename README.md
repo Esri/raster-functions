@@ -108,12 +108,16 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 * #### Key Metadata
 
   [KeyMetadata.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/KeyMetadata.py) demonstrates
-  how [*key metadata*](https://github.com/Esri/raster-functions/wiki/KeyMetadata%23key-metadata#key-metadata) (or property) 
-  can be introduced or overridden by a raster function. It also serves as an example of a function that 
-  doesn't need to implement the [`.updatePixels()`](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#updatepixels) method. 
+  how [*key properties*](https://github.com/Esri/raster-functions/wiki/KeyMetadata#key-metadata) 
+  can be introduced or overridden by a raster function. These are the inputs to the function:
 
-  In addition to the one input raster, this function accepts two string parameters representing the name and corresponding value 
-  of the dataset-level key property. Another string parameter enables users to specify band names of the outgoing raster as a CSV. 
+  - `Property Name`, `Property Value`&mdash;The name and value of the dataset-level key property to update or introduce.
+  - `Band Names`&mdash;Band names of the outgoing raster specified as a CSV. 
+  - `Metadata JSON`&mdash;Key metadata to be injected into the outgoing raster described as a JSON string representing a collection of key-value pairs. 
+    Learn more [here](http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#//02r3000000p3000000).
+  
+  This function serves as an example of one that doesn't need to implement 
+  the [`.updatePixels()`](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#updatepixels) method. 
 
 * #### Mask Raster
 
