@@ -100,6 +100,7 @@ class FMask():
         # output pixel arrays of multispectral bands with masked features
         pixelBlocks['output_pixels'] = pixels.astype('f4', copy=False)
         pixelBlocks['output_mask'] = np.array([np.logical_not(fmask)] * shape[0]).astype('u1', copy=False)
+
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
@@ -115,6 +116,9 @@ class FMask():
 # public methods...
 
     def getScaledTemperature(self, temperature):
+        # check if thermal band from raster product or single thermal band added
+        temperature = temperature[0] if len(temperature.shape) > 2 else temperature
+
         # assign thermal band properties depending on sensor name
         if self.sensorName == "Landsat 8":
             k1 = 774.89  # thermal conversion constant K1
@@ -152,6 +156,7 @@ class FMask():
     # clear land pixels, and shadow pixels
     def getPotentialMasks(self, pixels, temperature):
         dim = pixels[0].shape  # dimensions of imagery
+
         bandIDs = self.getBandIDs()  # get bandIDs depending on landsat scene
 
         # cirrus band probability for Landsat 8 imagery
