@@ -12,7 +12,7 @@
 			<String>ClassName</String>
 			<String>r1</String>
 			<String>r2</String>
-			<String>mode</String>
+			<String>mask</String>
 		</Names>
 		<Values xsi:type='typens:ArrayOfAnyType'>
 			<AnyType xsi:type='xs:string'>../functions/FMask.py</AnyType>
@@ -98,7 +98,7 @@
 				<IsDataset>true</IsDataset>
 			</AnyType>
 			<AnyType xsi:type='typens:RasterFunctionVariable'>
-				<Name>mode</Name>
+				<Name>mask</Name>
 				<Description/>
 				<Value xsi:type='xs:string'>Mask Cloud</Value>
 				<IsDataset>false</IsDataset>
