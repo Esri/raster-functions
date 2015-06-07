@@ -86,24 +86,26 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
  
 * #### Function of Mask
   [FMask.py](https://github.com/RonakSumbaly/raster-functions/blob/FMask/functions/FMask.py) helps 
-  with masking of cloud, cloud shadow and snow in Landsat TM / ETM+ scenes given two rasters corresponding to multispectral and thermal bands.
+  with detection and masking of cloud, cloud shadow and snow in Landsat TM / ETM+ scenes by first computing a probability mask based on cloud 
+  physical properties and then deriving a potential mask by applying scene-based threshold limit values, object segmentation and flood fill transformation.
+  It accepts two multi-band raster as input corresponding to the [top of atmosphere (TOA) reflectances](http://resources.arcgis.com/en/help/main/10.1/index.html#//009t0000023s000000)
+  of the multispectral bands, and thermal bands of the Landsat product, and a `masking feature` parameter controls the output
+  [pixelBlocks](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks) mask.  
   
+  FMask templates are *grouping* raster function templates where the inputs are the multispectral and thermal bands
+  of the Landsat product (in that order).  
   Supporting templates:
-  - [FMask-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Snow.rft.xml) is a *grouping* 
-  raster function template.:
+  - [FMask-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Snow.rft.xml):
     Returns multispectral bands of the scene with snow masked out.
-  - [FMask-Cloud](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud.rft.xml) is a *grouping* 
-  raster function template.:
+  - [FMask-Cloud](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud.rft.xml):
     Returns multispectral bands of the scene with clouds masked out.
-  - [FMask-CloudShadow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-CloudShadow.rft.xml) is a *grouping* 
-  raster function template.:
+  - [FMask-CloudShadow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-CloudShadow.rft.xml):
     Returns multispectral bands of the scene with clouds and their shadow masked out. 
-  - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml) is a *grouping* 
-  raster function template.:
+  - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml):
     Returns multispectral bands of the scene with clouds, cloud shadows and snow masked out.
 
-  Learn more about FMask on [Google Code](https://code.google.com/p/fmask/)
-  or in the [ArcGIS Blog](link to blog)
+  Learn more about how the FMask algorithm works [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853)
+  or in the [Esri Blogs](link to blog)
      
 * #### Wind Chill
 
