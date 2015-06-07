@@ -95,10 +95,6 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   - `Thermal Bands`&mdash;The thermal item of Landsat raster product. 
   - `Masking Feature`&mdash;Parameter to control the output [pixelBlocks](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks) mask. 
   
-  It accepts two multi-band raster as input corresponding to the thermal bands and [top of atmosphere (TOA) reflectance](http://resources.arcgis.com/en/help/main/10.1/index.html#//009t0000023s000000)
-  albedo values of the multispectral bands of the Landsat product, and an additional `masking feature` parameter controls the output
-  [pixelBlocks'](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks) mask.  
-  
   FMask templates are *grouping* raster function templates where the inputs are the multispectral and thermal bands
   of the Landsat product (in that order).  
   
