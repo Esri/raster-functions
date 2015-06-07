@@ -5,8 +5,8 @@ class Windchill():
 
     def __init__(self):
         self.name = "Wind Chill Function"
-        self.description = "This function computes wind chill on the Fahrenheit scale given wind speed and air temperature."
-
+        self.description = ("This function computes wind chill on the Fahrenheit "
+                            "scale given wind speed and air temperature.")
 
     def getParameterInfo(self):
         return [
@@ -28,7 +28,6 @@ class Windchill():
             },
         ]
 
-
     def getConfiguration(self, **scalars):
         return {
           'inheritProperties': 4 | 8,               # inherit all but the pixel type and NoData from the input raster
@@ -36,14 +35,12 @@ class Windchill():
           'inputMask': False                        # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
         }
 
-
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1      # output is a single band raster
         kwargs['output_info']['statistics'] = ()    # we know nothing about the stats of the outgoing raster. 
         kwargs['output_info']['histogram'] = ()     # we know nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = 'f4'   
         return kwargs
-
 
     def updatePixels(self, tlc, size, props, **pixelBlocks):
         ws = np.array(pixelBlocks['ws_pixels'], dtype='f4', copy=False)
@@ -53,7 +50,6 @@ class Windchill():
         outBlock = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t * ws16)
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)
         return pixelBlocks
-
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:

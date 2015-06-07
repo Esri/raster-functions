@@ -4,7 +4,7 @@ import numpy as np
 class Arithmetic():
     def __init__(self):
         self.name = "Arithmetic Function"
-        self.description = ""
+        self.description = "Performs simple arithmetic operations on two rasters."
         self.op = None
 
     def getParameterInfo(self):
@@ -36,26 +36,23 @@ class Arithmetic():
             },
         ]
 
-
     def getConfiguration(self, **scalars):
         return {
-          'inheritProperties': 2 | 4 | 8,
-          'invalidateProperties': 2 | 4 | 8, 
+            'inheritProperties': 2 | 4 | 8,
+            'invalidateProperties': 2 | 4 | 8,
         }
-
 
     def updateRasterInfo(self, **kwargs):
         m = kwargs.get('op', 'Add').lower()
-        
+
         if m == 'add':          self.op = np.add
         elif m == 'subtract':   self.op = np.subtract
         elif m == 'multiply':   self.op = np.multiply
         elif m == 'divide':     self.op = np.divide
-                      
-        kwargs['output_info']['statistics'] = () 
+
+        kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
         return kwargs
-
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4', copy=False)
@@ -65,11 +62,10 @@ class Arithmetic():
         pixelBlocks['output_pixels'] = self.op(r1, r2).astype(props['pixelType'], copy=False)
         return pixelBlocks
 
-
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
             keyMetadata['datatype'] = 'Processed'               # outgoing raster is now 'Processed'
         elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
+            keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata
             keyMetadata['wavelengthmax'] = None
         return keyMetadata
