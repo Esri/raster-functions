@@ -42,7 +42,8 @@ class NDVI():
                 'required': False,
                 'domain': ('Raw', 'Grayscale', 'Colormap'),
                 'displayName': "Output Image Type",
-                'description': "The type of output expected from this function. Specify Raw for scientific analysis. Pick Grayscale or Colomap for visualization."
+                'description': ("The type of output expected from this function. Specify Raw for scientific analysis. "
+                                "Pick Grayscale or Colomap for visualization.")
             },
         ]
 
