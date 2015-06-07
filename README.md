@@ -96,7 +96,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   - `Masking Feature`&mdash;Parameter to control the output [pixelBlocks mask](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks). 
   
   FMask templates are *grouping* raster function templates where the inputs are the multispectral and thermal bands
-  of the Landsat product (in that order).  
+  of the Landsat raster product (in that order).  
   
   Supporting templates:
   - [FMask-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Snow.rft.xml):
