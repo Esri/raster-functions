@@ -4,12 +4,20 @@ __all__ = ['isProductVersionOK',
            'Projection',
            'Trace']
 
+<<<<<<< HEAD
 ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+=======
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+>>>>>>> master
 
 
 def isProductVersionOK(productInfo, major, minor, build):
     v = productInfo['major']*1.e+10 + int(0.5+productInfo['minor']*10)*1.e+6 + productInfo['build']
+<<<<<<< HEAD
     return v >= major*1e+10 + minor*1e+7 + build
+=======
+    return v >= major*1e+10 + int(0.5+minor*10)*1.e+6 + build
+>>>>>>> master
 
 
 def computePixelBlockExtents(tlc, shape, props):
@@ -25,6 +33,7 @@ def computeCellSize(props, sr=None, proj=None):
     if sr is None:
         return (e[2]-e[0])/w, (e[3]-e[1])/h                     # cell size of parent raster
 
+<<<<<<< HEAD
     if proj is None: proj = Projection()                        # reproject extents
     (xMin, xMax) = proj.transform(props['spatialReference'], sr, e[0], e[2])
     (yMin, yMax) = proj.transform(props['spatialReference'], sr, e[1], e[3])
@@ -33,6 +42,17 @@ def computeCellSize(props, sr=None, proj=None):
 
 
 ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+=======
+    if proj is None:
+        proj = Projection()                                     # reproject extents
+
+    (xMin, xMax) = proj.transform(props['spatialReference'], sr, e[0], e[2])
+    (yMin, yMax) = proj.transform(props['spatialReference'], sr, e[1], e[3])
+    return (xMax-xMin)/w, (yMax-yMin)/h                         # cell size of parent raster
+
+
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+>>>>>>> master
 
 class Projection():
     def __init__(self):
@@ -54,7 +74,12 @@ class Projection():
 
         return self._transformFunc(self._inProj, self._outProj, x, y)
 
+<<<<<<< HEAD
 ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+=======
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+
+>>>>>>> master
 
 class Trace():
     def __init__(self):
@@ -67,4 +92,8 @@ class Trace():
         self.trace(self.c_char_p(s.encode('utf-8')))
         return s
 
+<<<<<<< HEAD
 ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+=======
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+>>>>>>> master

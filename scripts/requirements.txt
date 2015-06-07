@@ -1,0 +1,11 @@
+pyparsing
+pyproj
+python-dateutil
+pytz
+six
+numpy
+scipy
+matplotlib 
+scikit-image
+scikit-learn
+Cython
