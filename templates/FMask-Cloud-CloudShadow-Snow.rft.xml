@@ -15,10 +15,10 @@
 			<String>mask</String>
 		</Names>
 		<Values xsi:type='typens:ArrayOfAnyType'>
-			<AnyType xsi:type='xs:string'>../functions/FMask.py</AnyType>
+			<AnyType xsi:type='xs:string'>../functions/FMask.pyd</AnyType>
 			<AnyType xsi:type='xs:string'>FMask</AnyType>
 			<AnyType xsi:type='typens:RasterFunctionVariable'>
-				<Name>Raster</Name>
+				<Name>Raster1</Name>
 				<Description/>
 				<Value xsi:type='typens:RasterFunctionTemplate'>
 					<Name>Raster Function Template</Name>
