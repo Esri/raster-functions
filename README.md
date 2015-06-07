@@ -82,8 +82,29 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
     Returns *scaled* NDVI values as color-mapped raster.
 
   Learn more about NDVI on [Wikipedia](http://en.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index) 
-  or in the [Documentation for ArcGIS](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm). 
+  or in the [Documentation for ArcGIS](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm).
+ 
+* #### Function of Mask
+  [FMask.py](https://github.com/RonakSumbaly/raster-functions/blob/FMask/functions/FMask.py) helps 
+  with masking of cloud, cloud shadow and snow in Landsat TM / ETM+ scenes given two rasters corresponding to multispectral and thermal bands.
+  
+  Supporting templates:
+  - [FMask-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Snow.rft.xml) is a *grouping* 
+  raster function template.:
+    Returns multispectral bands of the scene with snow masked out.
+  - [FMask-Cloud](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud.rft.xml) is a *grouping* 
+  raster function template.:
+    Returns multispectral bands of the scene with clouds masked out.
+  - [FMask-CloudShadow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-CloudShadow.rft.xml) is a *grouping* 
+  raster function template.:
+    Returns multispectral bands of the scene with clouds and their shadow masked out. 
+  - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml) is a *grouping* 
+  raster function template.:
+    Returns multispectral bands of the scene with clouds, cloud shadows and snow masked out.
 
+  Learn more about FMask on [Google Code](https://code.google.com/p/fmask/)
+  or in the [ArcGIS Blog](link to blog)
+     
 * #### Wind Chill
 
   [WindChill.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/Windchill.py) computes 
