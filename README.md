@@ -91,9 +91,9 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   potential mask by applying flood fill transformation, scene-based threshold limit values and object segmentation. These are the inputs to the function:
   
   - `Top of Atmosphere (TOA) Reflectances`&mdash;The multispectral item of Landsat raster product with [Apparent Reflectance](http://resources.arcgis.com/en/help/main/10.1/index.html#//009t0000023s000000) 
-  function applied on top.
+  function expressed as Albedo applied on top.
   - `Thermal Bands`&mdash;The thermal item of Landsat raster product. 
-  - `Masking Feature`&mdash;Parameter to control the output [pixelBlocks](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks) mask. 
+  - `Masking Feature`&mdash;Parameter to control the output [pixelBlocks mask](https://github.com/Esri/raster-functions/wiki/PythonRasterFunction#pixelblocks). 
   
   FMask templates are *grouping* raster function templates where the inputs are the multispectral and thermal bands
   of the Landsat product (in that order).  
