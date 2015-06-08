@@ -109,8 +109,8 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml):
     Returns scene with clouds, cloud shadows and snow masked out.
 
-  FMask cloud and cloud shadow masking algorithm for Landsat data was published [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853) by Zhe Zhu.
-  Learn more about the FMask function [here](link to blog)
+  FMask cloud and cloud shadow masking algorithm in based on a paper published [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853) by Zhe Zhu.
+  Learn more about FMask [here.](link to blog)
      
 * #### Wind Chill
 
