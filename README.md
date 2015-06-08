@@ -87,8 +87,9 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 * #### Function of Mask
   [FMask.py](https://github.com/RonakSumbaly/raster-functions/blob/FMask/functions/FMask.py) helps 
   with detection and masking of cloud, cloud shadow and snow in Landsat TM / ETM+ scenes. 
-  It functions by first computing a probability mask based on cloud physical properties and then deriving a 
-  potential mask by applying flood fill transformation, scene-based threshold limit values and object segmentation. These are the inputs to the function:
+  It functions by computing a potential probability mask using spectral tests based on cloud and cloud shadow physical properties and then deriving a 
+  final output mask by applying flood fill transformation, scene-based threshold limit values, object segmentation and geometric relationships. 
+  These are the inputs to the function:
   
   - `Top of Atmosphere (TOA) Reflectances`&mdash;The multispectral item of Landsat raster product with [Apparent Reflectance](http://resources.arcgis.com/en/help/main/10.1/index.html#//009t0000023s000000) 
   function expressed as Albedo applied on top.
@@ -108,8 +109,8 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml):
     Returns scene with clouds, cloud shadows and snow masked out.
 
-  Learn more about how the FMask algorithm works [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853)
-  or in the [Esri Blogs](link to blog)
+  FMask cloud and cloud shadow masking algorithm for Landsat data was published [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853) by Zhe Zhu.
+  Learn more about the FMask function [here](link to blog)
      
 * #### Wind Chill
 
