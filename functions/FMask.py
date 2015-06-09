@@ -40,8 +40,8 @@ class FMask():
                 'dataType': 'string',
                 'value': 'Mask Cloud',
                 'required': True,
-                'domain': ('Mask Cloud', 'Mask Cloud & Cloud Shadow',
-                           'Mask Snow', 'Mask Cloud, Cloud Shadow & Snow'),
+                'domain': ('Mask Cloud', 'Mask Water', 'Mask Snow',
+                           'Mask Cloud & Cloud Shadow', 'Mask Cloud, Cloud Shadow & Snow'),
                 'displayName': "Masking Feature",
                 'description': "Select masking feature to apply on Landsat imagery."
             },
@@ -398,16 +398,15 @@ class FMask():
 
         # END OF PASS 3 #
 
-        water[np.logical_and(water == 1, cloud == 0)] = 1
         cloud = cloud.astype('uint8')
         cloud[mask == 0] = 255
         shadow[mask == 0] = 255
+        water[np.logical_and(water == 1, cloud == 0)] = 1
 
         return ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow
 
     # Object matching of cloud shadow layer and dilation of output mask
     def matchCloudObjects(self, ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow):
-
         dim = cloud.shape  # dimensions of single band
         fmask = np.zeros(dim, 'uint8')  # final output mask to return back
         sunElevationRad = math.radians(self.sunElevation)  # solar elevation angle radians
@@ -438,6 +437,7 @@ class FMask():
         if ptm <= 0.001 or ptmRevised >= .90:
             cloudCal[:] = 1
             shadowCal[:] = 1
+            water[:] = 1
             similarity = -1
         else:
             # CLOUD SHADOW MATCHING #
@@ -585,8 +585,9 @@ class FMask():
         fmask[boundaryTest == 0] = 255
 
         if self.mask == "Mask Snow":                    fmask[snow == 1] = 1
-        elif self.mask == "Mask Cloud & Cloud Shadow":  fmask[np.logical_or(shadowCal == 1, cloudCal == 1)] = 1
         elif self.mask == "Mask Cloud":                 fmask[cloudCal == 1] = 1
+        elif self.mask == "Mask Water":                 fmask[water == 1] = 1
+        elif self.mask == "Mask Cloud & Cloud Shadow":  fmask[np.logical_or(shadowCal == 1, cloudCal == 1)] = 1
         else:                                           fmask[np.logical_or(np.logical_or(cloudCal == 1, shadowCal == 1), snow == 1)] = 1
 
         return fmask
