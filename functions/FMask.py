@@ -41,7 +41,7 @@ class FMask():
                 'value': 'Mask Cloud',
                 'required': True,
                 'domain': ('Mask Cloud', 'Mask Water', 'Mask Snow',
-                           'Mask Cloud & Cloud Shadow', 'Mask Cloud, Cloud Shadow & Snow'),
+                           'Mask Cloud Shadow', 'Mask Cloud, Snow & Water'),
                 'displayName': "Masking Feature",
                 'description': "Select masking feature to apply on Landsat imagery."
             },
@@ -587,8 +587,8 @@ class FMask():
         if self.mask == "Mask Snow":                    fmask[snow == 1] = 1
         elif self.mask == "Mask Cloud":                 fmask[cloudCal == 1] = 1
         elif self.mask == "Mask Water":                 fmask[water == 1] = 1
-        elif self.mask == "Mask Cloud & Cloud Shadow":  fmask[np.logical_or(shadowCal == 1, cloudCal == 1)] = 1
-        else:                                           fmask[np.logical_or(np.logical_or(cloudCal == 1, shadowCal == 1), snow == 1)] = 1
+        elif self.mask == "Mask Cloud Shadow":          fmask[np.logical_or(shadowCal == 1, cloudCal == 1)] = 1
+        else:                                           fmask[np.logical_or(np.logical_or(cloudCal == 1, water == 1), snow == 1)] = 1
 
         return fmask
 

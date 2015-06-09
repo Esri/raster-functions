@@ -86,7 +86,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
  
 * #### Function of Mask
   [FMask.py](https://github.com/RonakSumbaly/raster-functions/blob/FMask/functions/FMask.py) helps 
-  with detection and masking of cloud, cloud shadow and snow in Landsat TM / ETM+ scenes. 
+  with detection and masking of cloud, cloud shadow, snow and water in Landsat TM / ETM+ scenes. 
   It functions by computing a potential probability mask using spectral tests based on cloud and cloud shadow physical properties and then deriving a 
   final output mask by applying flood fill transformation, scene-based threshold limit values, object segmentation and geometric relationships. 
   These are the inputs to the function:
@@ -102,12 +102,14 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   Supporting templates:
   - [FMask-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Snow.rft.xml):
     Returns scene with snow masked out.
+  - [FMask-Water](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Water.rft.xml):
+    Returns scene with water masked out.
   - [FMask-Cloud](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud.rft.xml):
     Returns scene with clouds masked out.
   - [FMask-CloudShadow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-CloudShadow.rft.xml):
     Returns scene with clouds and their shadow masked out. 
-  - [FMask-Cloud-CloudShadow-Snow](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-CloudShadow-Snow.rft.xml):
-    Returns scene with clouds, cloud shadows and snow masked out.
+  - [FMask-Cloud-Snow-Water](https://github.com/RonakSumbaly/raster-functions/blob/FMask/templates/FMask-Cloud-Snow-Water.rft.xml):
+    Returns scene with clouds, snow and water masked out.
 
   FMask cloud and cloud shadow masking algorithm in based on a paper published [here](http://www.sciencedirect.com/science/article/pii/S0034425711003853) by Zhe Zhu.
   Learn more about FMask [here.](link to blog)

@@ -1,5 +1,5 @@
 <RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
-	<Name>FMask-Cloud-CloudShadow-Snow</Name>
+	<Name>FMask-Cloud-Snow-Water</Name>
 	<Description>A raster function template.</Description>
 	<Function xsi:type='typens:PythonAdapterFunction'>
 		<Name>FMask Function</Name>
@@ -100,7 +100,7 @@
 			<AnyType xsi:type='typens:RasterFunctionVariable'>
 				<Name>mask</Name>
 				<Description/>
-				<Value xsi:type='xs:string'>Mask Cloud, Cloud Shadow &amp; Snow</Value>
+				<Value xsi:type='xs:string'>Mask Cloud, Snow &amp; Water </Value>
 				<IsDataset>false</IsDataset>
 			</AnyType>
 		</Values>
