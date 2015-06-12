@@ -37,7 +37,7 @@ def computeCellSize(props, sr=None, proj=None):
 def isGeographic(s):
     arcpy = __import__('arcpy')
     sr = arcpy.SpatialReference()
-    sr.loadFromString(str(s) if isinstance(s, int) or isinstance(s, str) else s.exportToString())
+    sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
     return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
@@ -61,7 +61,7 @@ class Projection():
 
     def createSR(self, s):
         sr = self.arcpy.SpatialReference()
-        sr.loadFromString(str(s) if isinstance(s, int) or isinstance(s, str) else s.exportToString())
+        sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
         return sr
     
 
