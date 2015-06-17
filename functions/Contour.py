@@ -218,7 +218,7 @@ class Contour():
     # dynamic contouring - interval calculation
     def dynamicContouring(self, dem):
         # mask noData values in raster
-        dem = np.ma.array(dem, mask=dem == self.noData)
+        dem = np.ma.array(np.ma.masked_invalid(dem), mask=np.ma.masked_invalid(dem) == self.noData)
 
         stdPixels = np.ma.std(dem)  # standard deviation of masked input
         maxPixels = np.ma.max(dem)  # maximum value of masked input
@@ -242,11 +242,11 @@ class Contour():
 
     # intermediate contour value
     def calculateContourIntermediate(self, temp):
-        return np.where(temp == self.noData, self.noData, np.floor((temp - self.par["base"])/self.par["interval"]))
+        return np.where(np.equal(temp, self.noData), self.noData, np.floor((temp - self.par["base"])/self.par["interval"]))
 
     # final contour value
     def finalContourValue(self, temp):
-        return np.where(temp == self.noData, self.noData, (temp * self.par["interval"]) + self.par["base"])
+        return np.where(np.equal(temp, self.noData), self.noData, (temp * self.par["interval"]) + self.par["base"])
 
     # fill mode
     def fillMode(self, temp):
@@ -375,6 +375,10 @@ class Contour():
 
     # generate contour #
     def generateContour(self, temp):
+        # identify tool
+        if temp.shape == (2, 2):
+            return temp
+
         # calculate intermediate contour values
         temp = self.calculateContourIntermediate(temp)
 
@@ -387,14 +391,16 @@ class Contour():
         # skip contour generation
         # skip if top, right or center values any one are noData
         # skip if top, right are equal to center values
-        noDataPos = np.logical_or(np.logical_or(np.logical_or(np.equal(temp, self.noData), np.equal(topNeighbors, self.noData)),
-                    np.equal(rightNeighbors, self.noData)), np.logical_and(np.equal(temp, topNeighbors), np.equal(temp, rightNeighbors)))
+        nD1 = np.equal(temp, self.noData)
+        nD2 = np.logical_or(np.equal(topNeighbors, self.noData), np.equal(rightNeighbors, self.noData))
+        nD3 = np.logical_and(np.equal(temp, topNeighbors), np.equal(temp, rightNeighbors))
+        skipContour = np.logical_or(np.logical_or(nD1, nD2), nD3)
 
         # if interval a factor of 2.5 then every 4th contour should be index contour
         if abs(math.floor((math.log10(self.par["interval"] / 2.5) + 3) + 0.5) - (math.log10(self.par["interval"] / 2.5) + 3)) < 0.001:
             self.par["indexContourFactor"] = 4
 
-        dem = np.where(noDataPos, self.noData, temp)
+        dem = np.where(skipContour, self.noData, temp)
 
         # conditions for contour lines
         # C1. hereOutput >= topOutput && hereOutput >= rightOutput  && hereOutput >=0
@@ -404,15 +410,12 @@ class Contour():
         c1 = np.logical_and(np.logical_and(np.greater_equal(temp, topNeighbors), np.greater_equal(temp, rightNeighbors)), np.greater_equal(temp, 0))
         c2 = np.roll(np.logical_and(np.less(temp, topNeighbors), np.greater_equal(topNeighbors, 0)), -1, axis=0)
         c3 = np.roll(np.logical_and(np.less(temp, rightNeighbors), np.greater_equal(rightNeighbors, 0)), 1, axis=1)
+        contourLine =  np.logical_or(np.logical_or(c1, c2), c3)
 
         # set contour lines
-
-        dem = np.where(np.logical_and(c1, np.not_equal(dem, self.noData)), 1, dem)
-        dem = np.where(np.logical_and(c2, np.not_equal(dem, self.noData)), 1, dem)
-        dem = np.where(np.logical_and(c3, np.not_equal(dem, self.noData)), 1, dem)
+        dem = np.where(np.logical_and(contourLine, np.logical_not(skipContour)), 1, dem)
 
         # index contour lines - darken every 5th contour line
-
         if self.par["indexContour"]:
             dem = self.generateIndexContour(dem, temp, topNeighbors, rightNeighbors)
 
