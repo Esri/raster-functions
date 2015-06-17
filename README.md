@@ -84,6 +84,34 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   Learn more about NDVI on [Wikipedia](http://en.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index) 
   or in the [Documentation for ArcGIS](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm). 
 
+* #### Contour
+  [Contour.py](https://github.com/RonakSumbaly/raster-functions/blob/Contour/functions/Contour.py) serves as a reference
+  Python rendition of the [stock Contour raster function](http://www.arcgis.com/home/item.html?id=7a572f9e0ee14c1790cfbccfb9f41acf) 
+  It accepts a single-band raster as input, and enables you to visualize contours on elevation data or any other continuous data 
+  such as temperature or air pressure. 
+  
+  The contour smoothing implementation can be used to remove rough contours that are common with most topographical data. 
+  The function supports dynamic contouring, the contour interval can be defined on the basis of the visible data range, 
+  providing rough contours when the view is zoomed out and finer when zoomed in. 
+  Contour regions can be visualized as a colormap using the Fill mode of the function.
+  
+  The Contour raster function templates are formulated on the default values of the different modes within the function. 
+  
+  Supporting templates:
+  - [Contour](https://github.com/RonakSumbaly/raster-functions/blob/Contour/templates/Contour.rft.xml):
+    Returns contour lines on the input raster with dynamic contouring.
+  - [Smooth Contour](https://github.com/RonakSumbaly/raster-functions/blob/Contour/templates/SmoothContour.rft.xml):
+    Performs cartographic smoothing of the input raster and generate contours from the smoothed raster.
+  - [Smoothening Only](https://github.com/RonakSumbaly/raster-functions/blob/Contour/templates/SmootheningOnly.rft.xml):
+    Returns a smoothed input raster.
+  - [Smooth Fill](https://github.com/RonakSumbaly/raster-functions/blob/Contour/templates/SmoothFill.rft.xml):
+    Returns contour regions for a smoothed input raster.
+  - [Fill](https://github.com/RonakSumbaly/raster-functions/blob/Contour/templates/Fill.rft.xml):
+    Returns contour regions for the input raster.
+
+  Learn more about Contour on [Wikipedia](https://en.wikipedia.org/wiki/Contour_line)
+  or in the [ArcGIS blog](http://blogs.esri.com/esri/arcgis/2014/09/25/contours_function/)
+  
 * #### Wind Chill
 
   [WindChill.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/Windchill.py) computes 

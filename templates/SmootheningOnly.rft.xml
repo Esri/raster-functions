@@ -1,0 +1,109 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
+	<Name>Smoothening Only</Name>
+	<Description>A raster function template.</Description>
+	<Function xsi:type='typens:PythonAdapterFunction'>
+		<Name>Contour Function</Name>
+		<Description>Contour Raster Function generates contour lines i.e. line joining the points with the same elevationfrom the given DEM raster.</Description>
+		<PixelType>UNKNOWN</PixelType>
+	</Function>
+	<Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
+		<Names xsi:type='typens:ArrayOfString'>
+			<String>PythonModule</String>
+			<String>ClassName</String>
+			<String>raster</String>
+			<String>mode</String>
+			<String>values</String>
+			<String>interval</String>
+			<String>base</String>
+			<String>indexcontour</String>
+			<String>sfactor</String>
+			<String>zfactor</String>
+			<String>sloperad</String>
+			<String>avgrad</String>
+			<String>radinc</String>
+			<String>maxrad</String>
+		</Names>
+		<Values xsi:type='typens:ArrayOfAnyType'>
+			<AnyType xsi:type='xs:string'>..\functions\Contour.py</AnyType>
+			<AnyType xsi:type='xs:string'>Contour</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>Raster</Name>
+				<Description/>
+				<Value/>
+				<IsDataset>true</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>mode</Name>
+				<Description/>
+				<Value xsi:type='xs:string'>Smoothing Only</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>values</Name>
+				<Description/>
+				<Value xsi:type='xs:string'>No. of Contours</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>interval</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>10</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>base</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>0</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>indexcontour</Name>
+				<Description/>
+				<Value xsi:type='xs:boolean'>true</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>sfactor</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>0.59999999999999998</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>zfactor</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>1</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>sloperad</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>3</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>avgrad</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>6</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>radinc</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>0</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>maxrad</Name>
+				<Description/>
+				<Value xsi:type='xs:double'>6</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+		</Values>
+	</Arguments>
+	<Help/>
+	<Type>1</Type>
+	<Thumbnail/>
+	<Definition/>
+	<Group/>
+	<Tag/>
+</RasterFunctionTemplate>
