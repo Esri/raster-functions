@@ -212,17 +212,20 @@ class Contour():
 
     # get minimum of input pixel block
     def calcRasterMin(self, dem):
-        dem = np.ma.array(dem, mask=dem == self.noData)  # mask noData values in raster
-        return np.ma.min(dem)
+        dem = np.ma.array(np.ma.masked_invalid(dem), mask=np.ma.masked_invalid(dem) == self.noData)  # mask noData values in raster
+        return np.ma.min(np.ma.masked_invalid(dem))
 
     # dynamic contouring - interval calculation
     def dynamicContouring(self, dem):
         # mask noData values in raster
         dem = np.ma.array(np.ma.masked_invalid(dem), mask=np.ma.masked_invalid(dem) == self.noData)
 
-        stdPixels = np.ma.std(dem)  # standard deviation of masked input
-        maxPixels = np.ma.max(dem)  # maximum value of masked input
-        minPixels = np.ma.min(dem)  # minimum value of masked input
+        stdPixels = np.ma.std(np.ma.masked_invalid(dem))  # standard deviation of masked input
+        maxPixels = np.ma.max(np.ma.masked_invalid(dem))  # maximum value of masked input
+        minPixels = np.ma.min(np.ma.masked_invalid(dem))  # minimum value of masked input
+
+        self.minScale = minPixels
+        self.maxScale = maxPixels
 
         range1 = maxPixels - minPixels
         range2 = 5 * stdPixels
@@ -373,20 +376,14 @@ class Contour():
 
         return dem
 
-    # generate contour #
+    # generate contour
     def generateContour(self, temp):
-        # identify tool
-        if temp.shape == (2, 2):
+        if temp.shape == (2, 2):  # identify tool
             return temp
 
-        # calculate intermediate contour values
-        temp = self.calculateContourIntermediate(temp)
-
-        # top neighbors of the input pixel block
-        topNeighbors = np.roll(temp, 1, axis=0)
-
-        # right neighbors of the input pixel block
-        rightNeighbors = np.roll(temp, -1, axis=1)
+        temp = self.calculateContourIntermediate(temp)  # calculate intermediate contour values
+        topNeighbors = np.roll(temp, 1, axis=0)  # top neighbors of the input pixel block
+        rightNeighbors = np.roll(temp, -1, axis=1)  # right neighbors of the input pixel block
 
         # skip contour generation
         # skip if top, right or center values any one are noData
@@ -403,13 +400,13 @@ class Contour():
         dem = np.where(skipContour, self.noData, temp)
 
         # conditions for contour lines
-        # C1. hereOutput >= topOutput && hereOutput >= rightOutput  && hereOutput >=0
-        # C2. hereOutput < topOutput && y > 0 && topOutput >= 0
-        # C3. hereOutput < rightOutput && x < width - 1 && rightOutput >= 0
+        # c1. hereOutput >= topOutput && hereOutput >= rightOutput  && hereOutput >=0
+        # c2. hereOutput < topOutput && y > 0 && topOutput >= 0
+        # c3. hereOutput < rightOutput && x < width - 1 && rightOutput >= 0
 
         c1 = np.logical_and(np.logical_and(np.greater_equal(temp, topNeighbors), np.greater_equal(temp, rightNeighbors)), np.greater_equal(temp, 0))
-        c2 = np.roll(np.logical_and(np.less(temp, topNeighbors), np.greater_equal(topNeighbors, 0)), -1, axis=0)
-        c3 = np.roll(np.logical_and(np.less(temp, rightNeighbors), np.greater_equal(rightNeighbors, 0)), 1, axis=1)
+        c2 = np.roll(np.logical_and(np.logical_and(np.less(temp, topNeighbors), np.greater_equal(topNeighbors, 0)), np.logical_not(c1)), -1, axis=0)
+        c3 = np.roll(np.logical_and(np.logical_and(np.less(temp, rightNeighbors), np.greater_equal(rightNeighbors, 0)), np.logical_not(c1)), 1, axis=1)
         contourLine =  np.logical_or(np.logical_or(c1, c2), c3)
 
         # set contour lines
@@ -419,8 +416,7 @@ class Contour():
         if self.par["indexContour"]:
             dem = self.generateIndexContour(dem, temp, topNeighbors, rightNeighbors)
 
-        # omitting boundary effects
-        dem[0] = dem[-1] = dem[:, -1] = dem[:, 0] = self.noData
+        dem[0] = dem[-1] = dem[:, -1] = dem[:, 0] = self.noData  # omitting boundary effects
 
         return dem
 
@@ -430,32 +426,32 @@ class Contour():
         intTempPlusOne = (temp + 1).astype('int32')
 
         # conditions for index contour lines
-        # C1. hereOutput >= topOutput && hereOutput >= rightOutput  && hereOutput >=0
-        # C2. hereOutput < topOutput && y > 0 && topOutput >= 0
-        # C3. hereOutput < rightOutput && x < width - 1 && rightOutput >= 0
+        # c1. hereOutput >= topOutput && hereOutput >= rightOutput  && hereOutput >=0
+        # c2. hereOutput < topOutput && y > 0 && topOutput >= 0
+        # c3. hereOutput < rightOutput && x < width - 1 && rightOutput >= 0
 
         c1 = np.logical_and(np.logical_and(np.logical_and(np.greater_equal(temp, topNeighbors),
              np.greater_equal(temp, rightNeighbors)), np.greater_equal(temp, 0)), np.not_equal(dem, self.noData))
         c2 = np.logical_and(np.logical_and(np.less(temp, topNeighbors), np.greater_equal(topNeighbors, 0)), np.not_equal(dem, self.noData))
         c3 = np.logical_and(np.logical_and(np.less(temp, rightNeighbors), np.greater_equal(rightNeighbors, 0)), np.not_equal(dem, self.noData))
 
-        # C4. <int>(hereOutput) % indexContourFactor == 0
-        # C5. <int>(hereOutput +1) % indexContourFactor == 0
-        # C6. hereOutput > topOutput
-        # C7. hereOutput > rightOutput
+        # c4. <int>(hereOutput) % indexContourFactor == 0
+        # c5. <int>(hereOutput +1) % indexContourFactor == 0
+        # c6. hereOutput > topOutput
+        # c7. hereOutput > rightOutput
 
         c4 = np.equal(intTemp % self.par["indexContourFactor"], 0)
         c5 = np.equal(intTempPlusOne % self.par["indexContourFactor"], 0)
         c6 = np.logical_and(np.greater(temp, topNeighbors), np.greater_equal(topNeighbors, 0))
         c7 = np.logical_and(np.greater(temp, rightNeighbors), np.greater_equal(rightNeighbors, 0))
 
-        # C8. C1. && C4.
-        # C9. C8. && C6. -> top neighbors
-        # C10. C8 && C7. -> right neighbors
+        # c8. c1. && c4.
+        # c9. c8. && c6. -> top neighbors
+        # c10. c8 && c7. -> right neighbors
 
-        c8 = np.logical_and(c1, c4)  # Combine c1 & c4
-        c9 = np.roll(np.logical_and(c8, c6), -1, axis=0)  # Combine c1, c4 & c6
-        c10 = np.roll(np.logical_and(c8, c7), 1, axis=1)  # Combine c1, c4 & c7
+        c8 = np.logical_and(c1, c4)  # combine c1 & c4
+        c9 = np.roll(np.logical_and(c8, c6), -1, axis=0)  # combine c1, c4 & c6
+        c10 = np.roll(np.logical_and(c8, c7), 1, axis=1)  # combine c1, c4 & c7
 
         # release memory
         del c1
@@ -463,13 +459,13 @@ class Contour():
         del c6
         del c7
 
-        # C11. C2. && C5.
-        # C12. C3. && C5.
-        # C13. C11. -> top neighbors
-        # C14. C12. -> right neighbors
+        # c11. c2. && c5.
+        # c12. c3. && c5.
+        # c13. c11. - top neighbors
+        # c14. c12. - right neighbors
 
-        c11 = np.logical_and(c2, c5)   # Combine c2 & c5
-        c12 = np.logical_and(c3, c5)   # Combine c3 & c5
+        c11 = np.logical_and(c2, c5)   # combine c2 & c5
+        c12 = np.logical_and(c3, c5)   # combine c3 & c5
         c13 = np.roll(c11, -1, axis=0)
         c14 = np.roll(c12, 1, axis=1)
 
