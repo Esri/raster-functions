@@ -206,9 +206,9 @@ class Contour():
         elif pixelType == 'i4':  return np.array([65535, ])  # signed integer 32 bit
         elif pixelType == 'i2':  return np.array([32767, ])  # signed integer 16 bit
         elif pixelType == 'i1':  return np.array([255, ])  # signed integer 8 bit
-        elif pixelType == 'u4':  return np.array([-65535, ])  # unsigned integer 32 bit
-        elif pixelType == 'u2':  return np.array([-32767, ])  # unsigned integer 16 bit
-        elif pixelType == 'u1':  return np.array([-255, ])  # unsigned integer 8 bit
+        elif pixelType == 'u4':  return np.array([-65536, ])  # unsigned integer 32 bit
+        elif pixelType == 'u2':  return np.array([-32768, ])  # unsigned integer 16 bit
+        elif pixelType == 'u1':  return np.array([-256, ])  # unsigned integer 8 bit
 
     # get minimum of input pixel block
     def calcRasterMin(self, dem):
