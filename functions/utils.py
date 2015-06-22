@@ -4,6 +4,7 @@ __all__ = ['isProductVersionOK',
            'Projection',
            'Trace']
 
+
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
 
@@ -28,32 +29,41 @@ def computeCellSize(props, sr=None, proj=None):
     if proj is None:
         proj = Projection()                                     # reproject extents
 
-    (xMin, xMax) = proj.transform(props['spatialReference'], sr, e[0], e[2])
-    (yMin, yMax) = proj.transform(props['spatialReference'], sr, e[1], e[3])
+    (xMin, yMin) = proj.transform(props['spatialReference'], sr, e[0], e[1])
+    (xMax, yMax) = proj.transform(props['spatialReference'], sr, e[2], e[3])
     return (xMax-xMin)/w, (yMax-yMin)/h                         # cell size of parent raster
+
+
+def isGeographic(s):
+    arcpy = __import__('arcpy')
+    sr = arcpy.SpatialReference()
+    sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
+    return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
+
 class Projection():
     def __init__(self):
-        pyprojModule = __import__('pyproj')
-        self._inProj, self._outProj = None, None
-        self._inEPSG, self._outEPSG = -1, -1
+        self.arcpy = __import__('arcpy')
+        self.inSR, self.outSR = None, None
 
-        self._projClass = getattr(pyprojModule, 'Proj')
-        self._transformFunc = getattr(pyprojModule, 'transform')
+    def transform(self, inSR, outSR, x, y):
+        if self.inSR != inSR:
+            self.inSR = self.createSR(inSR)
+        if self.outSR != outSR:
+            self.outSR = self.createSR(outSR)
+    
+        p = self.arcpy.PointGeometry(self.arcpy.Point(x, y), self.inSR, False, False)
+        q = p.projectAs(self.outSR)
+        return q.firstPoint.X, q.firstPoint.Y
 
-    def transform(self, inEPSG, outEPSG, x, y):
-        if inEPSG != self._inEPSG:
-            self._inProj = self._projClass("+init=EPSG:{0}".format(inEPSG))
-            self._inEPSG = inEPSG
-
-        if outEPSG != self._outEPSG:
-            self._outProj = self._projClass("+init=EPSG:{0}".format(outEPSG))
-            self._outEPSG = outEPSG
-
-        return self._transformFunc(self._inProj, self._outProj, x, y)
+    def createSR(self, s):
+        sr = self.arcpy.SpatialReference()
+        sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
+        return sr
+    
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
