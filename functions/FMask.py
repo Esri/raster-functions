@@ -64,14 +64,14 @@ class FMask():
         # used for cloud shadow detection
         self.sunElevation = kwargs['r1_keyMetadata'].get("sunelevation")
         self.sunAzimuth = kwargs['r1_keyMetadata'].get("sunazimuth")
-        self.sensorName = kwargs['r1_keyMetadata'].get('sensorname')
+        self.sensorName = kwargs['r1_keyMetadata'].get('sensorname').replace("-"," ")
 
         # check key metadata values
         if (self.sunAzimuth is None or self.sunElevation is None or self.sensorName is None or
            not(isinstance(self.sunAzimuth, float)) or not(isinstance(self.sunElevation, float)) or not(isinstance(self.sensorName, str))):
             raise Exception("Error: Key Metadata values not valid.")
 
-        if self.sensorName != "Landsat 8" and self.sensorName != "Landsat 7" and self.sensorName != "Landsat-5-TM":
+        if self.sensorName[0:9] != "Landsat 8" and self.sensorName[0:9] != "Landsat 7" and self.sensorName[0:9] != "Landsat 5" :
             raise Exception("Error: FMask function only works on Landsat 8, 7 and 5 imagery.")
 
         # get resolution of the input raster
@@ -80,7 +80,6 @@ class FMask():
 
         # output raster information
         kwargs['output_info']['bandCount'] = kwargs['r1_info']['bandCount']
-        kwargs['output_info']['pixelType'] = kwargs['r1_info']['pixelType']
         kwargs['output_info']['resampling'] = False
         return kwargs
 
@@ -98,7 +97,7 @@ class FMask():
         fmask = self.matchCloudObjects(ptm, temperature, tempLow, tempHigh, water, snow, cloud, shadow)
 
         # output pixel arrays of multispectral bands with masked features
-        pixelBlocks['output_pixels'] = pixels.astype('f4', copy=False)
+        pixelBlocks['output_pixels'] = pixels.astype(props['pixelType'], copy=False)
         pixelBlocks['output_mask'] = np.array([np.logical_not(fmask)] * shape[0]).astype('u1', copy=False)
 
         return pixelBlocks
