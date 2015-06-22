@@ -1,0 +1,114 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
+	<Name>FMask-Snow</Name>
+	<Description>A raster function template.</Description>
+	<Function xsi:type='typens:PythonAdapterFunction'>
+		<Name>FMask Function</Name>
+		<Description>Performs masking of Clouds, Clouds Shadow &amp; Snow in Landsat imagery</Description>
+		<PixelType>F32</PixelType>
+	</Function>
+	<Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
+		<Names xsi:type='typens:ArrayOfString'>
+			<String>PythonModule</String>
+			<String>ClassName</String>
+			<String>r1</String>
+			<String>r2</String>
+			<String>mask</String>
+		</Names>
+		<Values xsi:type='typens:ArrayOfAnyType'>
+			<AnyType xsi:type='xs:string'>../functions/FMask.pyd</AnyType>
+			<AnyType xsi:type='xs:string'>FMask</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>Raster1</Name>
+				<Description/>
+				<Value xsi:type='typens:RasterFunctionTemplate'>
+					<Name>Raster Function Template</Name>
+					<Description>A raster function template.</Description>
+					<Function xsi:type='typens:ReflectanceFunction'>
+						<Name>Apparent Reflectance Function</Name>
+						<Description>Computes apparent surface reflectance values for spaceborne sensors.</Description>
+						<PixelType>UNKNOWN</PixelType>
+					</Function>
+					<Arguments xsi:type='typens:ReflectanceFunctionArguments'>
+						<Names xsi:type='typens:ArrayOfString'>
+							<String>Raster</String>
+							<String>RadianceGainValues</String>
+							<String>RadianceBiasValues</String>
+							<String>ReflectanceBiasValues</String>
+							<String>ReflectanceGainValues</String>
+							<String>SunElevation</String>
+							<String>Albedo</String>
+							<String>__Properties</String>
+						</Names>
+						<Values xsi:type='typens:ArrayOfAnyType'>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>Raster</Name>
+								<Description/>
+								<Value/>
+								<IsDataset>true</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>RadianceGainValues_201563_55953_423</Name>
+								<Description/>
+								<Value xsi:type='typens:ArrayOfDouble'/>
+								<IsDataset>false</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>RadianceBiasValues_201563_55953_423</Name>
+								<Description/>
+								<Value xsi:type='typens:ArrayOfDouble'/>
+								<IsDataset>false</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>ReflectanceBiasValues_201563_55953_423</Name>
+								<Description/>
+								<Value/>
+								<IsDataset>false</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>ReflectanceGainValues_201563_55953_423</Name>
+								<Description/>
+								<Value/>
+								<IsDataset>false</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='typens:RasterFunctionVariable'>
+								<Name>SunElevation_201563_55953_423</Name>
+								<Description/>
+								<Value/>
+								<IsDataset>false</IsDataset>
+							</AnyType>
+							<AnyType xsi:type='xs:boolean'>true</AnyType>
+							<AnyType xsi:type='typens:PropertySet'>
+								<PropertyArray xsi:type='typens:ArrayOfPropertySetProperty'/>
+							</AnyType>
+						</Values>
+					</Arguments>
+					<Help/>
+					<Type>0</Type>
+					<Thumbnail/>
+					<Definition/>
+					<Group/>
+					<Tag/>
+				</Value>
+				<IsDataset>true</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>Raster2</Name>
+				<Description/>
+				<Value/>
+				<IsDataset>true</IsDataset>
+			</AnyType>
+			<AnyType xsi:type='typens:RasterFunctionVariable'>
+				<Name>mask</Name>
+				<Description/>
+				<Value xsi:type='xs:string'>Mask Snow</Value>
+				<IsDataset>false</IsDataset>
+			</AnyType>
+		</Values>
+	</Arguments>
+	<Help/>
+	<Type>0</Type>
+	<Thumbnail/>
+	<Definition/>
+	<Group/>
+	<Tag/>
+</RasterFunctionTemplate>
