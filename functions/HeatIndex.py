@@ -6,8 +6,7 @@ class HeatIndex():
     def __init__(self):
         self.name = "Heat Index Function"
         self.description = "This function combines ambient air temperature and relative humidity to return apparent temperature in degrees Fahrenheit."
-        self.doConversion = False
-
+        self.units = 'f'
 
     def getParameterInfo(self):
         return [
@@ -24,7 +23,7 @@ class HeatIndex():
                 'dataType': 'string',
                 'value': 'Fahrenheit',
                 'required': True,
-                'domain': ('Celsius', 'Fahrenheit'),
+                'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
                 'displayName': "Temperature Measured In",
                 'description': "The unit of measurement associated with the temperature raster."
             },
@@ -51,14 +50,16 @@ class HeatIndex():
         kwargs['output_info']['histogram'] = ()     # we know nothing about the histogram of the outgoing raster.
         kwargs['output_info']['pixelType'] = 'f4'   # bit-depth of the outgoing HeatIndex raster based on user-specified parameters
 
-        self.doConversion = bool(kwargs.get('units', 'Fahrenheit').lower() == 'Celsius')
+        self.units = kwargs.get('units', 'Fahrenheit').lower()[0]
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)
         r = np.array(pixelBlocks['rh_pixels'], dtype='f4', copy=False)
 
-        if self.doConversion:
+        if self.units == 'k':
+            t = (9./5. * (t - 273.15)) + 32.
+        elif self.units == 'c':
             t = (9./5. * t) + 32.
 
         tr = t * r
@@ -68,7 +69,10 @@ class HeatIndex():
         trr = t * rr
         ttrr = ttr * r
 
-        outBlock = -42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) + (0.00085282 * trr) - (0.00000199 * ttrr)
+        outBlock = (-42.379 + (2.04901523 * t) + (10.14333127 * r) - (0.22475541 * tr) 
+                    - (0.00683783 * tt) - (0.05481717 * rr) + (0.00122874 * ttr) 
+                    + (0.00085282 * trr) - (0.00000199 * ttrr))
+
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)
         return pixelBlocks
 
