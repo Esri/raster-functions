@@ -13,7 +13,7 @@
       <String>raster</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">../functions/MultidirectionalHillshade.py</AnyType>
+      <AnyType xsi:type="xs:string">../functions/MultidirectionalHillshade.pyd</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Raster</Name>
         <Description></Description>

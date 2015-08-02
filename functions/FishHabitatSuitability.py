@@ -33,16 +33,14 @@ class FishHabitatSuitability():
                 'required': True,
                 'displayname': "Ocean Depth",
                 'description': "A numeric value representing ocean depth in meters.",
-            }   
+            },
         ]
-
 
     def getConfiguration(self, **scalars):
         return {
             'inheritProperties': 2 | 4 | 8,     # inherit everything but the pixel type (1)
             'invalidateProperties': 2 | 4 | 8   # invalidate these aspects because we are modifying pixels and key metadata
         }
-
 
     def updateRasterInfo(self, **kwargs):
         kwargs['output_info']['bandCount'] = 1
@@ -70,10 +68,9 @@ class FishHabitatSuitability():
         self.depth = d
         return kwargs
 
-
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4')
-        s = np.array(pixelBlocks['salinity_pixels'], dtype='f4')
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)
+        s = np.array(pixelBlocks['salinity_pixels'], dtype='f4', copy=False)
 
         # piece-wise linear parameters for temperature...
         tMinA = 17.99
@@ -98,9 +95,8 @@ class FishHabitatSuitability():
         np.putmask(s, s < 0, 0)
 
         # get overall probability by tying all conditions
-        pixelBlocks['output_pixels'] = np.array(t * s * self.depth).astype(props['pixelType'])
+        pixelBlocks['output_pixels'] = np.array(t * s * self.depth).astype(props['pixelType'], copy=False)
         return pixelBlocks
-
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
