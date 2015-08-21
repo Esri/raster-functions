@@ -22,6 +22,7 @@
         <IsDataset>true</IsDataset>
         <Aliases xsi:type="typens:ArrayOfString">
           <String>Raster1</String>
+          <String>t@SFC</String>
         </Aliases>
       </AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
@@ -31,6 +32,8 @@
         <IsDataset>true</IsDataset>
         <Aliases xsi:type="typens:ArrayOfString">
           <String>Raster2</String>
+          <String>Windspeed</String>
+          <String>windspd@SFC</String>
         </Aliases>
       </AnyType>
     </Values>
