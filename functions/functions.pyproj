@@ -26,7 +26,7 @@
     <Compile Include="ConvertPerSecondToPerMonth.py" />
     <Compile Include="Cythonize.py" />
     <Compile Include="FishHabitatSuitability.py" />
-    <Compile Include="FocalStatistics.py" />
+    <Compile Include="BlockStatistics.py" />
     <Compile Include="HeatIndex.py" />
     <Compile Include="Hillshade.py" />
     <Compile Include="KeyMetadata.py" />
@@ -35,6 +35,7 @@
     <Compile Include="NDVI.py" />
     <Compile Include="Random.py" />
     <Compile Include="Reference.py" />
+    <Compile Include="Resample.py" />
     <Compile Include="SelectByPixelSize.py" />
     <Compile Include="utils.py" />
     <Compile Include="VineyardAnalysis.py" />
