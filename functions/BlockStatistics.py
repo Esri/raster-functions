@@ -1,5 +1,6 @@
 import numpy as np
-from skimage import measure
+from skimage.transform import resize
+from skimage.util import view_as_blocks
 
 
 class BlockStatistics():
@@ -8,7 +9,8 @@ class BlockStatistics():
         self.name = "Block Statistics Function"
         self.description = ("Generates a downsampled output raster by computing a statistical "
                             "measure over non-overlapping square blocks of pixels in the input raster.")
-        self.measure = np.mean
+        self.func = np.mean
+
 
     def getParameterInfo(self):
         return [
@@ -50,14 +52,16 @@ class BlockStatistics():
             },
         ]
 
+
     def getConfiguration(self, **scalars):
         return { 
             'samplingFactor': scalars.get('size', 1.0),
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,      # invalidate histogram, statistics, and key metadata
-            'inputMask': True 
+            'inputMask': True,
         }
         
+
     def updateRasterInfo(self, **kwargs):
         f = kwargs.get('factor', 1.0)
         kwargs['output_info']['resampling'] = False
@@ -68,36 +72,42 @@ class BlockStatistics():
 
         m = kwargs.get('measure', 'Mean')
         if m.lower() == 'minimum':
-            self.measure = np.min
+            self.func = np.min
         elif m.lower() == 'maximum':
-            self.measure = np.max
+            self.func = np.max
         elif m.lower() == 'mean':
-            self.measure = np.mean
+            self.func = np.mean
         elif m.lower() == 'median':
-            self.measure = np.median
+            self.func = np.median
         elif m.lower() == 'sum':
-            self.measure = np.sum
+            self.func = np.sum
         elif m.lower() == 'nearest':
-            self.measure = None
+            self.func = None
 
         return kwargs
 
-    def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        p = pixelBlocks['raster_pixels']
 
-        if self.measure is None:
-            b = resize(p, shape, order=0, preserve_range=True)
+    def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        if self.func is None:
+            b = resize(pixelBlocks['raster_pixels'], shape, order=0, preserve_range=True)
+            m = resize(pixelBlocks['raster_mask'], shape, order=0, preserve_range=True)
         else:
+            p = pixelBlocks['raster_pixels']
             blockSizes = tuple(np.divide(p.shape, shape))
-            b = measure.block_reduce(p, blockSizes, self.measure)
+
+            q = np.ma.masked_array(view_as_blocks(p, blockSizes), 
+                                   view_as_blocks(~pixelBlocks['raster_mask'].astype('b1'), blockSizes))
+            for i in range(len(q.shape) // 2):
+                q = self.func(q, axis=-1)
+            b = q.data
+            m = ~q.mask
 
         pixelBlocks['output_pixels'] = b.astype(props['pixelType'], copy=False)
+        pixelBlocks['output_mask'] = m.astype('u1', copy=False)
         return pixelBlocks
+
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
             keyMetadata['datatype'] = 'Processed'
-        elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None
-            keyMetadata['wavelengthmax'] = None
         return keyMetadata
