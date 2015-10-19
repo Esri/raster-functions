@@ -11,7 +11,6 @@ class BlockStatistics():
                             "measure over non-overlapping square blocks of pixels in the input raster.")
         self.func = np.mean
 
-
     def getParameterInfo(self):
         return [
             {
@@ -52,22 +51,20 @@ class BlockStatistics():
             },
         ]
 
-
     def getConfiguration(self, **scalars):
-        return { 
+        return {
             'samplingFactor': scalars.get('size', 1.0),
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,      # invalidate histogram, statistics, and key metadata
             'inputMask': True,
         }
-        
 
     def updateRasterInfo(self, **kwargs):
         f = kwargs.get('factor', 1.0)
         kwargs['output_info']['resampling'] = False
         kwargs['output_info']['cellSize'] = tuple(np.multiply(kwargs['raster_info']['cellSize'], f))
         kwargs['output_info']['pixelType'] = 'f4'   # output pixels values are floating-point
-        kwargs['output_info']['statistics'] = () 
+        kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
         m = kwargs.get('measure', 'Mean')
@@ -86,26 +83,23 @@ class BlockStatistics():
 
         return kwargs
 
-
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        if self.func is None:
-            b = resize(pixelBlocks['raster_pixels'], shape, order=0, preserve_range=True)
-            m = resize(pixelBlocks['raster_mask'], shape, order=0, preserve_range=True)
-        else:
-            p = pixelBlocks['raster_pixels']
-            blockSizes = tuple(np.divide(p.shape, shape))
+        p = pixelBlocks['raster_pixels']
+        m = pixelBlocks['raster_mask']
 
-            q = np.ma.masked_array(view_as_blocks(p, blockSizes), 
-                                   view_as_blocks(~pixelBlocks['raster_mask'].astype('b1'), blockSizes))
-            for i in range(len(q.shape) // 2):
-                q = self.func(q, axis=-1)
-            b = q.data
-            m = ~q.mask
+        if self.func is None:
+            b = resize(p, shape, order=0, preserve_range=True)
+        else:
+            blockSizes = tuple(np.divide(p.shape, shape))
+            b = np.ma.masked_array(view_as_blocks(p, blockSizes),
+                                   view_as_blocks(~m.astype('b1'), blockSizes))
+            for i in range(len(b.shape) // 2):
+                b = self.func(b, axis=-1)
+            b = b.data
 
         pixelBlocks['output_pixels'] = b.astype(props['pixelType'], copy=False)
-        pixelBlocks['output_mask'] = m.astype('u1', copy=False)
+        pixelBlocks['output_mask'] = resize(m, shape, order=0, preserve_range=True).astype('u1', copy=False)
         return pixelBlocks
-
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
