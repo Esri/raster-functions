@@ -27,7 +27,7 @@
     <Compile Include="Cythonize.py" />
     <Compile Include="FishHabitatSuitability.py" />
     <Compile Include="BlockStatistics.py" />
-    <Compile Include="FocalStatistics.py" />
+    <Compile Include="RankFilter.py" />
     <Compile Include="HeatIndex.py" />
     <Compile Include="Hillshade.py" />
     <Compile Include="KeyMetadata.py" />

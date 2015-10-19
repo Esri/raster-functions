@@ -37,7 +37,8 @@ class RankFilter():
                 'value': 'Mean',
                 'required': False,
                 'displayName': "Measure",
-                'domain': ('Minimum', 'Maximum', 'Mean', 'Bilateral Mean', 'Median', 'Sum', 'Entropy', 'Threshold', 'Autolevel'),
+                'domain': ('Minimum', 'Maximum', 'Mean', 'Bilateral Mean', 'Median', 
+                           'Sum', 'Entropy', 'Threshold', 'Autolevel'),
                 'description': ("")
             },
         ]
@@ -76,7 +77,6 @@ class RankFilter():
             self.func = rank.threshold
         elif m == 'autolevel':
             self.func = rank.autolevel
-
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
