@@ -67,18 +67,18 @@ class BlockStatistics():
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
-        m = kwargs.get('measure', 'Mean')
-        if m.lower() == 'minimum':
+        m = kwargs.get('measure', 'Mean').lower()
+        if m == 'minimum':
             self.func = np.min
-        elif m.lower() == 'maximum':
+        elif m == 'maximum':
             self.func = np.max
-        elif m.lower() == 'mean':
+        elif m == 'mean':
             self.func = np.mean
-        elif m.lower() == 'median':
+        elif m == 'median':
             self.func = np.median
-        elif m.lower() == 'sum':
+        elif m == 'sum':
             self.func = np.sum
-        elif m.lower() == 'nearest':
+        elif m == 'nearest':
             self.func = None
 
         return kwargs
