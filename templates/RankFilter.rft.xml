@@ -18,49 +18,19 @@
       <AnyType xsi:type='xs:string'>..\functions\RankFilter.py</AnyType>
       <AnyType xsi:type='xs:string'>RankFilter</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>raster_20151019_234926_222</Name>
+        <Name>Raster</Name>
         <Description></Description>
-        <Value xsi:type='typens:RasterFunctionTemplate'>
-          <Name>Raster Function Template</Name>
-          <Description>A raster function template.</Description>
-          <Function xsi:type='typens:ExtractBandFunction'>
-            <Name>Extract Band Function</Name>
-            <Description>Reorders or extracts bands from a raster.</Description>
-            <PixelType>UNKNOWN</PixelType>
-          </Function>
-          <Arguments xsi:type='typens:ExtractBandFunctionArguments'>
-            <Names xsi:type='typens:ArrayOfString'>
-              <String>Raster</String>
-              <String>BandIDs</String>
-            </Names>
-            <Values xsi:type='typens:ArrayOfAnyType'>
-              <AnyType xsi:type='typens:RasterFunctionVariable'>
-                <Name>Raster</Name>
-                <Description></Description>
-                <Value></Value>
-                <IsDataset>true</IsDataset>
-              </AnyType>
-              <AnyType xsi:type='typens:RasterFunctionVariable'>
-                <Name>BandIDs_20151019_23457_325</Name>
-                <Description></Description>
-                <Value xsi:type='typens:ArrayOfInt'>
-                  <Int>0</Int>
-                </Value>
-                <IsDataset>false</IsDataset>
-              </AnyType>
-            </Values>
-          </Arguments>
-        </Value>
+        <Value></Value>
         <IsDataset>true</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>size_20151019_234436_161</Name>
+        <Name>size</Name>
         <Description></Description>
         <Value xsi:type='xs:double'>5</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>measure_20151019_234436_161</Name>
+        <Name>measure</Name>
         <Description></Description>
         <Value xsi:type='xs:string'>Entropy</Value>
         <IsDataset>false</IsDataset>
