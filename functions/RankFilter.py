@@ -3,7 +3,7 @@ from skimage.transform import resize
 from skimage.util import view_as_blocks
 from skimage.filters import rank
 from skimage.morphology import square
-
+from utils import Trace
 
 class RankFilter():
 
@@ -11,7 +11,8 @@ class RankFilter():
         self.name = "Rank Filter Function"
         self.description = ("")
         self.func = rank.mean
-        self.windowSize = 3
+        self.window = None
+        self.trace = Trace()
 
     def getParameterInfo(self):
         return [
@@ -51,14 +52,15 @@ class RankFilter():
         }
 
     def updateRasterInfo(self, **kwargs):
+        #if kwargs['raster_info'].get('bandCount', 1) > 1:
+        #    raise ValueError("Input raster must have one band only.")
+
         kwargs['output_info']['resampling'] = False
-        kwargs['output_info']['pixelType'] = 'f4'   # output pixels values are floating-point
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
-        self.windowSize = int(kwargs.get('size', 3))
+        self.window = square(int(kwargs.get('size', 3)))
         m = kwargs.get('measure', 'Mean').lower()
-
         if m == 'minimum':
             self.func = rank.minimum
         elif m == 'maximum':
@@ -80,9 +82,14 @@ class RankFilter():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        p = np.array(pixelBlocks['raster_pixels'], dtype='u1', copy=False)
-        b = self.func(p, selem=square(self.windowSize), mask=pixelBlocks['raster_mask'])
-        pixelBlocks['output_pixels'] = b.astype(props['pixelType'], copy=False)
+        p = pixelBlocks['raster_pixels']
+        m = pixelBlocks['raster_mask']
+
+        q = np.empty(p.shape)
+        for b in range(p.shape[0]): 
+            q[b] = self.func(p[b], selem=self.window, mask=m[b])
+
+        pixelBlocks['output_pixels'] = q.astype(props['pixelType'], copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
