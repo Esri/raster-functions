@@ -52,9 +52,6 @@ class RankFilter():
         }
 
     def updateRasterInfo(self, **kwargs):
-        #if kwargs['raster_info'].get('bandCount', 1) > 1:
-        #    raise ValueError("Input raster must have one band only.")
-
         kwargs['output_info']['resampling'] = False
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()

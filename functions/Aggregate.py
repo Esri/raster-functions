@@ -45,6 +45,7 @@ class Aggregate():
         }
 
     def updateRasterInfo(self, **kwargs):
+        kwargs['output_info']['resampling'] = False # process at native resolution
         kwargs['output_info']['pixelType'] = 'f4'   # output pixels are floating-point values
         kwargs['output_info']['noData'] = None      # we'll set the mask updatePixels()
         kwargs['output_info']['histogram'] = ()     # no statistics/histogram for output raster specified
