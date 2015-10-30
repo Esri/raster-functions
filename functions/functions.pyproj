@@ -25,6 +25,7 @@
     <Compile Include="Arithmetic.py" />
     <Compile Include="ConvertPerSecondToPerMonth.py" />
     <Compile Include="Cythonize.py" />
+    <Compile Include="FillRaster.py" />
     <Compile Include="FishHabitatSuitability.py" />
     <Compile Include="BlockStatistics.py" />
     <Compile Include="RankFilter.py" />

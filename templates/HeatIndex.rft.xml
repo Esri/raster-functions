@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
   <Name>HeatIndex</Name>
-  <Description>A raster function template.</Description>
+  <Description>A raster function template that combines ambient air temperature and relative humidity to return apparent temperature in degrees Fahrenheit.</Description>
   <Function xsi:type="typens:PythonAdapterFunction">
     <Name>HeatIndex</Name>
     <Description></Description>
