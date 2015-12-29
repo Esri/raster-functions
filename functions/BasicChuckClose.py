@@ -63,7 +63,7 @@ class BasicChuckClose():
         chuck_close = np.zeros(inBlock_dem.shape)
         x, y = inBlock_dem.shape
         square_size = 13.0
-        pixel_buffer = 6
+        pixel_buffer = 7
         maximum = np.max(inBlock_dem)
         minimum = np.min(inBlock_dem)
         spread = maximum-minimum
