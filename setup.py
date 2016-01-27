@@ -117,15 +117,28 @@ def main():
         arcpy = __import__('arcpy')
         info = arcpy.GetInstallInfo()
 
-        minVersion = '10.3.1'
-        if tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, (minVersion.split(".")))):
-            raise Exception("No ArcGIS")
+        bVersionOK = True
+        
+        minArcGISVersion = '10.3.1'
+        if info['Version'].split(".")[0] == 10 and (tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, (minArcGISVersion.split("."))))):
+           bVersionOK = False
 
+        minProVersion = '1.0'
+        if info['Version'].split(".")[0] == 1 and (tuple(map(int, (info['Version'].split(".")))) < tuple(map(int, (minProVersion.split("."))))):
+           bVersionOK = False
+
+        if not bVersionOK:
+           raise Exception("No ArcGIS")
+               
         print("\n\n")
-        log("Python extensions for raster functions in ArcGIS {} {} build {} successfully installed.".format(
-            info['ProductName'], info['Version'], info['BuildNumber']))
+        if info['Version'][0] == 10:
+            log("Python extensions for raster functions in ArcGIS {} {} build {} successfully installed.".format(
+                info['ProductName'], info['Version'], info['BuildNumber']))
+        else:
+            log("Python extensions for raster functions in {} {} build {} successfully installed.".format(
+                info['ProductName'], info['Version'], info['BuildNumber']))
     except:
-        logging.warn("Unable to find ArcGIS 10.3.1 or above.")
+        logging.warn("Unable to find ArcGIS 10.3.1/ArcGIS Pro 1.0 or above.")
 
     log("Done.")
     sleep(2)
