@@ -2,7 +2,8 @@ __all__ = ['isProductVersionOK',
            'computePixelBlockExtents',
            'computeCellSize',
            'Projection',
-           'Trace']
+           'Trace',
+           'ZonalThresholdsTable',]
 
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
@@ -63,7 +64,7 @@ class Projection():
         sr = self.arcpy.SpatialReference()
         sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
         return sr
-    
+
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
@@ -80,3 +81,90 @@ class Trace():
         return s
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+
+
+class ZonalThresholdsTable():
+    def __init__(self, tableUri, 
+                 idField="ObjectID", 
+                 minField="MinValue", 
+                 maxField="MaxValue", 
+                 outField="OutValue"):
+        if idField is None:
+            raise Exception("TODO");
+
+        if tableUri is None:
+            raise Exception("TODO");
+
+        self.tableUri = tableUri
+        self.idField  = idField.lower()  if idField  else None
+        self.minField = minField.lower() if minField else None
+        self.maxField = maxField.lower() if maxField else None
+        self.outField = outField.lower() if outField else None
+        
+        self.fieldList = [a for a in [self.idField, self.minField, self.maxField, self.outField] 
+                          if (a is not None and len(a))]
+        self.fieldCSV = ",".join(self.fieldList)
+
+        self.queryUrl = None    # indicator of remote URL vs local table
+        s = tableUri.lower()
+        if s.startswith('http://') or s.startswith('https://'):
+            self.queryUrl = tableUri + ('/query' if tableUri[-1] != '/' else 'query')
+            self.urllib = __import__('urllib')
+            self.json = __import__('json')
+        else:
+            self.arcpy = __import__('arcpy')
+
+
+    def query(self, idList=[], where=None, extent=None, sr=None):
+        if self.queryUrl:
+            return self._queryFeatureService(self, idList, where, extent, sr)
+        else:
+            return self._queryTable(self, idList, where, extent, sr)
+
+    def _queryTable(self, idList=[], where=None, extent=None, sr=None):
+        T = {}
+        with self.arcpy.da.SearchCursor(tableName, fieldNames) as cursor:
+            for row in cursor:
+                if row[0]:
+                    T.update({row[0]: (row[1], row[2], row[3])})
+        return T
+
+    def _queryFeatureService(self, idList=[], where=None, extent=None, sr=None):
+        p = {'f': 'json', 'returnGeometry': 'false'}
+        p.update({'outFields': self.fieldCSV})
+        
+        w = None
+        if idList and len(idList):
+            w = "{0} IN ({1})".format(self.idField, ",".join(str(z) for z in idList))
+
+        w = "( {0} ){1}( {2} )".format(w if w else "", 
+                                       " AND " if w and where and len(where) else "", 
+                                       where if where else "")
+        if w and len(w): 
+            p.update({'where': w})
+
+        if extent and len(extent) == 4 and sr and isinstance(sr, int): 
+            p.update({'geometryType': 'esriGeometryEnvelope',
+                      'geometry': {'xmin': extent[0], 
+                                   'ymin': extent[1],
+                                   'xmax': extent[2],
+                                   'ymax': extent[3]},
+                      'inSR': {'latestWkid': int(sr)},
+                      'spatialRel': 'esriSpatialRelEnvelopeIntersects'})
+
+        T = {}
+        r = self.urllib.urlopen(self.queryUrl, self.urllib.urlencode(p)).read()
+
+        responseJO = self.json.loads(r)
+        featuresJA = responseJO.get('features', None)
+        if featuresJA is not None:
+            for featureJO in featuresJA:
+                attrJO = featureJO.get('attributes', None)
+                if attrJO is not None:
+                    id = attrJO.get(self.idField, None)
+                    if id:
+                        minValue = attrJO.get(self.minField, None)
+                        maxValue = attrJO.get(self.maxField, None)
+                        outValue = attrJO.get(self.outField, None)
+                        T.update({id: (minValue, maxValue, outValue)})
+        return T
