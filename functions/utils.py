@@ -114,34 +114,27 @@ class ZonalThresholdsTable():
         else:
             self.arcpy = __import__('arcpy')
 
-
     def query(self, idList=[], where=None, extent=None, sr=None):
+        w = self._constructWhereClause(idList, where)
         if self.queryUrl:
-            return self._queryFeatureService(self, idList, where, extent, sr)
+            return self._queryFeatureService(w, extent, sr)
         else:
-            return self._queryTable(self, idList, where, extent, sr)
+            return self._queryTable(w, extent, sr)
 
-    def _queryTable(self, idList=[], where=None, extent=None, sr=None):
+    def _queryTable(self, where=None, extent=None, sr=None):
         T = {}
-        with self.arcpy.da.SearchCursor(tableName, fieldNames) as cursor:
+        with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
                 if row[0]:
                     T.update({row[0]: (row[1], row[2], row[3])})
         return T
 
-    def _queryFeatureService(self, idList=[], where=None, extent=None, sr=None):
+    def _queryFeatureService(self, where=None, extent=None, sr=None):
         p = {'f': 'json', 'returnGeometry': 'false'}
         p.update({'outFields': self.fieldCSV})
         
-        w = None
-        if idList and len(idList):
-            w = "{0} IN ({1})".format(self.idField, ",".join(str(z) for z in idList))
-
-        w = "( {0} ){1}( {2} )".format(w if w else "", 
-                                       " AND " if w and where and len(where) else "", 
-                                       where if where else "")
-        if w and len(w): 
-            p.update({'where': w})
+        if where and len(where): 
+            p.update({'where': where})
 
         if extent and len(extent) == 4 and sr and isinstance(sr, int): 
             p.update({'geometryType': 'esriGeometryEnvelope',
@@ -168,3 +161,14 @@ class ZonalThresholdsTable():
                         outValue = attrJO.get(self.outField, None)
                         T.update({id: (minValue, maxValue, outValue)})
         return T
+
+    def _constructWhereClause(self, idList=[], where=None):
+        w1 = "( " + where + " )" if where and len(where) else None
+        if idList and len(idList): 
+            w2 = "( {0} IN ({1}) )".format(self.idField, ",".join(str(z) for z in idList)) 
+        else:
+            w2 = None
+
+        return "{0}{1}{2}".format(w1 if w1 else "", 
+                                  " AND " if w1 and w2 else "", 
+                                  w2 if w2 else "")
