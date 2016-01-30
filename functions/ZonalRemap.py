@@ -7,12 +7,12 @@ class ZonalRemap():
     def __init__(self):
         self.name = "Zonal Remap"
         self.description = ""
-        self.ztMap = {}                        # zonal thresholds { zoneId:[zMin,zMax,zVal], ... }
-        self.isUrl = False
-        self.ztTable = None
+        self.ztMap = {}                 # zonal thresholds { zoneId:[zMin,zMax,zVal], ... }
+        self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = 0
         self.defaultTarget = 255
         self.trace = Trace()
+        self.whereClause = None
 
     def getParameterInfo(self):
         return [
@@ -49,7 +49,9 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Zone ID Field Name",
-                'description': "TODO"
+                'description': ("Name of the field containing the Zone ID values. "
+                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "or a URL to a feature service.")
             },
             {
                 'name': 'zmin',
@@ -57,7 +59,10 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Minimum Value Field Name",
-                'description': "TODO"
+                'description': ("Name of the field containing the minimum value above which an input pixel gets remapped. "
+                                "If left unspecified--or if the field value is null--pixel values are not tested for minimum. "
+                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "or a URL to a feature service.")
             },
             {
                 'name': 'zmax',
@@ -65,7 +70,10 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Maximum Value Field Name",
-                'description': "TODO"
+                'description': ("Name of the field containing the maximum value below which an input pixel gets remapped. "
+                                "If left unspecified--or if the field value is null--pixel values are not tested for maximum. "
+                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "or a URL to a feature service.")
             },
             {
                 'name': 'zval',
@@ -73,15 +81,20 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Target Value Field Name",
-                'description': "TODO"
+                'description': ("Name of the field containing the target value to which an input pixel gets remapped. "
+                                "If left unspecified--or if the field value is null--remapped pixel values are set "
+                                "to the 'Default Target Value'. "
+                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "or a URL to a feature service.")
             },
             {
                 'name': 'background',
                 'dataType': 'numeric',
-                'value': 0,
+                'value': None,
                 'required': False,
                 'displayName': "Background Value",
-                'description': "TODO"
+                'description': ("The initial pixel value of the output raster--before input pixels are remapped. "
+                                "If unspecified, output pixels are initialized to unremapped input pixels.")
             },
             {
                 'name': 'defzval',
@@ -89,15 +102,33 @@ class ZonalRemap():
                 'value': 255,
                 'required': False,
                 'displayName': "Default Target Value",
-                'description': "TODO"
+                'description': ("The default remap/target value of threshold. "
+                                "This is the value of the output pixel if either the 'zval' parameter is left unspecified "
+                                "or if the target value of the corresponding zonal threshold is left unspecified.")
             },
-
-            ### TODO: use time field
+            {
+                'name': 'groupfield',
+                'dataType': 'string',
+                'value': None,
+                'required': False,
+                'displayName': "Group Field Name",
+                'description': ("TODO")
+            },
+            {
+                'name': 'groupvalue',
+                'dataType': 'string',
+                'value': None,
+                'required': False,
+                'displayName': "Group Value",
+                'description': ("TODO")
+            },
         ]
 
 
     def updateRasterInfo(self, **kwargs):
         self.ztMap = None
+        self.whereClause = None
+
         ztStr = kwargs.get('ztable', "{}").strip()
 
         try:
@@ -115,6 +146,12 @@ class ZonalRemap():
 
         self.background = int(kwargs.get('background', 0))
         self.defaultTarget = int(kwargs.get('defzval', 255))
+
+        gField = kwargs.get('groupfield', None)
+        gValue = kwargs.get('groupvalue', None)
+        if gField and gValue:
+            self.whereClause = "{0} = {1}".format(str(gField), str(gValue))
+
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = () 
@@ -134,26 +171,30 @@ class ZonalRemap():
         if self.ztTable:
             zoneIds = list(set(uniqueIds) - set(self.ztMap.keys()))
             if len(zoneIds):
-                self.ztMap.update(self.ztTable.query(zoneIds))
+                self.ztMap = self.ztTable.query(idList=zoneIds, 
+                                                where=self.whereClause, 
+                                                extent=props['extent'], 
+                                                sr=props['spatialReference'])
             self.trace.log("Trace|ZonalRemap.updatePixels|ZT:{0}|ZoneIDs:{1}|".format(str(self.ztMap), str(zoneIds)))
 
         # output's all ones to begin with
         p = np.full(v.shape, self.background, dtype='u1')
 
         # use zonal thresholds to update output pixels...
-        for k in uniqueIds:
-            t = self.ztMap.get(k, None)                     # k from z might not be in ztMap
-            if not t:
-                continue
+        if self.ztMap and len(self.ztMap.keys()):
+            for k in uniqueIds:
+                t = self.ztMap.get(k, None)                     # k from z might not be in ztMap
+                if not t:
+                    continue
 
-            I = (z == k)
-            if t[0] and t[1]:                               # min and max are both available
-                I = I & (v > t[0]) & (v < t[1])
-            else:
-                I = I & (v > t[0]) if t[0] else (v < t[1])  # either min or max is available
+                I = (z == k)
+                if t[0] and t[1]:                               # min and max are both available
+                    I = I & (v > t[0]) & (v < t[1])
+                else:
+                    I = I & (v > t[0]) if t[0] else (v < t[1])  # either min or max is available
             
-            # all pixels where zoneID is k, which are out of range, set to outValue or 0
-            p[I] = (t[2] if t[2] is not None else self.defaultTarget)
+                # all pixels where zoneID is k, which are out of range, set to outValue or 0
+                p[I] = (t[2] if t[2] is not None else self.defaultTarget)
 
         pixelBlocks['output_pixels'] = p.astype(props['pixelType'], copy=False)
         return pixelBlocks

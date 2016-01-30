@@ -105,23 +105,22 @@ class ZonalThresholdsTable():
                           if (a is not None and len(a))]
         self.fieldCSV = ",".join(self.fieldList)
 
+        self.arcpy = __import__('arcpy')
         self.queryUrl = None    # indicator of remote URL vs local table
         s = tableUri.lower()
         if s.startswith('http://') or s.startswith('https://'):
             self.queryUrl = tableUri + ('/query' if tableUri[-1] != '/' else 'query')
             self.urllib = __import__('urllib')
             self.json = __import__('json')
-        else:
-            self.arcpy = __import__('arcpy')
 
     def query(self, idList=[], where=None, extent=None, sr=None):
         w = self._constructWhereClause(idList, where)
-        if self.queryUrl:
-            return self._queryFeatureService(w, extent, sr)
+        if not self.queryUrl:
+            return self._queryTable(w)
         else:
-            return self._queryTable(w, extent, sr)
+            return self._queryFeatureService(w, extent, sr)
 
-    def _queryTable(self, where=None, extent=None, sr=None):
+    def _queryTable(self, where=None):
         T = {}
         with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
@@ -136,13 +135,22 @@ class ZonalThresholdsTable():
         if where and len(where): 
             p.update({'where': where})
 
-        if extent and len(extent) == 4 and sr and isinstance(sr, int): 
+        if extent and len(extent) == 4 and sr:
+            _sr = sr
+            if not isinstance(sr, self.arcpy.SpatialReference) and isinstance(sr, (str, int, long)):
+                _sr = self.arcpy.SpatialReference()
+                _sr.loadFromString(str(sr))
+
+            if _sr.factoryCode > 0:
+                p.update({'inSR': {'latestWkid': _sr.factoryCode}})
+            else:
+                p.update({'inSR': {'wkt': _sr.exportToString()}})
+
             p.update({'geometryType': 'esriGeometryEnvelope',
                       'geometry': {'xmin': extent[0], 
                                    'ymin': extent[1],
                                    'xmax': extent[2],
                                    'ymax': extent[3]},
-                      'inSR': {'latestWkid': int(sr)},
                       'spatialRel': 'esriSpatialRelEnvelopeIntersects'})
 
         T = {}
