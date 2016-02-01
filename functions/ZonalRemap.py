@@ -1,6 +1,6 @@
 import numpy as np
-from utils import ZonalThresholdsTable, Trace
 import json
+from utils import ZonalThresholdsTable
 
 class ZonalRemap():
 
@@ -11,7 +11,6 @@ class ZonalRemap():
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = None
         self.defaultTarget = 255
-        self.trace = Trace()
         self.whereClause = None
 
     def getParameterInfo(self):
@@ -174,14 +173,10 @@ class ZonalRemap():
         #   - request dictionary for IDs not previously seen
         #   - update ztMap
         if self.ztTable and len(zoneIds):
-            # TODO: Consider maintaining a local cache of thresholds (and request for yet unseen IDs only)
-            # zoneIds = list(set(uniqueIds) - set(self.ztMap.keys())) 
-            
             self.ztMap = self.ztTable.query(idList=zoneIds, 
                                             where=self.whereClause, 
                                             extent=props['extent'], 
                                             sr=props['spatialReference'])
-            self.trace.log("Trace|ZonalRemap.updatePixels|ZT:{0}|ZoneIDs:{1}|".format(str(self.ztMap), str(zoneIds)))
 
         # output pixels initialized to background color
         p = np.full(v.shape, self.background, dtype='u1')
