@@ -125,7 +125,7 @@ class ZonalThresholdsTable():
         with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
                 if row[0]:
-                    T.update({row[0]: (row[1], row[2], row[3])})
+                    self._addThreshold(T, row[0], (row[1], row[2], row[3]))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):
@@ -167,12 +167,12 @@ class ZonalThresholdsTable():
                         minValue = attrJO.get(self.minField, None)
                         maxValue = attrJO.get(self.maxField, None)
                         outValue = attrJO.get(self.outField, None)
-                        T.update({id: (minValue, maxValue, outValue)})
+                        self._addThreshold(T, id, (minValue, maxValue, outValue))
         return T
 
     def _constructWhereClause(self, idList=[], where=None):
         w1 = "( " + where + " )" if where and len(where) else None
-        if idList and len(idList): 
+        if idList is not None and len(idList): 
             w2 = "( {0} IN ({1}) )".format(self.idField, ",".join(str(z) for z in idList)) 
         else:
             w2 = None
@@ -180,3 +180,6 @@ class ZonalThresholdsTable():
         return "{0}{1}{2}".format(w1 if w1 else "", 
                                   " AND " if w1 and w2 else "", 
                                   w2 if w2 else "")
+
+    def _addThreshold(self, T, zoneId, threshold):
+        T[zoneId] = T.get(zoneId, []) + [threshold]
