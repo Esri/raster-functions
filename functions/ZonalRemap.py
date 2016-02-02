@@ -9,7 +9,7 @@ class ZonalRemap():
         self.description = ""
         self.ztMap = {}                 # zonal thresholds { zoneId:[[zMin,zMax,zVal], ...], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
-        self.background = None
+        self.background = 0
         self.defaultTarget = 255
         self.whereClause = None
 

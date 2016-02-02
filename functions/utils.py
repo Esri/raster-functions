@@ -85,10 +85,10 @@ class Trace():
 
 class ZonalThresholdsTable():
     def __init__(self, tableUri, 
-                 idField="ObjectID", 
-                 minField="MinValue", 
-                 maxField="MaxValue", 
-                 outField="OutValue"):
+                 idField="ZoneID", 
+                 minField="ZoneMin", 
+                 maxField="ZoneMax", 
+                 outField="ZoneVal"):
         if idField is None:
             raise Exception("TODO");
 
@@ -100,9 +100,17 @@ class ZonalThresholdsTable():
         self.minField = minField.lower() if minField else None
         self.maxField = maxField.lower() if maxField else None
         self.outField = outField.lower() if outField else None
-        
-        self.fieldList = [a for a in [self.idField, self.minField, self.maxField, self.outField] 
-                          if (a is not None and len(a))]
+
+        k = 0
+        self.fi, self.fieldList = [], []
+        for a in [self.idField, self.minField, self.maxField, self.outField]:
+            if a is not None and len(a):
+                self.fieldList.append(a)  
+                self.fi.append(k)
+                k = k + 1
+            else: 
+                self.fi.append(None)
+
         self.fieldCSV = ",".join(self.fieldList)
 
         self.arcpy = __import__('arcpy')
@@ -125,7 +133,10 @@ class ZonalThresholdsTable():
         with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
                 if row[0]:
-                    self._addThreshold(T, row[0], (row[1], row[2], row[3]))
+                    I = []
+                    for i in range(1,4):
+                        I.append(row[self.fi[i]] if self.fi[i] is not None else None)
+                    self._addThreshold(T, row[0], tuple(I))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):
@@ -183,3 +194,7 @@ class ZonalThresholdsTable():
 
     def _addThreshold(self, T, zoneId, threshold):
         T[zoneId] = T.get(zoneId, []) + [threshold]
+
+
+zz = ZonalThresholdsTable(r"c:\Data\ZonalRemap\Matrix\ZonalThresholds.csv", minField=None)
+print(zz.query([7,24,40], "blockid = 100"))
