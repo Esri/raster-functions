@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from utils import ZonalThresholdsTable
+from utils import ZonalThresholdsTable, Trace
 
 class ZonalRemap():
 
@@ -12,6 +12,7 @@ class ZonalRemap():
         self.background = 0
         self.defaultTarget = 255
         self.whereClause = None
+        self.trace = Trace()
 
     def getParameterInfo(self):
         return [
@@ -128,6 +129,14 @@ class ZonalRemap():
         ]
 
 
+    def getConfiguration(self, **scalars):
+        return {
+          'inheritProperties': 2 | 4 | 8,
+          'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset.
+          'inputMask': False                        # Don't need input raster mask in .updatePixels().
+        }
+
+
     def updateRasterInfo(self, **kwargs):
         self.ztMap = None
         self.whereClause = None
@@ -155,18 +164,22 @@ class ZonalRemap():
         if gField and gValue:
             self.whereClause = "{0} = {1}".format(str(gField), str(gValue))
 
+        self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
+                        "defaultTarget: {2}|where: {3}").format(ztStr, 
+                                                                self.background,
+                                                                self.defaultTarget,
+                                                                self.whereClause))
         kwargs['output_info']['bandCount'] = 1
-        kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['colormap'] = ()
         return kwargs
-        
+
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         v = pixelBlocks['vraster_pixels'][0]
-        z = pixelBlocks['zraster_pixels'].astype('u1', copy=False)[0]
-
+        z = pixelBlocks['zraster_pixels'][0]
+           
         zoneIds = np.unique(z)    #TODO: handle no-data and mask in zone raster
 
         # if zonal threshold table is defined:
@@ -177,9 +190,11 @@ class ZonalRemap():
                                             where=self.whereClause, 
                                             extent=props['extent'], 
                                             sr=props['spatialReference'])
+            self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|".format(
+                str(zoneIds), str(self.ztMap)))
 
         # output pixels initialized to background color
-        p = np.full(v.shape, self.background, dtype='u1')
+        p = np.full(v.shape, self.background, dtype=props['pixelType'])
 
         # use zonal thresholds to update output pixels...
         if self.ztMap is not None and len(self.ztMap.keys()):
@@ -198,7 +213,7 @@ class ZonalRemap():
                         I = I & (v < t[1])  
                     p[I] = (t[2] if t[2] is not None else self.defaultTarget)
 
-        pixelBlocks['output_pixels'] = p.astype(props['pixelType'], copy=False)
+        pixelBlocks['output_pixels'] = p
         return pixelBlocks
 
 

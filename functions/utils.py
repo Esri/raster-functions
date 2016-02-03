@@ -86,9 +86,9 @@ class Trace():
 class ZonalThresholdsTable():
     def __init__(self, tableUri, 
                  idField="ZoneID", 
-                 minField="ZoneMin", 
-                 maxField="ZoneMax", 
-                 outField="ZoneVal"):
+                 minField=None, 
+                 maxField=None, 
+                 outField=None):
         if idField is None:
             raise Exception("TODO");
 
@@ -194,7 +194,3 @@ class ZonalThresholdsTable():
 
     def _addThreshold(self, T, zoneId, threshold):
         T[zoneId] = T.get(zoneId, []) + [threshold]
-
-
-zz = ZonalThresholdsTable(r"c:\Data\ZonalRemap\Matrix\ZonalThresholds.csv", minField=None)
-print(zz.query([7,24,40], "blockid = 100"))
