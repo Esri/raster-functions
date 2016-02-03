@@ -109,22 +109,12 @@ class ZonalRemap():
                                 "zonal threshold is left unspecified in the 'Zonal Thresholds' table.")
             },
             {
-                'name': 'groupfield',
+                'name': 'where',
                 'dataType': 'string',
                 'value': None,
                 'required': False,
-                'displayName': "Group Field Name",
-                'description': ("Name of the field used for filtering rows of the Zonal Thresholds table. "
-                                "No additional query is used if this parameter is left unspecified.")
-            },
-            {
-                'name': 'groupvalue',
-                'dataType': 'string',
-                'value': None,
-                'required': False,
-                'displayName': "Group Value",
-                'description': ("Value of the group field used for filtering rows of the Zonal Thresholds table. "
-                                "No additional query is used if this parameter is left unspecified.")
+                'displayName': "Where Clause",
+                'description': ("Additional query applied on Zonal Thresholds table.")
             },
         ]
 
@@ -158,14 +148,10 @@ class ZonalRemap():
 
         self.background = int(kwargs.get('background', 0))
         self.defaultTarget = int(kwargs.get('defzval', 255))
-
-        gField = kwargs.get('groupfield', None)
-        gValue = kwargs.get('groupvalue', None)
-        if gField and gValue:
-            self.whereClause = "{0} = {1}".format(str(gField), str(gValue))
+        self.whereClause = kwargs.get('where', None)
 
         self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
-                        "defaultTarget: {2}|where: {3}").format(ztStr, 
+                        "defaultTarget: {2}|where: {3}|\n").format(ztStr, 
                                                                 self.background,
                                                                 self.defaultTarget,
                                                                 self.whereClause))
@@ -190,7 +176,7 @@ class ZonalRemap():
                                             where=self.whereClause, 
                                             extent=props['extent'], 
                                             sr=props['spatialReference'])
-            self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|".format(
+            self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|\n".format(
                 str(zoneIds), str(self.ztMap)))
 
         # output pixels initialized to background color
