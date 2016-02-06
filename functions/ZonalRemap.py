@@ -12,7 +12,7 @@ class ZonalRemap():
         self.background = 0
         self.defaultTarget = 255
         self.whereClause = None
-        self.trace = Trace()
+        #self.trace = Trace()
 
     def getParameterInfo(self):
         return [
@@ -28,7 +28,7 @@ class ZonalRemap():
                 'name': 'zraster',
                 'dataType': 'raster',
                 'value': None,
-                'required': True,
+                'required': False,
                 'displayName': "Zone Raster",
                 'description': ("The single-band zone raster where each pixel contains "
                                 "the zone ID associated with the location.")
@@ -150,11 +150,11 @@ class ZonalRemap():
         self.defaultTarget = int(kwargs.get('defzval', 255))
         self.whereClause = kwargs.get('where', None)
 
-        self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
-                        "defaultTarget: {2}|where: {3}|\n").format(ztStr, 
-                                                                self.background,
-                                                                self.defaultTarget,
-                                                                self.whereClause))
+        #self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
+        #                "defaultTarget: {2}|where: {3}|\n").format(ztStr, 
+        #                                                        self.background,
+        #                                                        self.defaultTarget,
+        #                                                        self.whereClause))
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
@@ -164,33 +164,31 @@ class ZonalRemap():
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         v = pixelBlocks['vraster_pixels'][0]
-        z = pixelBlocks['zraster_pixels'][0]
-           
-        zoneIds = np.unique(z)    #TODO: handle no-data and mask in zone raster
 
-        # if zonal threshold table is defined:
-        #   - request dictionary for IDs not previously seen
-        #   - update ztMap
-        if self.ztTable and len(zoneIds):
-            self.ztMap = self.ztTable.query(idList=zoneIds, 
-                                            where=self.whereClause, 
-                                            extent=props['extent'], 
-                                            sr=props['spatialReference'])
-            self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|\n".format(
-                str(zoneIds), str(self.ztMap)))
+        z = None    # zone raster is optional
+        zoneIds = None
+        if pixelBlocks.has_key('zraster_pixels'): 
+            z = pixelBlocks['zraster_pixels'][0]
+            zoneIds = np.unique(z)    #TODO: handle no-data and mask in zone raster
+
+        ZT = self.ztTable.query(idList=zoneIds, 
+                                where=self.whereClause, 
+                                extent=props['extent'], 
+                                sr=props['spatialReference']) if self.ztTable else self.ztMap
+        #self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|\n".format(str(zoneIds), str(ZT)))
 
         # output pixels initialized to background color
         p = np.full(v.shape, self.background, dtype=props['pixelType'])
 
         # use zonal thresholds to update output pixels...
-        if self.ztMap is not None and len(self.ztMap.keys()):
-            for k in zoneIds:
-                T = self.ztMap.get(k, None)                         # k from z might not be in ztMap
+        if ZT is not None and len(ZT.keys()):
+            for k in zoneIds or [None]:
+                T = ZT.get(k, None)                                 # k from z might not be in ztMap
                 if not T:
                     continue
 
                 for t in T:
-                    I = (z == k)
+                    I = (z == k) if z is not None else np.ones(v.shape, dtype=bool)
                     if t[0] and t[1]:                               # min and max are both available
                         I = I & (v > t[0]) & (v < t[1])
                     elif t[0]:

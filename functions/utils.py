@@ -85,13 +85,10 @@ class Trace():
 
 class ZonalThresholdsTable():
     def __init__(self, tableUri, 
-                 idField="ZoneID", 
+                 idField=None, 
                  minField=None, 
                  maxField=None, 
                  outField=None):
-        if idField is None:
-            raise Exception("TODO");
-
         if tableUri is None:
             raise Exception("TODO");
 
@@ -130,13 +127,13 @@ class ZonalThresholdsTable():
 
     def _queryTable(self, where=None):
         T = {}
+        idFI = self.fi[0]
         with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
-                if row[0]:
-                    I = []
-                    for i in range(1,4):
-                        I.append(row[self.fi[i]] if self.fi[i] is not None else None)
-                    self._addThreshold(T, row[0], tuple(I))
+                I = []
+                for i in range(1,4):
+                    I.append(row[self.fi[i]] if self.fi[i] is not None else None)
+                self._addThreshold(T, row[idFI] if idFI else None, tuple(I))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):
@@ -183,7 +180,7 @@ class ZonalThresholdsTable():
 
     def _constructWhereClause(self, idList=[], where=None):
         w1 = "( " + where + " )" if where and len(where) else None
-        if idList is not None and len(idList): 
+        if self.idField and idList is not None and len(idList): 
             w2 = "( {0} IN ({1}) )".format(self.idField, ",".join(str(z) for z in idList)) 
         else:
             w2 = None
