@@ -165,11 +165,11 @@ class ZonalRemap():
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
         v = pixelBlocks['vraster_pixels'][0]
 
-        z = None    # zone raster is optional
         zoneIds = None
-        if pixelBlocks.has_key('zraster_pixels'): 
+        z = pixelBlocks.get('zraster_pixels', None)
+        if z is not None:               # zone raster is optional 
             z = pixelBlocks['zraster_pixels'][0]
-            zoneIds = np.unique(z)    #TODO: handle no-data and mask in zone raster
+            zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
 
         ZT = self.ztTable.query(idList=zoneIds, 
                                 where=self.whereClause, 
