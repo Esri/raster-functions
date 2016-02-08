@@ -131,7 +131,8 @@ class ZonalRemap():
         self.ztMap = None
         self.whereClause = None
 
-        ztStr = kwargs.get('ztable', "{}").strip()
+        ztStr = kwargs.get('ztable', None)
+        ztStr = ztStr.strip() if ztStr else "{}"
 
         try:
             self.ztMap = json.loads(ztStr) if ztStr else {}
@@ -146,8 +147,12 @@ class ZonalRemap():
                                                 kwargs.get('zmax', None),
                                                 kwargs.get('zval', None))
 
-        self.background = int(kwargs.get('background', 0))
-        self.defaultTarget = int(kwargs.get('defzval', 255))
+        self.background = kwargs.get('background', None)
+        self.background = int(self.background) if self.background else 0
+
+        self.defaultTarget = kwargs.get('defzval', None)
+        self.defaultTarget = int(self.defaultTarget) if self.defaultTarget else 255
+
         self.whereClause = kwargs.get('where', None)
 
         #self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
