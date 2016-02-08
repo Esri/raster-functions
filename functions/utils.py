@@ -133,7 +133,7 @@ class ZonalThresholdsTable():
                 I = []
                 for i in range(1,4):
                     I.append(row[self.fi[i]] if self.fi[i] is not None else None)
-                self._addThreshold(T, row[idFI] if idFI else None, tuple(I))
+                self._addThreshold(T, row[idFI] if idFI is not None else None, tuple(I))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):

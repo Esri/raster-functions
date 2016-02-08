@@ -157,9 +157,9 @@ class ZonalRemap():
 
         #self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
         #                "defaultTarget: {2}|where: {3}|\n").format(ztStr, 
-        #                                                        self.background,
-        #                                                        self.defaultTarget,
-        #                                                        self.whereClause))
+        #                                                           self.background,
+        #                                                           self.defaultTarget,
+        #                                                           self.whereClause))
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
@@ -187,7 +187,7 @@ class ZonalRemap():
 
         # use zonal thresholds to update output pixels...
         if ZT is not None and len(ZT.keys()):
-            for k in zoneIds or [None]:
+            for k in (zoneIds if zoneIds is not None else [None]):
                 T = ZT.get(k, None)                                 # k from z might not be in ztMap
                 if not T:
                     continue
