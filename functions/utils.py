@@ -3,7 +3,7 @@ __all__ = ['isProductVersionOK',
            'computeCellSize',
            'Projection',
            'Trace',
-           'ZonalThresholdsTable',]
+           'ZonalAttributesTable',]
 
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
@@ -83,24 +83,18 @@ class Trace():
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
 
-class ZonalThresholdsTable():
-    def __init__(self, tableUri, 
-                 idField=None, 
-                 minField=None, 
-                 maxField=None, 
-                 outField=None):
+class ZonalAttributesTable():
+    def __init__(self, tableUri, idField=None, attribList=None):
         if tableUri is None:
             raise Exception("TODO");
 
         self.tableUri = tableUri
         self.idField  = idField.lower()  if idField  else None
-        self.minField = minField.lower() if minField else None
-        self.maxField = maxField.lower() if maxField else None
-        self.outField = outField.lower() if outField else None
+        self.attribList = attribList if attribList else []
 
         k = 0
         self.fi, self.fieldList = [], []
-        for a in [self.idField, self.minField, self.maxField, self.outField]:
+        for a in [self.idField] + self.attribList:
             if a is not None and len(a):
                 self.fieldList.append(a)  
                 self.fi.append(k)
@@ -128,12 +122,13 @@ class ZonalThresholdsTable():
     def _queryTable(self, where=None):
         T = {}
         idFI = self.fi[0]
+        m = len(self.attribList)
         with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
             for row in cursor:
                 I = []
-                for i in range(1,4):
+                for i in range(1,m+1):
                     I.append(row[self.fi[i]] if self.fi[i] is not None else None)
-                self._addThreshold(T, row[idFI] if idFI is not None else None, tuple(I))
+                self._addAttributes(T, row[idFI] if idFI is not None else None, tuple(I))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):
@@ -170,12 +165,10 @@ class ZonalThresholdsTable():
             for featureJO in featuresJA:
                 attrJO = featureJO.get('attributes', None)
                 if attrJO is not None:
-                    id = attrJO.get(self.idField, None)
-                    if id:
-                        minValue = attrJO.get(self.minField, None)
-                        maxValue = attrJO.get(self.maxField, None)
-                        outValue = attrJO.get(self.outField, None)
-                        self._addThreshold(T, id, (minValue, maxValue, outValue))
+                    A = []
+                    for z in self.attribList:
+                        A = A + [attrJO.get(z, None)]
+                    self._addAttributes(T, attrJO.get(self.idField, None), tuple(A))
         return T
 
     def _constructWhereClause(self, idList=[], where=None):
@@ -189,5 +182,5 @@ class ZonalThresholdsTable():
                                   " AND " if w1 and w2 else "", 
                                   w2 if w2 else "")
 
-    def _addThreshold(self, T, zoneId, threshold):
-        T[zoneId] = T.get(zoneId, []) + [threshold]
+    def _addAttributes(self, T, zoneId, attribValues):
+        T[zoneId] = T.get(zoneId, []) + [attribValues]

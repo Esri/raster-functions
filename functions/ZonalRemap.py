@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from utils import ZonalThresholdsTable, Trace
+from utils import ZonalAttributesTable, Trace
 
 class ZonalRemap():
 
@@ -38,7 +38,7 @@ class ZonalRemap():
                 'dataType': 'string',
                 'value': None,
                 'required': True,
-                'displayName': "Zonal Thresholds",
+                'displayName': "Zonal Thresholds Table",
                 'description': ("The threshold map specified as a JSON string, "
                                 "a path to a local feature class or table, or a URL to a feature service layer. "
                                 "In JSON, it's described as a collection of mapping from zone IDs to an "
@@ -63,7 +63,7 @@ class ZonalRemap():
                 'displayName': "Minimum Value Field Name",
                 'description': ("Name of the field containing the minimum value above which an input pixel gets remapped. "
                                 "If left unspecified--or if the field value is null--pixel values are not tested for minimum. "
-                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "This is only applicable if the 'Zonal Thresholds Table' parameter contains path to a table "
                                 "or a URL to a feature service.")
             },
             {
@@ -74,7 +74,7 @@ class ZonalRemap():
                 'displayName': "Maximum Value Field Name",
                 'description': ("Name of the field containing the maximum value below which an input pixel gets remapped. "
                                 "If left unspecified--or if the field value is null--pixel values are not tested for maximum. "
-                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "This is only applicable if the 'Zonal Thresholds Table' parameter contains path to a table "
                                 "or a URL to a feature service.")
             },
             {
@@ -86,7 +86,7 @@ class ZonalRemap():
                 'description': ("Name of the field containing the target value to which an input pixel gets remapped. "
                                 "If left unspecified--or if the field value is null--remapped pixel values are set "
                                 "to the 'Default Target Value'. "
-                                "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
+                                "This is only applicable if the 'Zonal Thresholds Table' parameter contains path to a table "
                                 "or a URL to a feature service.")
             },
             {
@@ -106,7 +106,7 @@ class ZonalRemap():
                 'description': ("The default remap/target value of threshold. "
                                 "This is the value of the output pixel if either the 'Target Value Field Name' "
                                 "parameter is left unspecified or if the target value of the corresponding "
-                                "zonal threshold is left unspecified in the 'Zonal Thresholds' table.")
+                                "zonal threshold is left unspecified in the Zonal Thresholds Table.")
             },
             {
                 'name': 'where',
@@ -114,7 +114,7 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Where Clause",
-                'description': ("Additional query applied on Zonal Thresholds table.")
+                'description': ("Additional query applied on the Zonal Thresholds Table.")
             },
         ]
 
@@ -141,11 +141,11 @@ class ZonalRemap():
 
         if self.ztMap is None:
             self.ztMap = {}
-            self.ztTable = ZonalThresholdsTable(ztStr,
-                                                kwargs.get('zid', None),
-                                                kwargs.get('zmin', None),
-                                                kwargs.get('zmax', None),
-                                                kwargs.get('zval', None))
+            self.ztTable = ZonalAttributesTable(tableUri=ztStr,
+                                                idField=kwargs.get('zid', None),
+                                                attribList=[kwargs.get('zmin', None), 
+                                                            kwargs.get('zmax', None), 
+                                                            kwargs.get('zval', None)])
 
         self.background = kwargs.get('background', None)
         self.background = int(self.background) if self.background else 0

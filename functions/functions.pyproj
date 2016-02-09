@@ -39,6 +39,7 @@
     <Compile Include="utils.py" />
     <Compile Include="VineyardAnalysis.py" />
     <Compile Include="Windchill.py" />
+    <Compile Include="ZonalAttributes.py" />
     <Compile Include="ZonalRemap.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
