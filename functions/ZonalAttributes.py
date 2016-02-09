@@ -24,20 +24,20 @@ class ZonalAttributes():
                 'displayName': "Input Raster",
                 'description': "The primary input raster."
             },
-            #{
-            #    'name': 'zraster',
-            #    'dataType': 'raster',
-            #    'value': None,
-            #    'required': False,
-            #    'displayName': "Zone Raster",
-            #    'description': ("The single-band zone raster where each pixel contains "
-            #                    "the zone ID associated with the location.")
-            #},
+            {
+                'name': 'zraster',
+                'dataType': 'raster',
+                'value': None,
+                'required': False,
+                'displayName': "Zone Raster",
+                'description': ("The single-band zone raster where each pixel contains "
+                                "the zone ID associated with the location.")
+            },
             {
                 'name': 'ztable',
                 'dataType': 'string',
                 'value': None,
-                'required': True,
+                'required': False,
                 'displayName': "Zonal Attributes Table",
                 'description': ("The zonal attributes specified as a JSON string, "
                                 "a path to a local feature class or table, or the URL to a feature service layer. "
@@ -45,16 +45,16 @@ class ZonalAttributes():
                                 "an array of integers, "
                                 "like this: { zoneId:[f1,f2,...,fn], ... } ")
             },
-            #{
-            #    'name': 'zid',
-            #    'dataType': 'string',
-            #    'value': None,
-            #    'required': False,
-            #    'displayName': "Zone ID Field Name",
-            #    'description': ("Name of the field containing the Zone ID values. "
-            #                    "This is only applicable if the 'Zonal Thresholds' parameter contains path to a table "
-            #                    "or a URL to a feature service.")
-            #},
+            {
+                'name': 'zid',
+                'dataType': 'string',
+                'value': None,
+                'required': False,
+                'displayName': "Zone ID Field Name",
+                'description': ("Name of the field containing the Zone ID values. "
+                                "This is only applicable if the 'Zonal Attributes Table' parameter contains path to a table "
+                                "or a URL to a feature service.")
+            },
             {
                 'name': 'attribs',
                 'dataType': 'string',
