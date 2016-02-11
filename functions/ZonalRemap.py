@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from utils import ZonalAttributesTable, Trace
+from utils import ZonalAttributesTable
 
 class ZonalRemap():
 
@@ -12,7 +12,7 @@ class ZonalRemap():
         self.background = 0
         self.defaultTarget = 255
         self.whereClause = None
-        #self.trace = Trace()
+
 
     def getParameterInfo(self):
         return [
@@ -152,14 +152,8 @@ class ZonalRemap():
 
         self.defaultTarget = kwargs.get('defzval', None)
         self.defaultTarget = int(self.defaultTarget) if self.defaultTarget else 255
-
         self.whereClause = kwargs.get('where', None)
 
-        #self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
-        #                "defaultTarget: {2}|where: {3}|\n").format(ztStr, 
-        #                                                           self.background,
-        #                                                           self.defaultTarget,
-        #                                                           self.whereClause))
         kwargs['output_info']['bandCount'] = 1
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
@@ -180,7 +174,6 @@ class ZonalRemap():
                                 where=self.whereClause, 
                                 extent=props['extent'], 
                                 sr=props['spatialReference']) if self.ztTable else self.ztMap
-        #self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|\n".format(str(zoneIds), str(ZT)))
 
         # output pixels initialized to background color
         p = np.full(v.shape, self.background, dtype=props['pixelType'])

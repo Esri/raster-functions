@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from utils import ZonalAttributesTable, Trace
+from utils import ZonalAttributesTable
 
 class ZonalAttributes():
 
@@ -12,7 +12,6 @@ class ZonalAttributes():
         self.background = 0
         self.whereClause = None
         self.M = 0                      # number of attribute names == additional bands in the output
-        self.trace = Trace()
 
     def getParameterInfo(self):
         return [
@@ -114,11 +113,7 @@ class ZonalAttributes():
 
         self.background = kwargs.get('background', None)
         self.background = int(self.background) if self.background else 0
-
         self.whereClause = kwargs.get('where', None)
-
-        self.trace.log(("Trace|ZonalRemap.updateRasterInfo|ZT: {0}|background: {1}|"
-                        "where: {2}|\n").format(ztStr, self.background,self.whereClause))
 
         kwargs['output_info']['bandCount'] = 1 + self.M
         kwargs['output_info']['statistics'] = () 
@@ -140,7 +135,6 @@ class ZonalAttributes():
                                 where=self.whereClause, 
                                 extent=props['extent'], 
                                 sr=props['spatialReference']) if self.ztTable else self.ztMap
-        self.trace.log("Trace|ZonalRemap.updatePixels|ZoneID:{0}|ZT-Map{1}|\n".format(str(zoneIds), str(ZT)))
 
         # output pixels initialized to background color
         p = np.full(shape=(1 + self.M,) + v.shape,      # band dimension is 1 more than #attributes 
@@ -149,7 +143,6 @@ class ZonalAttributes():
 
         np.copyto(p[0], v, casting='unsafe')
         ones = np.ones(v.shape, dtype=bool)
-        self.trace.log("Trace|ZonalRemap.updatePixels|p.shape:{0}||\n".format(str(p.shape)))
         
         # use zonal attributes to update output pixels...
         if ZT is not None and len(ZT.keys()):
@@ -161,7 +154,6 @@ class ZonalAttributes():
                 I = (z == k) if z is not None else ones
                 for b,t in enumerate(T[0], 1):          # first band of p is v, skip it.
                     if t is not None:
-                        self.trace.log("Trace|ZonalRemap.updatePixels|b:{0}|t:{1}|\n".format(str(b), str(t)))
                         p[b][I] = t
 
         pixelBlocks['output_pixels'] = p
