@@ -89,22 +89,27 @@ class ZonalAttributesTable():
             raise Exception("TODO");
 
         self.tableUri = tableUri
-        self.idField  = idField.lower()  if idField  else None
+        self.idField, self.idFI = (idField.lower(), 0) if idField else (None, None)
         self.attribList = attribList if attribList else []
 
         k = 0
-        self.fi, self.fieldList = [], []
-        for a in [self.idField] + self.attribList:
+        self.fi, self.queryFields = [], []
+        for a in self.attribList:
             if a is not None and len(a):
-                self.fieldList.append(a)  
+                self.queryFields.append(a)  
                 self.fi.append(k)
                 k = k + 1
             else: 
                 self.fi.append(None)
 
-        self.fieldCSV = ",".join(self.fieldList)
+        if self.idField: 
+            self.fi = [k+1 if k is not None else None for k in self.fi]
 
-        self.arcpy = __import__('arcpy')
+        self.tupleSize = len(self.fi)
+        self.queryFields = ([self.idField] if self.idField else []) + self.queryFields
+        self.fieldCSV = ",".join(self.queryFields)
+
+        self.arcpy = None
         self.queryUrl = None    # indicator of remote URL vs local table
         s = tableUri.lower()
         if s.startswith('http://') or s.startswith('https://'):
@@ -113,6 +118,8 @@ class ZonalAttributesTable():
             self.json = __import__('json')
 
     def query(self, idList=[], where=None, extent=None, sr=None):
+        if self.arcpy is None:
+            self.arcpy = __import__('arcpy')
         w = self._constructWhereClause(idList, where)
         if not self.queryUrl:
             return self._queryTable(w)
@@ -121,14 +128,12 @@ class ZonalAttributesTable():
 
     def _queryTable(self, where=None):
         T = {}
-        idFI = self.fi[0]
-        m = len(self.attribList)
-        with self.arcpy.da.SearchCursor(self.tableUri, self.fieldList, where_clause=where) as cursor:
+        with self.arcpy.da.SearchCursor(self.tableUri, self.queryFields, where_clause=where) as cursor:
             for row in cursor:
                 I = []
-                for i in range(1,m+1):
-                    I.append(row[self.fi[i]] if self.fi[i] is not None else None)
-                self._addAttributes(T, row[idFI] if idFI is not None else None, tuple(I))
+                for k in range(self.tupleSize):
+                    I.append(row[self.fi[k]] if self.fi[k] is not None else None)
+                self._addAttributes(T, row[self.idFI] if self.idFI is not None else None, tuple(I))
         return T
 
     def _queryFeatureService(self, where=None, extent=None, sr=None):
