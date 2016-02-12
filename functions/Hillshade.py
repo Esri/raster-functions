@@ -147,6 +147,6 @@ References:
     http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
 
     [4]. Burrough, P. A. and McDonell, R. A., 1998.
-    Principles of Geographical Information Systems (Oxford University Press, New York), 190 pp.
+    Principles of Geographical Information Systems. Oxford University Press, New York, 190 pp.
 
 """

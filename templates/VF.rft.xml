@@ -1,0 +1,60 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.4'>
+  <Name>VF</Name>
+  <Description>A raster function template.</Description>
+  <Function xsi:type='typens:VectorFieldFunction'>
+    <Name>Vector Field Function</Name>
+    <Description>Combines magnitude(u) and direction(v) rasters in scientific datasets to produce a two band output.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type='typens:VectorFieldFunctionArguments'>
+    <Names xsi:type='typens:ArrayOfString'>
+      <String>Raster1</String>
+      <String>Raster2</String>
+      <String>InputDataType</String>
+      <String>OutputDataType</String>
+      <String>AngleReferenceSystem</String>
+      <String>__Properties</String>
+    </Names>
+    <Values xsi:type='typens:ArrayOfAnyType'>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster1</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>true</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster2</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>true</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>InputDataType_2015829_21436_329</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>OutputDataType_2015829_21436_329</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>AngleReferenceSystem_2015829_21436_329</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:PropertySet'>
+        <PropertyArray xsi:type='typens:ArrayOfPropertySetProperty'></PropertyArray>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail xsi:type='xs:string'></Thumbnail>
+  <Definition></Definition>
+  <Group>GroupName</Group>
+  <Tag>Tag</Tag>
+</RasterFunctionTemplate>

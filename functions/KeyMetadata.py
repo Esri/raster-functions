@@ -49,7 +49,8 @@ class KeyMetadata():
                 'value': '',
                 'displayName': "Metadata JSON",
                 'required': False,
-                'description': ("Key metadata to be injected into the outgoing raster described as a JSON string representing a collection of key-value pairs. "
+                'description': ("Key metadata to be injected into the outgoing raster described as a "
+                                "JSON string representing a collection of key-value pairs. "
                                 "Learn more by searching for 'Raster Key Properties' at http://resources.arcgis.com.")
             },
     ]

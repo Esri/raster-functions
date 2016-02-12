@@ -40,6 +40,7 @@ class Arithmetic():
         return {
             'inheritProperties': 2 | 4 | 8,
             'invalidateProperties': 2 | 4 | 8,
+            'resampling': True                                  # process at request resolution
         }
 
     def updateRasterInfo(self, **kwargs):
