@@ -6,7 +6,9 @@ class FuzzyMembership():
 
     def __init__(self):
         self.name = "Fuzzy Membership Function"
-        self.description = "Reclassifies or transforms the input data to a 0 to 1 scale based on the possibility of being a member of a specified set"
+        self.description = ("Reclassifies or transforms the input data to a 0 to 1 "
+                            "scale based on the possibility of being a member of a "
+                            "specified set")
         self.parA = {'minimum': 1., 'mid': None, 'meanMultipler': 1.}
         self.parB = {'maximum': 1., 'stdMultipler': 1., 'spreadA': 0.1, 'spreadB': 5.}
 
@@ -18,15 +20,17 @@ class FuzzyMembership():
                 'value': None,
                 'required': True,
                 'displayName': "Input Raster",
-                'description': ("Fuzzy Membership tool - 0 is assigned to those locations that are definitely not a member of the specified set. "
-                                "1 is assigned to those values that are definitely a member of the specified set, "
-                                "and the entire range of possibilities between 0 and 1 are assigned to some level of possible membership.")
+                'description': ("Fuzzy Membership tool - 0 is assigned to those locations that "
+                                "are definitely not a member of the specified set. "
+                                "1 is assigned to those values that are definitely a member "
+                                "of the specified set, and the entire range of possibilities "
+                                "between 0 and 1 are assigned to some level of possible membership.")
             },
             {
                 'name': 'mode',
                 'dataType': 'string',
                 'value': 'Linear',
-                'required': False,
+                'required': True,
                 'domain': ('Linear', 'Gaussian', 'Small', 'Large', 'Near', 'MSSmall', 'MSLarge'),
                 'displayName': "Fuzzy Membership Type",
                 'description': "Fuzzy Membership type."
@@ -34,30 +38,32 @@ class FuzzyMembership():
             {
                 'name': 'par1',
                 'dataType': 'numeric',
-                'value': 0.0,
-                'required': True,
+                'value': None,
+                'required': False,
                 'displayName': "Input Parameter A",
-                'description': "Linear : {minimum value} , Gaussian/Near/Small/Large : {mid point} , MSSmall/MSLarge : {mean multiplier}. Enter 0 for default values."
+                'description': ("Linear : {minimum value}, Gaussian/Near/Small/Large : {mid point}, " 
+                                "MSSmall/MSLarge : {mean multiplier}.")
             },
             {
                 'name': 'par2',
                 'dataType': 'numeric',
-                'value': 0.0,
+                'value': False,
                 'required': True,
                 'displayName': "Input Parameter B",
-                'description': "Linear : {maximum value} , Gaussian/Near/Small/Large : {spread} , MSSmall/MSLarge : {std deviation multiplier}. Enter 0 for default values."
+                'description': ("Linear : {maximum value}, Gaussian/Near/Small/Large : {spread}, "
+                                "MSSmall/MSLarge : {std deviation multiplier}. ")
             },
             {
                 'name': 'hedge',
                 'dataType': 'string',
-                'value': 'NONE',
+                'value': 'None',
                 'required': False,
-                'domain': ('NONE', 'SOMEWHAT', 'VERY'),
+                'domain': ('None', 'Somewhat', 'Very'),
                 'displayName': "Hedge",
-                'description': ("A hedge increases or decreases the fuzzy membership values which modify the meaning of a fuzzy set."
-                                " NONE - No hedge applied."
-                                " SOMEWHAT - The square root of the fuzzy membership function. Increases fuzzy membership functions."
-                                " VERY - The square  of the fuzzy membership function. Decreases fuzzy membership functions.")
+                'description': ("A hedge increases or decreases the fuzzy membership values which modify the meaning of a fuzzy set. "
+                                "None - No hedge applied. "
+                                "Somewhat - The square root of the fuzzy membership function. Increases fuzzy membership functions. "
+                                "Very- The square  of the fuzzy membership function. Decreases fuzzy membership functions.")
             },
         ]
 
@@ -65,7 +71,6 @@ class FuzzyMembership():
         return {
           'inheritProperties': 2 | 4 | 8,       # inherit everything but the pixel type (1)
           'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
-          'padding': 0,                         # no padding of the input pixel block
           'inputMask': False                    # we don't need the input mask in .updatePixels()
         }
 
@@ -165,10 +170,15 @@ class FuzzyMembership():
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'FuzzyMembership'
 
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+
 """
 References:
+
     [1]. Esri (2013): ArcGIS Resources. How Fuzzy Membership Works.
     http://resources.arcgis.com/en/help/main/10.1/index.html#//009z000000rz000000
+
     [2]. Esri (2013): ArcGIS Resources. An overview of fuzzy classes.
     http://resources.arcgis.com/en/help/main/10.1/index.html#/An_overview_of_fuzzy_classes/005m00000019000000/
+
 """

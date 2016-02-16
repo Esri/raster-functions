@@ -28,6 +28,7 @@
     <Compile Include="FillRaster.py" />
     <Compile Include="FishHabitatSuitability.py" />
     <Compile Include="BlockStatistics.py" />
+    <Compile Include="FuzzyMembership.py" />
     <Compile Include="RankFilter.py" />
     <Compile Include="HeatIndex.py" />
     <Compile Include="Hillshade.py" />
