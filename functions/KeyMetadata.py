@@ -98,8 +98,10 @@ class KeyMetadata():
         if not properties:
             return keyMetadata
 
-        for key in properties:
-            v = properties[key]
-            keyMetadata[str(key)] = str(v) if isinstance(v, unicode) else v
+        skipCheck = not bool(names)             # => key names are internally generated, not user-specified
+        for k in (names or properties):         # iterate over either of those containers
+            if skipCheck or k in properties:    # spend time checking for existence only if necessary
+                v = properties[k]
+                keyMetadata[str(k)] = str(v) if isinstance(v, unicode) else v
 
         return keyMetadata
