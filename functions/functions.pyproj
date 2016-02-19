@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4842f09b-120b-4468-ae7c-f48cb0adf7bb}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>ZonalRemap.py</StartupFile>
+    <StartupFile>KeyMetadata.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>

@@ -1,22 +1,21 @@
 <RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.4'>
   <Name>Subtract</Name>
-  <Description>A raster function template for subtracting two rasters.</Description>
-  <Function xsi:type='typens:PythonAdapterFunction'>
+  <Description>A raster function template that returns the difference of two rasters.</Description>
+  <Function xsi:type='typens:ArithmeticFunction'>
     <Name>Arithmetic Function</Name>
-    <Description>Performs simple arithmetic operations on two rasters.</Description>
+    <Description>Performs an arithmetic operation between two partially or completely spatially overlapping rasters or a raster and one or more constant values.</Description>
     <PixelType>UNKNOWN</PixelType>
   </Function>
-  <Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
+  <Arguments xsi:type='typens:ArithmeticFunctionArguments'>
     <Names xsi:type='typens:ArrayOfString'>
-      <String>PythonModule</String>
-      <String>ClassName</String>
-      <String>r1</String>
-      <String>r2</String>
-      <String>op</String>
+      <String>Raster</String>
+      <String>Raster2</String>
+      <String>Operation</String>
+      <String>ExtentType</String>
+      <String>CellsizeType</String>
+      <String>RasterToGenerate</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\Arithmetic.py</AnyType>
-      <AnyType xsi:type='xs:string'>Arithmetic</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster1</Name>
         <Description></Description>
@@ -30,17 +29,36 @@
         <IsDataset>true</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>operator</Name>
+        <Name>Operation</Name>
         <Description></Description>
-        <Value xsi:type='xs:string'>Subtract</Value>
+        <Value xsi:type='xs:int'>2</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>ExtentType</Name>
+        <Description></Description>
+        <Value xsi:type='xs:int'>1</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>CellsizeType</Name>
+        <Description></Description>
+        <Value xsi:type='xs:int'>1</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>RasterToGenerate</Name>
+        <Description></Description>
+        <Value xsi:type='xs:int'>0</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
     </Values>
   </Arguments>
   <Help></Help>
   <Type>2</Type>
-  <Thumbnail></Thumbnail>
+  <Thumbnail xsi:type='xs:string'></Thumbnail>
   <Definition></Definition>
   <Group>GroupName</Group>
   <Tag>Tag</Tag>
+  <ThumbnailEx></ThumbnailEx>
 </RasterFunctionTemplate>
