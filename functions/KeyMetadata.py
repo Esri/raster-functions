@@ -49,7 +49,8 @@ class KeyMetadata():
                 'value': '',
                 'displayName': "Metadata JSON",
                 'required': False,
-                'description': ("Key metadata to be injected into the outgoing raster described as a JSON string representing a collection of key-value pairs. "
+                'description': ("Key metadata to be injected into the outgoing raster described as a "
+                                "JSON string representing a collection of key-value pairs. "
                                 "Learn more by searching for 'Raster Key Properties' at http://resources.arcgis.com.")
             },
     ]
@@ -98,8 +99,10 @@ class KeyMetadata():
         if not properties:
             return keyMetadata
 
-        for key in properties:
-            v = properties[key]
-            keyMetadata[str(key)] = str(v) if isinstance(v, unicode) else v
+        skipCheck = not bool(names)             # => key names are internally generated, not user-specified
+        for k in (names or properties):         # iterate over either of those containers
+            if skipCheck or k in properties:    # spend time checking for existence only if necessary
+                v = properties[k]
+                keyMetadata[str(k)] = str(v) if isinstance(v, unicode) else v
 
         return keyMetadata

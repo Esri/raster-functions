@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
-  <Name>Aggregate</Name>
+  <Name>Multidirectional Hillshade</Name>
   <Description>A raster function template.</Description>
   <Function xsi:type="typens:PythonAdapterFunction">
-    <Name>Python Adapter Function</Name>
+    <Name>Multidirectional Hillshade</Name>
     <Description>Adapter function for raster functions written in python.</Description>
     <PixelType>F32</PixelType>
   </Function>
   <Arguments xsi:type="typens:PythonAdapterFunctionArguments">
     <Names xsi:type="typens:ArrayOfString">
       <String>PythonModule</String>
-      <String>Rasters</String>
+      <String>raster</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">../functions/Aggregate.py</AnyType>
+      <AnyType xsi:type="xs:string">MultidirectionalHillshade.pyd</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
-        <Name>Raster[]</Name>
-        <Description>The set of overlapping rasters to aggregate.</Description>
+        <Name>Raster</Name>
+        <Description></Description>
         <Value></Value>
-        <IsDataset>false</IsDataset>
+        <IsDataset>true</IsDataset>
       </AnyType>
     </Values>
   </Arguments>
   <Help></Help>
-  <Type>2</Type>
+  <Type>0</Type>
   <Thumbnail></Thumbnail>
   <Definition></Definition>
-  <Group>GroupName</Group>
-  <Tag>Tag</Tag>
+  <Group></Group>
+  <Tag></Tag>
 </RasterFunctionTemplate>

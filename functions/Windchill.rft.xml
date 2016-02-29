@@ -14,7 +14,7 @@
       <String>ws</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">../functions/Windchill.py</AnyType>
+      <AnyType xsi:type="xs:string">Windchill.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Temperature</Name>
         <Description>A single-band raster where pixel values represent ambient air temperature in Fahrenheit.</Description>
@@ -22,6 +22,7 @@
         <IsDataset>true</IsDataset>
         <Aliases xsi:type="typens:ArrayOfString">
           <String>Raster1</String>
+          <String>t@SFC</String>
         </Aliases>
       </AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
@@ -31,6 +32,8 @@
         <IsDataset>true</IsDataset>
         <Aliases xsi:type="typens:ArrayOfString">
           <String>Raster2</String>
+          <String>Windspeed</String>
+          <String>windspd@SFC</String>
         </Aliases>
       </AnyType>
     </Values>

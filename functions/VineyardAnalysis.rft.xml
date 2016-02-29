@@ -15,7 +15,7 @@
       <String>aspect</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>../functions/VineyardAnalysis.py</AnyType>
+      <AnyType xsi:type='xs:string'>VineyardAnalysis.py</AnyType>
       <AnyType xsi:type='xs:string'>VineyardAnalysis</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster</Name>

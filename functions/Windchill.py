@@ -4,8 +4,8 @@ import numpy as np
 class Windchill():
 
     def __init__(self):
-        self.name = "Wind Chill Function"
-        self.description = ("This function computes wind chill on the Fahrenheit "
+        self.name = "Windchill Function"
+        self.description = ("This function computes windchill on the Fahrenheit "
                             "scale given wind speed and air temperature.")
 
     def getParameterInfo(self):
@@ -54,9 +54,22 @@ class Windchill():
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
         if bandIndex == -1:
             keyMetadata['datatype'] = 'Scientific'
-            keyMetadata['datatype'] = 'Windchill'
+            keyMetadata['variable'] = 'Windchill'
         elif bandIndex == 0:
             keyMetadata['wavelengthmin'] = None     # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
             keyMetadata['bandname'] = 'Winchill'
         return keyMetadata
+
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+
+"""
+References:
+
+    [1] Steadman, Robert G. "Indices of windchill of clothed persons." 
+        Journal of Applied Meteorology 10.4 (1971): 674-683.
+
+    [2] National Weather Service. "NWS Wind Chill Index".
+        http://www.nws.noaa.gov/om/winter/windchill.shtml
+
+"""

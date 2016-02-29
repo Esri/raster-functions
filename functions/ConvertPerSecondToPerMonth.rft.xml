@@ -1,41 +1,39 @@
 <RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
-  <Name>SelectByPixelSize</Name>
+  <Name>ConvertPerSecondToPerMonth</Name>
   <Description>A raster function template.</Description>
   <Function xsi:type='typens:PythonAdapterFunction'>
-    <Name>Select by Pixel Size</Name>
-    <Description></Description>
+    <Name>Convert Per-Second To Per-Month</Name>
+    <Description>This function converts a raster containing values in units-per-second to a raster representing units-per-month.</Description>
     <PixelType>UNKNOWN</PixelType>
   </Function>
   <Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
     <Names xsi:type='typens:ArrayOfString'>
       <String>PythonModule</String>
       <String>ClassName</String>
-      <String>threshold</String>
-      <String>r1</String>
-      <String>r2</String>
+      <String>raster</String>
+      <String>units</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\SelectByPixelSize.py</AnyType>
-      <AnyType xsi:type='xs:string'>SelectByPixelSize</AnyType>
-      <AnyType xsi:type='xs:double'>0</AnyType>
+      <AnyType xsi:type='xs:string'>ConvertPerSecondToPerMonth.py</AnyType>
+      <AnyType xsi:type='xs:string'>ConvertPerSecondToPerMonth</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>Raster1</Name>
+        <Name>Raster</Name>
         <Description></Description>
         <Value></Value>
         <IsDataset>true</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>Raster2</Name>
+        <Name>units</Name>
         <Description></Description>
-        <Value></Value>
-        <IsDataset>true</IsDataset>
+        <Value xsi:type='xs:string'>per month</Value>
+        <IsDataset>false</IsDataset>
       </AnyType>
     </Values>
   </Arguments>
   <Help></Help>
-  <Type>2</Type>
+  <Type>1</Type>
   <Thumbnail></Thumbnail>
   <Definition></Definition>
-  <Group>GroupName</Group>
-  <Tag>Tag</Tag>
+  <Group></Group>
+  <Tag></Tag>
 </RasterFunctionTemplate>

@@ -1,7 +1,7 @@
 from scipy import ndimage
 import numpy as np
 import math
-import utils
+from utils import computeCellSize, Projection, isGeographic
 
 
 class Hillshade():
@@ -10,7 +10,7 @@ class Hillshade():
         self.name = "Hillshade Function"
         self.description = ""
         self.prepare()
-        self.proj = utils.Projection()
+        self.proj = Projection()
 
     def getParameterInfo(self):
         return [
@@ -80,11 +80,12 @@ class Hillshade():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        v = np.array(pixelBlocks['raster_pixels'], dtype='f4', copy=False)
-        m = np.array(pixelBlocks['raster_mask'], dtype='u1', copy=False)
+        v = np.array(pixelBlocks['raster_pixels'], dtype='f4', copy=False)[0]
+        m = np.array(pixelBlocks['raster_mask'], dtype='u1', copy=False)[0]
 
         dx, dy = self.computeGradients(v, props)
         outBlock = self.computeHillshade(dx, dy)
+
         pixelBlocks['output_pixels'] = outBlock[1:-1, 1:-1].astype(props['pixelType'], copy=False)
         pixelBlocks['output_mask'] = \
             m[:-2, :-2]  & m[1:-1, :-2]  & m[2:, :-2]  \
@@ -111,8 +112,8 @@ class Hillshade():
         self.cosZ = math.cos(Z)
         self.sinZsinA = sinZ * math.sin(A)
         self.sinZcosA = sinZ * math.cos(A)
-        self.xKernel = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
-        self.yKernel = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
+        self.xKernel = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
+        self.yKernel = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
         self.zf = zFactor
         self.ce = cellSizeExponent
         self.cf = cellSizeFactor
@@ -120,15 +121,12 @@ class Hillshade():
 
     def computeGradients(self, pixelBlock, props):
         # pixel size in input raster SR...
-        p = props['cellSize'] if self.sr is None else utils.computeCellSize(props, self.sr, self.proj)
-
-        m = 1.11e5 if math.fabs(self.zf - 1.) <= 0.0001 and props['spatialReference'] == 4326 else 1.
+        p = props['cellSize'] if self.sr is None else computeCellSize(props, self.sr, self.proj)
         if p is not None and len(p) == 2:
-            p = np.multiply(p, m)   # conditional degrees to meters conversion
+            p = np.multiply(p, 1.11e5 if isGeographic(props['spatialReference']) else 1.)   # conditional degrees to meters conversion
             xs, ys = (self.zf + (np.power(p, self.ce) * self.cf)) / (8*p)
         else:
             xs, ys = 1., 1.         # degenerate case. shouldn't happen.
-
         return (ndimage.convolve(pixelBlock, self.xKernel)*xs, ndimage.convolve(pixelBlock, self.yKernel)*ys)
 
     def computeHillshade(self, dx, dy):
@@ -149,6 +147,6 @@ References:
     http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
 
     [4]. Burrough, P. A. and McDonell, R. A., 1998.
-    Principles of Geographical Information Systems (Oxford University Press, New York), 190 pp.
+    Principles of Geographical Information Systems. Oxford University Press, New York, 190 pp.
 
 """
