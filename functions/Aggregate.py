@@ -53,7 +53,7 @@ class Aggregate():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        # pixelBlocks['rasters_pixels']: tuple of 2-d or 3-d array containing pixel blocks from each input raster
+        # pixelBlocks['rasters_pixels']: tuple of 3-d array containing pixel blocks from each input raster
         # apply the selected operator over each array in the tuple
         outBlock = self.operator(pixelBlocks['rasters_pixels'], axis=0)
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)

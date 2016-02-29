@@ -45,6 +45,33 @@
     <Compile Include="ZonalAttributes.py" />
     <Compile Include="ZonalRemap.py" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Aggregate.rft.xml" />
+    <Content Include="BlockStatistics.rft.xml" />
+    <Content Include="CompositeBands-4Bands-Ordered.rft.xml" />
+    <Content Include="CompositeBands.rft.xml" />
+    <Content Include="ConvertPerSecondToPerMonth.rft.xml" />
+    <Content Include="DeviationFromMean.rft.xml" />
+    <Content Include="FillRaster.rft.xml" />
+    <Content Include="FishHabitatSuitability.rft.xml" />
+    <Content Include="FocalStatistics.rft.xml" />
+    <Content Include="HeatIndex.rft.xml" />
+    <Content Include="Hillshade-ScaleAdjusted-Py.rft.xml" />
+    <Content Include="LinearSpectralUnmixing.rft.xml" />
+    <Content Include="MaskRaster.rft.xml" />
+    <Content Include="MergeRasters.rft.xml" />
+    <Content Include="MultidirectionalHillshade.rft.xml" />
+    <Content Include="NDVI-Colormap.rft.xml" />
+    <Content Include="NDVI-Grayscale.rft.xml" />
+    <Content Include="NDVI.rft.xml" />
+    <Content Include="Random.rft.xml" />
+    <Content Include="RankFilter.rft.xml" />
+    <Content Include="SelectByPixelSize.rft.xml" />
+    <Content Include="Subtract.rft.xml" />
+    <Content Include="VF.rft.xml" />
+    <Content Include="VineyardAnalysis.rft.xml" />
+    <Content Include="Windchill.rft.xml" />
+  </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
 </Project>
