@@ -14,7 +14,7 @@
       <String>raster</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\FocalStatistics.py</AnyType>
+      <AnyType xsi:type='xs:string'>FocalStatistics.py</AnyType>
       <AnyType xsi:type='xs:string'>FocalStatistics</AnyType>
       <AnyType xsi:type='xs:double'>5</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>

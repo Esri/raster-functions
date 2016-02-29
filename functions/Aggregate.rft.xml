@@ -15,7 +15,7 @@
       <String>method</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\Aggregate.py</AnyType>
+      <AnyType xsi:type='xs:string'>Aggregate.py</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster[]</Name>
         <Description>The set of overlapping rasters to aggregate.</Description>

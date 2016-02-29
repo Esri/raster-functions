@@ -14,7 +14,7 @@
       <String>units</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\ConvertPerSecondToPerMonth.py</AnyType>
+      <AnyType xsi:type='xs:string'>ConvertPerSecondToPerMonth.py</AnyType>
       <AnyType xsi:type='xs:string'>ConvertPerSecondToPerMonth</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster</Name>

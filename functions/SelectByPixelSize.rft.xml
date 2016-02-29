@@ -15,7 +15,7 @@
       <String>r2</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\SelectByPixelSize.py</AnyType>
+      <AnyType xsi:type='xs:string'>SelectByPixelSize.py</AnyType>
       <AnyType xsi:type='xs:string'>SelectByPixelSize</AnyType>
       <AnyType xsi:type='xs:double'>0</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>

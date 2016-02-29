@@ -16,7 +16,7 @@
       <String>factor</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\BlockStatistics.py</AnyType>
+      <AnyType xsi:type='xs:string'>BlockStatistics.py</AnyType>
       <AnyType xsi:type='xs:string'>BlockStatistics</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster</Name>

@@ -15,7 +15,7 @@
       <String>measure</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\RankFilter.py</AnyType>
+      <AnyType xsi:type='xs:string'>RankFilter.py</AnyType>
       <AnyType xsi:type='xs:string'>RankFilter</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster</Name>

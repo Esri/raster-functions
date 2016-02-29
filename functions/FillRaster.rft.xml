@@ -14,7 +14,7 @@
       <String>value</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
-      <AnyType xsi:type='xs:string'>..\functions\FillRaster.py</AnyType>
+      <AnyType xsi:type='xs:string'>FillRaster.py</AnyType>
       <AnyType xsi:type='xs:string'>FillRaster</AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>Raster</Name>
