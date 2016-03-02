@@ -10,7 +10,7 @@ class RankFilter():
 
     def __init__(self):
         self.name = "Rank Filter Function"
-        self.description = ("")
+        self.description = ("Apply a non-linear filter on a local neighborhood of inputs pixels in a sliding window.")
         self.func = rank.mean
         self.window = None
         self.trace = Trace()
@@ -23,7 +23,7 @@ class RankFilter():
                 'value': None,
                 'required': True,
                 'displayName': "Input Raster",
-                'description': "The primary input raster on which the filter is applied."
+                'description': ("The primary input raster on which the filter is applied.")
             },
             {
                 'name': 'measure',

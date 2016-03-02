@@ -3,7 +3,7 @@
   <Description>A raster function template.</Description>
   <Function xsi:type='typens:PythonAdapterFunction'>
     <Name>Rank Filter Function</Name>
-    <Description></Description>
+    <Description>Apply a non-linear filter on a local neighborhood of inputs pixels in a sliding window.</Description>
     <PixelType>UNKNOWN</PixelType>
   </Function>
   <Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
@@ -11,8 +11,9 @@
       <String>PythonModule</String>
       <String>ClassName</String>
       <String>raster</String>
-      <String>size</String>
       <String>measure</String>
+      <String>size</String>
+      <String>res</String>
     </Names>
     <Values xsi:type='typens:ArrayOfAnyType'>
       <AnyType xsi:type='xs:string'>RankFilter.py</AnyType>
@@ -24,22 +25,28 @@
         <IsDataset>true</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>measure</Name>
+        <Description></Description>
+        <Value xsi:type='xs:string'>Mean</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
         <Name>size</Name>
         <Description></Description>
         <Value xsi:type='xs:double'>5</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>measure</Name>
+        <Name>res</Name>
         <Description></Description>
-        <Value xsi:type='xs:string'>Entropy</Value>
+        <Value xsi:type='xs:string'>Request</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
     </Values>
   </Arguments>
   <Help></Help>
   <Type>0</Type>
-  <Thumbnail xsi:type='xs:string'></Thumbnail>
+  <Thumbnail></Thumbnail>
   <Definition></Definition>
   <Group></Group>
   <Tag></Tag>
