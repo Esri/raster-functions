@@ -5,6 +5,7 @@ from skimage.filters import rank
 from skimage.morphology import square
 from utils import Trace
 
+
 class RankFilter():
 
     def __init__(self):
@@ -22,15 +23,7 @@ class RankFilter():
                 'value': None,
                 'required': True,
                 'displayName': "Input Raster",
-                'description': ""
-            },
-            {
-                'name': 'size',
-                'dataType': 'numeric',
-                'value': 5,
-                'required': False,
-                'displayName': "Window Size",
-                'description': ("")
+                'description': "The primary input raster on which the filter is applied."
             },
             {
                 'name': 'measure',
@@ -40,19 +33,41 @@ class RankFilter():
                 'displayName': "Measure",
                 'domain': ('Minimum', 'Maximum', 'Mean', 'Bilateral Mean', 'Median', 
                            'Sum', 'Entropy', 'Threshold', 'Autolevel'),
-                'description': ("")
+                'description': ("The measure represented by an ouput pixel " 
+                                "computed over a sliding window of input pixels.")
+            },
+            {
+                'name': 'size',
+                'dataType': 'numeric',
+                'value': 5,
+                'required': False,
+                'displayName': "Window Size",
+                'description': ("The width of the sliding window or kernel (in pixels).")
+            },
+            {
+                'name': 'res',
+                'dataType': 'string',
+                'value': 'Request',
+                'required': False,
+                'displayName': "Resolution",
+                'domain': ('Request', 'Raster'),
+                'description': ("The resolution at which the filter is applied. "
+                                "Choose between processing input pixels at resampled display/request resolution "
+                                "or in the original/raster resolution.")
             },
         ]
 
     def getConfiguration(self, **scalars):
+        r = scalars.get('res', None)
+
         return {
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,      # invalidate histogram, statistics, and key metadata
             'inputMask': True,
+            'resampling': not(r is not None and str(r).lower() == 'raster')
         }
 
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['resampling'] = False
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
@@ -93,3 +108,18 @@ class RankFilter():
         if bandIndex == -1:
             keyMetadata['datatype'] = 'Processed'
         return keyMetadata
+
+
+# ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ##
+
+"""
+References:
+
+    [1] Sicuranza, G., 2000. Nonlinear image processing. Academic Press.
+
+    [2] Rank Filters for Image Processing.
+        http://www.numerical-tours.com/matlab/denoisingadv_7_rankfilters/
+
+    [3] Scikit-image: Image processing in Python (Rank filters).
+        http://scikit-image.org/docs/dev/auto_examples/applications/plot_rank_filters.html
+"""
