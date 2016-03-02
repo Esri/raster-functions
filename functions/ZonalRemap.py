@@ -6,7 +6,9 @@ class ZonalRemap():
 
     def __init__(self):
         self.name = "Zonal Remap"
-        self.description = ""
+        self.description = ("Remap pixels in a raster based on zones "
+                            "defined in another raster and zone-dependent "
+                            "value mapping defined in a table.")
         self.ztMap = {}                 # zonal thresholds { zoneId:[[zMin,zMax,zVal], ...], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = 0
