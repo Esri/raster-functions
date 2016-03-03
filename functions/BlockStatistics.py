@@ -57,17 +57,19 @@ class BlockStatistics():
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,      # invalidate histogram, statistics, and key metadata
             'inputMask': True,
+            'resampling': False,
         }
 
     def updateRasterInfo(self, **kwargs):
         f = kwargs.get('factor', 1.0)
-        kwargs['output_info']['resampling'] = False
         kwargs['output_info']['cellSize'] = tuple(np.multiply(kwargs['raster_info']['cellSize'], f))
         kwargs['output_info']['pixelType'] = 'f4'   # output pixels values are floating-point
         kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
 
-        m = kwargs.get('measure', 'Mean').lower()
+        m = kwargs.get('measure')
+        m = m.lower() if m is not None and len(m) else 'mean'
+
         if m == 'minimum':
             self.func = np.min
         elif m == 'maximum':

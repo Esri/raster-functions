@@ -16,6 +16,7 @@ class Random():
         return {
           'inheritProperties': 0,                   # no input raster, nothing to inherit. 
           'invalidateProperties': 1 | 2 | 4 | 8,    # reset everything on the parent dataset.
+          'resampling': True,
         }
 
 
@@ -37,7 +38,6 @@ class Random():
             'histogram': (),
             'colormap': (),
             'noData': np.array([256], dtype='u1'),
-            'resampling': True
         }
 
         kwargs['output_info'] = outputInfo

@@ -41,11 +41,12 @@ class Aggregate():
         return {
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4,          # invalidate histogram and statistics because we are modifying pixel values
-            'inputMask': True                       # need raster mask of all input rasters in .updatePixels().
+            'inputMask': True,                      # need raster mask of all input rasters in .updatePixels().
+            'resampling': False                     # process at native resolution
+
         }
 
     def updateRasterInfo(self, **kwargs):
-        kwargs['output_info']['resampling'] = False # process at native resolution
         kwargs['output_info']['pixelType'] = 'f4'   # output pixels are floating-point values
         kwargs['output_info']['noData'] = None      # we'll set the mask updatePixels()
         kwargs['output_info']['histogram'] = ()     # no statistics/histogram for output raster specified

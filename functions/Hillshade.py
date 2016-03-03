@@ -58,7 +58,8 @@ class Hillshade():
             'inheritProperties': 4 | 8,           # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
             'padding': 1,                         # one extra on each each of the input pixel block
-            'inputMask': True                     # we need the input mask in .updatePixels()
+            'inputMask': True,                    # we need the input mask in .updatePixels()
+            'resampling': False                   # Resampling set explicitly to False
         }
 
     def updateRasterInfo(self, **kwargs):
@@ -66,7 +67,6 @@ class Hillshade():
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ({'minimum': 0., 'maximum': 255.}, )
         kwargs['output_info']['histogram'] = ()
-        kwargs['output_info']['resampling'] = False         # Resampling set explicitly to False
         kwargs['output_info']['colormap'] = ()
 
         r = kwargs['raster_info']
