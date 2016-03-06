@@ -14,6 +14,7 @@ class RankFilter():
         self.func = rank.mean
         self.window = None
         self.trace = Trace()
+        self.padding = 0
 
     def getParameterInfo(self):
         return [
@@ -59,11 +60,15 @@ class RankFilter():
 
     def getConfiguration(self, **scalars):
         r = scalars.get('res', None)
+        s = scalars.get('size', None)
+        s = 3 if s is None else s
+        self.padding = int(s / 2)
 
         return {
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4 | 8,      # invalidate histogram, statistics, and key metadata
             'inputMask': True,
+            'padding': self.padding,
             'resampling': not(r is not None and str(r).lower() == 'raster')
         }
 
@@ -101,7 +106,8 @@ class RankFilter():
         for b in range(p.shape[0]): 
             q[b] = self.func(p[b], selem=self.window, mask=m[b])
 
-        pixelBlocks['output_pixels'] = q.astype(props['pixelType'], copy=False)
+        d = self.padding
+        pixelBlocks['output_pixels'] = q[0][d:-d, d:-d].astype(props['pixelType'], copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
