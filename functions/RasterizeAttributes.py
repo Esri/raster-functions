@@ -1,12 +1,14 @@
 import numpy as np
 import json
-from utils import ZonalAttributesTable
+from utils import ZonalAttributesTable, loadJSON
 
 class RasterizeAttributes():
 
     def __init__(self):
         self.name = "Rasterize Attributes"
-        self.description = ""
+        self.description = ("Enriches a raster through additional bands derived from values of specified attributes "
+                            "of an external table or a feature service. You can optionally specify a zone raster "
+                            "and the associated zone ID attribute to enable region-based look-up. ")
         self.ztMap = {}                 # zonal thresholds { zoneId:[f1,f2,...,fn], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = 0
@@ -97,7 +99,7 @@ class RasterizeAttributes():
         ztStr = ztStr.strip() if ztStr else "{}"
 
         try:
-            self.ztMap = json.loads(ztStr) if ztStr else {}
+            self.ztMap = loadJSON(ztStr) if ztStr else {}
         except ValueError as e:
             self.ztMap = None
 

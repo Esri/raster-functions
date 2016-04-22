@@ -42,6 +42,20 @@ def isGeographic(s):
     return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
+def loadJSON(s):
+    if s is None:
+        return None
+
+    json = __import__('json')
+    from os import path
+
+    if path.exists(s):
+        with open(s) as f:
+            return json.load(f)
+    else:
+        return json.loads(s)
+
+
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
 
@@ -189,3 +203,5 @@ class ZonalAttributesTable():
 
     def _addAttributes(self, T, zoneId, attribValues):
         T[zoneId] = T.get(zoneId, []) + [attribValues]
+
+

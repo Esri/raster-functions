@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from utils import ZonalAttributesTable
+from utils import ZonalAttributesTable, loadJSON
 
 class ZonalRemap():
 
@@ -138,7 +138,7 @@ class ZonalRemap():
         ztStr = ztStr.strip() if ztStr else "{}"
 
         try:
-            self.ztMap = json.loads(ztStr) if ztStr else {}
+            self.ztMap = loadJSON(ztStr) if ztStr else {}
         except ValueError as e:
             self.ztMap = None
 
