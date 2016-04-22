@@ -1,4 +1,4 @@
-import json
+from utils import loadJSON
 
 
 class KeyMetadata():
@@ -63,7 +63,7 @@ class KeyMetadata():
     def updateRasterInfo(self, **kwargs):
         try:
             jsonInput = kwargs.get('json', "{}").strip()
-            allProps = json.loads(jsonInput) if jsonInput else {}
+            allProps = loadJSON(jsonInput) if jsonInput else {}
         except ValueError as e:
             raise Exception(e.message)
 
