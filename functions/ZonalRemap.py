@@ -6,9 +6,9 @@ class ZonalRemap():
 
     def __init__(self):
         self.name = "Zonal Remap"
-        self.description = ("Remap pixels in a raster based on zones "
-                            "defined in another raster and zone-dependent "
-                            "value mapping defined in a table.")
+        self.description = ("Remap pixels in a raster based on spatial zones "
+                            "defined by another raster, and a zone-dependent "
+                            "value mapping defined by a table.")
         self.ztMap = {}                 # zonal thresholds { zoneId:[[zMin,zMax,zVal], ...], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = 0
@@ -116,7 +116,8 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Where Clause",
-                'description': ("Additional query applied on the Zonal Thresholds Table.")
+                'description': ("Additional query applied on the Zonal Thresholds Table. "
+                                "Only the rows that satisfy this criteria participate in the zonal remapping.")
             },
         ]
 
@@ -183,13 +184,13 @@ class ZonalRemap():
         # use zonal thresholds to update output pixels...
         if ZT is not None and len(ZT.keys()):
             for k in (zoneIds if zoneIds is not None else [None]):
-                T = ZT.get(k, None)                                 # k from z might not be in ztMap
+                T = ZT.get(k, None)         # k from z might not be in ztMap
                 if not T:
                     continue
 
                 for t in T:
                     I = (z == k) if z is not None else np.ones(v.shape, dtype=bool)
-                    if t[0] and t[1]:                               # min and max are both available
+                    if t[0] and t[1]:       # min and max are both available
                         I = I & (v > t[0]) & (v < t[1])
                     elif t[0]:
                         I = I & (v > t[0]) 

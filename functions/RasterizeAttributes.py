@@ -2,10 +2,10 @@ import numpy as np
 import json
 from utils import ZonalAttributesTable
 
-class ZonalAttributes():
+class RasterizeAttributes():
 
     def __init__(self):
-        self.name = "Zonal Attributes"
+        self.name = "Rasterize Attributes"
         self.description = ""
         self.ztMap = {}                 # zonal thresholds { zoneId:[f1,f2,...,fn], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
