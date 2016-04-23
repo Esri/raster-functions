@@ -14,6 +14,7 @@ class RasterizeAttributes():
         self.background = 0
         self.whereClause = None
         self.M = 0                      # number of attribute names == additional bands in the output
+        self.zid = None
 
     def getParameterInfo(self):
         return [
@@ -84,12 +85,17 @@ class RasterizeAttributes():
 
 
     def getConfiguration(self, **scalars):
+        self.zid = scalars.get('zid', "").strip()
+        self.zid = self.zid if len(self.zid) else None
+
         return {
           'inheritProperties': 2 | 4 | 8,
           'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset.
           'inputMask': False                        # Don't need input raster mask in .updatePixels().
         }
 
+    def selectRasters(self, tlc, shape, props):
+        return ('vraster', 'zraster') if self.zid else ('vraster',)
 
     def updateRasterInfo(self, **kwargs):
         self.ztMap = None
@@ -110,7 +116,7 @@ class RasterizeAttributes():
         if self.ztMap is None:
             self.ztMap = {}
             self.ztTable = ZonalAttributesTable(tableUri=ztStr,
-                                                idField=kwargs.get('zid', None),
+                                                idField=self.zid,
                                                 attribList=attribs)
 
         self.background = kwargs.get('background', None)
@@ -125,10 +131,10 @@ class RasterizeAttributes():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        v = pixelBlocks['vraster_pixels'][0]
-
         zoneIds = None
-        z = pixelBlocks.get('zraster_pixels', None)
+        v = pixelBlocks['vraster_pixels'][0]
+        z = pixelBlocks.get('zraster_pixels', None) if self.zid else None
+
         if z is not None:               # zone raster is optional 
             z = pixelBlocks['zraster_pixels'][0]
             zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
@@ -145,7 +151,6 @@ class RasterizeAttributes():
 
         np.copyto(p[0], v, casting='unsafe')
         ones = np.ones(v.shape, dtype=bool)
-        
         # use zonal attributes to update output pixels...
         if ZT is not None and len(ZT.keys()):
             for k in (zoneIds if zoneIds is not None else [None]):

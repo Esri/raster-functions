@@ -96,7 +96,7 @@ class Trace():
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
-
+# TODO: support early termination (when only one row is needed), like in non-zonal rasterize attributes.
 class ZonalAttributesTable():
     def __init__(self, tableUri, idField=None, attribList=None):
         if tableUri is None:
@@ -121,6 +121,10 @@ class ZonalAttributesTable():
 
         self.tupleSize = len(self.fi)
         self.queryFields = ([self.idField] if self.idField else []) + self.queryFields
+
+        if not len(self.queryFields):
+            raise Exception("TODO")
+         
         self.fieldCSV = ",".join(self.queryFields)
 
         self.arcpy = None
@@ -205,3 +209,5 @@ class ZonalAttributesTable():
         T[zoneId] = T.get(zoneId, []) + [attribValues]
 
 
+z = ZonalAttributesTable(r"\\FerozK\Updates\ZonalRemap\Vinay\VCTable.csv", attribList=["maxkph","onslope","vehiclewidth"])
+print(z.query())
