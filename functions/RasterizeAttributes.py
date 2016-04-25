@@ -85,7 +85,7 @@ class RasterizeAttributes():
 
 
     def getConfiguration(self, **scalars):
-        self.zid = scalars.get('zid', "").strip()
+        self.zid = (scalars.get('zid', "") or "").strip()
         self.zid = self.zid if len(self.zid) else None
 
         return {
