@@ -207,7 +207,3 @@ class ZonalAttributesTable():
 
     def _addAttributes(self, T, zoneId, attribValues):
         T[zoneId] = T.get(zoneId, []) + [attribValues]
-
-
-z = ZonalAttributesTable(r"\\FerozK\Updates\ZonalRemap\Vinay\VCTable.csv", attribList=["maxkph","onslope","vehiclewidth"])
-print(z.query())
