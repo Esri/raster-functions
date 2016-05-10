@@ -1,5 +1,5 @@
 import numpy as np
-
+from utils import Trace
 
 class HeatIndex():
 
@@ -67,11 +67,12 @@ class HeatIndex():
 
         self.hiUnits = kwargs.get('outunits', None)
         self.hiUnits = (self.hiUnits or 'Fahrenheit').lower()[0] 
+
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False).flatten()
-        r = np.array(pixelBlocks['rh_pixels'], dtype='f4', copy=False).flatten()
+        t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)[0].flatten()
+        r = np.array(pixelBlocks['rh_pixels'], dtype='f4', copy=False)[0].flatten()
 
         # transform t to Fahrenheit space
         if self.tempUnits == 'k':
@@ -96,12 +97,12 @@ class HeatIndex():
                     + (8.5282e-4 * trr) - (1.99e-6 * ttrr))
 
         # apply adjustments
-        b = a & ((r < 13) & ((t >= 80.) | (t <= 112)))
+        b = a & ((r < 13) & (t >= 80.) & (t <= 112))
         fullHI[b] -= (((13. - r) / 4.) * np.sqrt((17. - np.abs(t-95.)) / 17.))[b]
-        
-        b = a & ((r > 85) & ((t >= 80.) | (t <= 87)))
+
+        b = a & ((r > 85) & (t >= 80.) & (t <= 87))
         fullHI[b] += (((t - 85.) / 10.) * ((87. - t) / 5.))[b]
-        
+
         # use full heat-index conditionally
         H[a] = fullHI[a]
 
