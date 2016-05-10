@@ -119,6 +119,12 @@ class HeatIndex():
         if bandIndex == -1:                                     # update dataset-level key metadata
             keyMetadata['datatype'] = 'Scientific'
             keyMetadata['variable'] = 'HeatIndex'
+            if self.hiUnits == 'k':
+                keyMetadata['unit'] = 'esriKelvin'
+            elif self.hiUnits == 'c':
+                keyMetadata['unit'] = 'esriCelsius'
+            else:
+                keyMetadata['unit'] = 'esriFahrenheit'
         elif bandIndex == 0:
             keyMetadata['wavelengthmin'] = None                 # reset inapplicable band-specific key metadata 
             keyMetadata['wavelengthmax'] = None
