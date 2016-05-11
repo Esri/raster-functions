@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
   <Name>HeatIndex</Name>
-  <Description>A raster function template that combines ambient air temperature and relative humidity to return apparent temperature in degrees Fahrenheit.</Description>
+  <Description>A raster function template that combines ambient air temperature and relative humidity to return apparent temperature.</Description>
   <Function xsi:type="typens:PythonAdapterFunction">
     <Name>HeatIndex</Name>
     <Description></Description>
@@ -12,12 +12,14 @@
       <String>PythonModule</String>
       <String>temperature</String>
       <String>rh</String>
+      <String>units</String>
+      <String>outunits</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
       <AnyType xsi:type="xs:string">HeatIndex.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Temperature</Name>
-        <Description>A single-band raster where pixel values represent ambient air temperature in Fahrenheit.</Description>
+        <Description>A single-band raster where pixel values represent ambient air temperature.</Description>
         <Value></Value>
         <IsDataset>true</IsDataset>
         <Aliases xsi:type="typens:ArrayOfString">
@@ -35,6 +37,18 @@
           <String>rh@SFC</String>
         </Aliases>
       </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Temperature-Units</Name>
+        <Description>The unit of measurement associated with the input temperature raster.</Description>
+        <Value xsi:type='xs:string'>Fahrenheit</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Output-Units</Name>
+        <Description>The unit of measurement associated with the output heat-index raster.</Description>
+        <Value xsi:type='xs:string'>Fahrenheit</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>      
     </Values>
   </Arguments>
   <Help></Help>

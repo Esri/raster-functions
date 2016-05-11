@@ -18,16 +18,8 @@ class HeatIndex():
                 'value': None,
                 'required': True,
                 'displayName': "Temperature Raster",
-                'description': "A single-band raster where pixel values represent ambient air temperature in Fahrenheit."
-            },
-            {
-                'name': 'units',
-                'dataType': 'string',
-                'value': 'Fahrenheit',
-                'required': True,
-                'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Temperature Measured In",
-                'description': "The unit of measurement associated with the input temperature raster. Output is always in Fahrenheit."
+                'description': ("A single-band raster where pixel values represent ambient air temperature "
+                                "in Fahrenheit, Celsius, or Kelvin.")
             },
             {
                 'name': 'rh',
@@ -39,12 +31,21 @@ class HeatIndex():
                                 "a percentage value between 0 and 100.")
             },
             {
+                'name': 'units',
+                'dataType': 'string',
+                'value': 'Fahrenheit',
+                'required': True,
+                'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
+                'displayName': "Input Temperature Measured In",
+                'description': "The unit of measurement associated with the input temperature raster."
+            },
+            {
                 'name': 'outunits',
                 'dataType': 'string',
                 'value': 'Fahrenheit',
                 'required': True,
                 'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Heat Index Measured In",
+                'displayName': "Output Heat Index Measured In",
                 'description': "The unit of measurement associated with the output heat-index raster."
             },
         ]
@@ -74,7 +75,7 @@ class HeatIndex():
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)[0].flatten()
         r = np.array(pixelBlocks['rh_pixels'], dtype='f4', copy=False)[0].flatten()
 
-        # transform t to Fahrenheit space
+        # transform t to Fahrenheit
         if self.tempUnits == 'k':
             t = (1.8 * t) - 459.67
         elif self.tempUnits == 'c':
@@ -106,7 +107,7 @@ class HeatIndex():
         # use full heat-index conditionally
         H[a] = fullHI[a]
 
-        # transform HI to desired output space
+        # transform HI to desired output units
         if self.hiUnits == 'k':
             H = (H + 459.67) / 1.8
         elif self.hiUnits == 'c':
