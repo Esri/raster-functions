@@ -1,5 +1,4 @@
 import numpy as np
-from utils import Trace
 
 class HeatIndex():
 
