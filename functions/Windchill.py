@@ -45,7 +45,7 @@ class Windchill():
                 'dataType': 'string',
                 'value': 'mph',
                 'required': True,
-                'domain': ('mi/h', 'kph', 'm/s'),
+                'domain': ('mi/h', 'kph', 'm/s', 'knots', 'fps'),
                 'displayName': "Input Wind-speed Measured In",
                 'description': "The unit of measurement associated with the input wind-speed raster."
             },
@@ -81,6 +81,10 @@ class Windchill():
             self.wUnits = 'm'
         elif self.wUnits == "kph":
             self.wUnits = 'k'
+        elif self.wUnits == "knots":
+            self.wUnits = 'n'
+        elif self.wUnits == "fps":
+            self.wUnits = 'f'
         else:
             self.wUnits = 'M'
 
@@ -98,9 +102,13 @@ class Windchill():
 
         # transform ws to mph
         if self.wUnits == 'm':
-            w = w * 3600./1609.344
+            ws *= (3600./1609.344)
         elif self.wUnits == 'k':
-            w = w / 1.609344
+            ws /= 1.609344
+        elif self.wUnits == 'n':
+            ws /= 1.15077945
+        elif self.wUnits == 'f':
+            ws *= (5280. / 3600)
 
         ws16 = np.power(ws, 0.16)
         wc = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t * ws16)
