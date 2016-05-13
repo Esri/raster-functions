@@ -5,7 +5,7 @@ class HeatIndex():
     def __init__(self):
         self.name = "Heat Index Function"
         self.description = ("This function combines ambient air temperature and relative humidity "
-                            "to return apparent temperature in degrees Fahrenheit.")
+                            "to return apparent temperature.")
         self.tempUnits = 'f'
         self.hiUnits = 'f'
 

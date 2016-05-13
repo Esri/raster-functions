@@ -5,8 +5,8 @@ class Windchill():
 
     def __init__(self):
         self.name = "Windchill Function"
-        self.description = ("This function computes windchill on the Fahrenheit "
-                            "scale given wind speed and air temperature.")
+        self.description = ("This function computes windchill given "
+                            "wind speed and air temperature.")
         self.tUnits = 'f'
         self.wUnits = 'M'
         self.oUnits = 'f'
@@ -45,7 +45,7 @@ class Windchill():
                 'dataType': 'string',
                 'value': 'mph',
                 'required': True,
-                'domain': ('mi/h', 'kph', 'm/s', 'ft/s', 'knots'),
+                'domain': ('mph', 'kph', 'm/s', 'ft/s', 'knots'),
                 'displayName': "Input Wind-speed Measured In",
                 'description': "The unit of measurement associated with the input wind-speed raster."
             },
