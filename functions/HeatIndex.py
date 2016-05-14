@@ -21,6 +21,15 @@ class HeatIndex():
                                 "in Fahrenheit, Celsius, or Kelvin.")
             },
             {
+                'name': 'units',
+                'dataType': 'string',
+                'value': 'Fahrenheit',
+                'required': True,
+                'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
+                'displayName': "Temperature Units",
+                'description': "The unit of measurement associated with the input temperature raster."
+            },
+            {
                 'name': 'rh',
                 'dataType': 'raster',
                 'value': None,
@@ -30,21 +39,12 @@ class HeatIndex():
                                 "a percentage value between 0 and 100.")
             },
             {
-                'name': 'units',
-                'dataType': 'string',
-                'value': 'Fahrenheit',
-                'required': True,
-                'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Input Temperature Measured In",
-                'description': "The unit of measurement associated with the input temperature raster."
-            },
-            {
                 'name': 'outunits',
                 'dataType': 'string',
                 'value': 'Fahrenheit',
                 'required': True,
                 'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Output Heat Index Measured In",
+                'displayName': "Output Heat Index Units",
                 'description': "The unit of measurement associated with the output heat-index raster."
             },
         ]

@@ -28,7 +28,7 @@ class Windchill():
                 'value': 'Fahrenheit',
                 'required': True,
                 'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Input Temperature Measured In",
+                'displayName': "Temperature Units",
                 'description': "The unit of measurement associated with the input temperature raster."
             },
             {
@@ -46,7 +46,7 @@ class Windchill():
                 'value': 'mph',
                 'required': True,
                 'domain': ('mph', 'kph', 'm/s', 'ft/s', 'knots'),
-                'displayName': "Input Wind-speed Measured In",
+                'displayName': "Wind-speed Units",
                 'description': "The unit of measurement associated with the input wind-speed raster."
             },
             {
@@ -55,7 +55,7 @@ class Windchill():
                 'value': 'Fahrenheit',
                 'required': True,
                 'domain': ('Celsius', 'Fahrenheit', 'Kelvin'),
-                'displayName': "Output Wind Chill Measured In",
+                'displayName': "Output Wind Chill Units",
                 'description': "The unit of measurement associated with the output wind chill raster."
             },
         ]
