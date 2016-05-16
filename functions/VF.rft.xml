@@ -29,21 +29,21 @@
         <IsDataset>true</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>InputDataType_2015829_21436_329</Name>
+        <Name>InputDataType</Name>
         <Description></Description>
-        <Value></Value>
+        <Value xsi:type='xs:string'>Vector-UV</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>OutputDataType_2015829_21436_329</Name>
+        <Name>OutputDataType</Name>
         <Description></Description>
-        <Value></Value>
+        <Value xsi:type='xs:string'>Vector-MagDir</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:RasterFunctionVariable'>
-        <Name>AngleReferenceSystem_2015829_21436_329</Name>
+        <Name>AngleReferenceSystem</Name>
         <Description></Description>
-        <Value></Value>
+        <Value xsi:type='xs:int'>1</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
       <AnyType xsi:type='typens:PropertySet'>
@@ -52,9 +52,10 @@
     </Values>
   </Arguments>
   <Help></Help>
-  <Type>2</Type>
-  <Thumbnail xsi:type='xs:string'></Thumbnail>
+  <Type>0</Type>
+  <Thumbnail></Thumbnail>
   <Definition></Definition>
   <Group>GroupName</Group>
   <Tag>Tag</Tag>
+  <ThumbnailEx></ThumbnailEx>
 </RasterFunctionTemplate>

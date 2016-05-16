@@ -10,6 +10,7 @@
   <Arguments xsi:type="typens:PythonAdapterFunctionArguments">
     <Names xsi:type="typens:ArrayOfString">
       <String>PythonModule</String>
+      <String>ClassName</String>
       <String>temperature</String>
       <String>rh</String>
       <String>units</String>
@@ -17,6 +18,7 @@
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
       <AnyType xsi:type="xs:string">HeatIndex.py</AnyType>
+      <AnyType xsi:type='xs:string'>HeatIndex</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Temperature</Name>
         <Description>A single-band raster where pixel values represent ambient air temperature.</Description>
