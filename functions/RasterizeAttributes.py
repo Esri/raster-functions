@@ -34,6 +34,10 @@ class RasterizeAttributes():
                 'displayName': "Zone Raster",
                 'description': ("The single-band zone raster where each pixel contains "
                                 "the zone ID associated with the location.")
+                'description': ("An optional single-band zone raster where each pixel contains "
+                                "the zone ID associated with the location. The zone ID is used for "
+                                "looking up rows in the zonal attributes table for zone-specific ingestion. "
+                                "Leave this parameter unspecified to simply import attribute")
             },
             {
                 'name': 'ztable',
@@ -136,7 +140,7 @@ class RasterizeAttributes():
         z = pixelBlocks.get('zraster_pixels', None) if self.zid else None
 
         if z is not None:               # zone raster is optional 
-            z = pixelBlocks['zraster_pixels'][0]
+            z = z[0]
             zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
 
         ZT = self.ztTable.query(idList=zoneIds, 
@@ -165,12 +169,3 @@ class RasterizeAttributes():
 
         pixelBlocks['output_pixels'] = p
         return pixelBlocks
-
-
-    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == -1:
-            keyMetadata['datatype'] = 'Processed'
-        elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None     # reset inapplicable band-specific key metadata 
-            keyMetadata['wavelengthmax'] = None
-        return keyMetadata

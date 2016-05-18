@@ -32,8 +32,11 @@ class ZonalRemap():
                 'value': None,
                 'required': False,
                 'displayName': "Zone Raster",
-                'description': ("The single-band zone raster where each pixel contains "
-                                "the zone ID associated with the location.")
+                'description': ("An optional single-band zone raster where each pixel contains "
+                                "the zone ID associated with the location. The zone ID is used for "
+                                "looking up rows in the zonal threshold table for zone-specific mapping. 
+                                "Leave this parameter unspecified to perform zone-independent, value-based "
+                                "remapping.")
             },
             {
                 'name': 'ztable',
@@ -44,8 +47,8 @@ class ZonalRemap():
                 'description': ("The threshold map specified as a JSON string, "
                                 "a path to a local feature class or table, or a URL to a feature service layer. "
                                 "In JSON, it's described as a collection of mapping from zone IDs to an "
-                                "array of intervals (zmin-zmax) and the corresponding target value (zval), "
-                                "like this: { zoneId:[[zmin,zmax,zval], ...], ... } ")
+                                "array of 3-tuples representing the interval (zmin-zmax) and the corresponding target value (zval), "
+                                "like this: { zoneId:[[zmin,zmax,zval], ...], ... }.")
             },
             {
                 'name': 'zid',
@@ -170,7 +173,7 @@ class ZonalRemap():
         zoneIds = None
         z = pixelBlocks.get('zraster_pixels', None)
         if z is not None:               # zone raster is optional 
-            z = pixelBlocks['zraster_pixels'][0]
+            z = z[0]
             zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
 
         ZT = self.ztTable.query(idList=zoneIds, 
@@ -200,12 +203,3 @@ class ZonalRemap():
 
         pixelBlocks['output_pixels'] = p
         return pixelBlocks
-
-
-    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == -1:
-            keyMetadata['datatype'] = 'Processed'
-        elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None     # reset inapplicable band-specific key metadata 
-            keyMetadata['wavelengthmax'] = None
-        return keyMetadata

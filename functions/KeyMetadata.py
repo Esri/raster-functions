@@ -23,7 +23,7 @@ class KeyMetadata():
                 'name': 'property',
                 'dataType': 'string',
                 'value': '',
-                'displayName': "Property Name",
+                'displayName': "Dataset-level Key Property Name",
                 'required': False,
                 'description': "The name of the optional dataset-level key property to override."
             },
@@ -31,7 +31,7 @@ class KeyMetadata():
                 'name': 'value',
                 'dataType': 'string',
                 'value': None,
-                'displayName': "Property Value",
+                'displayName': "Dataset-level Key Property Value",
                 'required': False,
                 'description': "The overriding new value of the dataset-level key property."
             },
@@ -51,7 +51,7 @@ class KeyMetadata():
                 'required': False,
                 'description': ("Key metadata to be injected into the outgoing raster described as a "
                                 "JSON string representing a collection of key-value pairs. "
-                                "Learn more by searching for 'Raster Key Properties' at http://resources.arcgis.com.")
+                                "To learn more, search for 'Raster Key Properties' at http://resources.arcgis.com.")
             },
     ]
 
