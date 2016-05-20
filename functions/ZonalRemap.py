@@ -34,9 +34,9 @@ class ZonalRemap():
                 'displayName': "Zone Raster",
                 'description': ("An optional single-band zone raster where each pixel contains "
                                 "the zone ID associated with the location. The zone ID is used for "
-                                "looking up rows in the zonal threshold table for zone-specific mapping. 
-                                "Leave this parameter unspecified to perform zone-independent, value-based "
-                                "remapping.")
+                                "looking up rows in the zonal threshold table for zone-specific mapping. " 
+                                "Leave this parameter unspecified to perform zone-independent remapping "
+                                "based only on the input pixel value.")
             },
             {
                 'name': 'ztable',
@@ -124,7 +124,6 @@ class ZonalRemap():
             },
         ]
 
-
     def getConfiguration(self, **scalars):
         return {
           'inheritProperties': 2 | 4 | 8,
@@ -138,7 +137,7 @@ class ZonalRemap():
         self.whereClause = None
 
         ztStr = kwargs.get('ztable', None)
-        ztStr = ztStr.strip() if ztStr else "{}"
+        ztStr = ztStr.strip() or "{}"
 
         try:
             self.ztMap = loadJSON(ztStr) if ztStr else {}
@@ -153,11 +152,8 @@ class ZonalRemap():
                                                             kwargs.get('zmax', None), 
                                                             kwargs.get('zval', None)])
 
-        self.background = kwargs.get('background', None)
-        self.background = int(self.background) if self.background else 0
-
-        self.defaultTarget = kwargs.get('defzval', None)
-        self.defaultTarget = int(self.defaultTarget) if self.defaultTarget else 255
+        self.background = int(kwargs.get('background', None) or 0)
+        self.defaultTarget = int(kwargs.get('defzval', None) or 255)
         self.whereClause = kwargs.get('where', None)
 
         kwargs['output_info']['bandCount'] = 1
@@ -186,7 +182,7 @@ class ZonalRemap():
 
         # use zonal thresholds to update output pixels...
         if ZT is not None and len(ZT.keys()):
-            for k in (zoneIds if zoneIds is not None else [None]):
+            for k in (zoneIds or [None]):
                 T = ZT.get(k, None)         # k from z might not be in ztMap
                 if not T:
                     continue

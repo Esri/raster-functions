@@ -104,7 +104,7 @@ class ZonalAttributesTable():
 
         self.tableUri = tableUri
         self.idField, self.idFI = (idField.lower(), 0) if idField else (None, None)
-        self.attribList = attribList if attribList else []
+        self.attribList = attribList or []
 
         k = 0
         self.fi, self.queryFields = [], []
