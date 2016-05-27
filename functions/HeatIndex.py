@@ -97,11 +97,12 @@ class HeatIndex():
                     + (8.5282e-4 * trr) - (1.99e-6 * ttrr))
 
         # apply adjustments
-        b = a & ((r < 13) & (t >= 80.) & (t <= 112))
-        fullHI[b] -= (((13. - r) / 4.) * np.sqrt((17. - np.abs(t-95.)) / 17.))[b]
+        c = a & ((r < 13) & (t >= 80.) & (t <= 112))
+        fullHI[c] -= (((13. - r[c]) / 4.) * np.sqrt((17. - np.abs(t[c]-95.)) / 17.))
 
-        b = a & ((r > 85) & (t >= 80.) & (t <= 87))
-        fullHI[b] += (((t - 85.) / 10.) * ((87. - t) / 5.))[b]
+        c = a & ((r > 85) & (t >= 80.) & (t <= 87))
+        tc = t[c]
+        fullHI[c] += (((tc - 85.) / 10.) * ((87. - tc) / 5.))
 
         # use full heat-index conditionally
         H[a] = fullHI[a]
