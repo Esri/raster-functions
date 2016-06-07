@@ -64,7 +64,7 @@ class Windchill():
         return {
           'inheritProperties': 4 | 8,               # inherit all but the pixel type and NoData from the input raster
           'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset because we modify pixel values. 
-          'inputMask': False                        # Don't need input raster mask in .updatePixels(). Simply use the inherited NoData. 
+          'inputMask': True                         # Need input raster mask in .updatePixels()
         }
 
     def updateRasterInfo(self, **kwargs):
@@ -94,6 +94,10 @@ class Windchill():
         ws = np.array(pixelBlocks['ws_pixels'], dtype='f4', copy=False)[0]
         t = np.array(pixelBlocks['temperature_pixels'], dtype='f4', copy=False)[0]
 
+        m =  np.array(pixelBlocks['temperature_mask'], dtype=bool, copy=False)[0]
+        m &= np.array(pixelBlocks['ws_mask'], dtype=bool, copy=False)[0]
+        m &= (ws >= 0)
+
         # transform t to Fahrenheit
         if self.tUnits == 'k':
             t = (1.8 * t) - 459.67
@@ -110,16 +114,18 @@ class Windchill():
         elif self.wUnits == 'f':
             ws *= (5280. / 3600)
 
-        ws16 = np.power(ws, 0.16)
-        wc = 35.74 + (0.6215 * t) - (35.75 * ws16) + (0.4275 * t * ws16)
+        wc = 35.74 + (0.6215 * t)
+        ws16 = np.power(ws[m], 0.16)
+        wc[m] += (0.4275 * t[m] * ws16) - (35.75 * ws16)
 
-        # transform HI to desired output units
+        # transform output wind-chill index to desired output units
         if self.oUnits == 'k':
             wc = (wc + 459.67) / 1.8
         elif self.oUnits == 'c':
             wc = (wc - 32.) / 1.8
 
         pixelBlocks['output_pixels'] = wc.astype(props['pixelType'], copy=False)
+        pixelBlocks['output_mask'] = m.astype(dtype='u1', copy=False)
         return pixelBlocks
 
     def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
