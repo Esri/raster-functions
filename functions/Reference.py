@@ -156,7 +156,6 @@ class Reference():
                                      Use the information in this tuple with arcpy.da.TableToNumPyArray() to access the values.
             . levelOfDetails:        Int: The number of level of details in the input raster.
             . origin:                Tuple(Floats): Tuple of (x,y) coordinate corresponding to the origin. 
-            . resampling:            Boolean
             . bandSelection:         Boolean
             . histogram:             Tuple(numpy.ndarrays): Tuple where each entry is an array of histogram values of a band.
             . statistics:            Tuple(dicts): Tuple of statistics values. 

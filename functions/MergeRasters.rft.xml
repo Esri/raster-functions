@@ -1,0 +1,29 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.4'>
+  <Name>MergeRasters</Name>
+  <Description>Merges a collection of rasters on the fly.</Description>
+  <Function xsi:type='typens:MergeRastersFunction'>
+    <Name>Merge Rasters Function</Name>
+    <Description>Merges a collection of rasters on the fly.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type='typens:MergeRastersFunctionArguments'>
+    <Names xsi:type='typens:ArrayOfString'>
+      <String>Rasters</String>
+    </Names>
+    <Values xsi:type='typens:ArrayOfAnyType'>
+      <Argument xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster[]</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </Argument>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>0</Type>
+  <Thumbnail></Thumbnail>
+  <Definition></Definition>
+  <Group></Group>
+  <Tag></Tag>
+  <ThumbnailEx></ThumbnailEx>
+</RasterFunctionTemplate>

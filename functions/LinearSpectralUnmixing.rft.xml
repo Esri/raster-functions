@@ -51,7 +51,7 @@
                 <Value xsi:type='xs:string'>Scaled</Value>
                 <IsDataset>false</IsDataset>
               </AnyType>
-              <AnyType xsi:type='xs:string'>..\functions\LinearSpectralUnmixing.py</AnyType>
+              <AnyType xsi:type='xs:string'>LinearSpectralUnmixing.py</AnyType>
               <AnyType xsi:type='xs:string'>LinearSpectralUnmixing</AnyType>
             </Values>
           </Arguments>

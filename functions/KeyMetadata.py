@@ -1,4 +1,4 @@
-import json
+from utils import loadJSON
 
 
 class KeyMetadata():
@@ -23,7 +23,7 @@ class KeyMetadata():
                 'name': 'property',
                 'dataType': 'string',
                 'value': '',
-                'displayName': "Property Name",
+                'displayName': "Dataset-level Key Property Name",
                 'required': False,
                 'description': "The name of the optional dataset-level key property to override."
             },
@@ -31,7 +31,7 @@ class KeyMetadata():
                 'name': 'value',
                 'dataType': 'string',
                 'value': None,
-                'displayName': "Property Value",
+                'displayName': "Dataset-level Key Property Value",
                 'required': False,
                 'description': "The overriding new value of the dataset-level key property."
             },
@@ -49,8 +49,9 @@ class KeyMetadata():
                 'value': '',
                 'displayName': "Metadata JSON",
                 'required': False,
-                'description': ("Key metadata to be injected into the outgoing raster described as a JSON string representing a collection of key-value pairs. "
-                                "Learn more by searching for 'Raster Key Properties' at http://resources.arcgis.com.")
+                'description': ("Key metadata to be injected into the outgoing raster described as a "
+                                "JSON string representing a collection of key-value pairs. "
+                                "To learn more, search for 'Raster Key Properties' at http://resources.arcgis.com.")
             },
     ]
 
@@ -62,7 +63,7 @@ class KeyMetadata():
     def updateRasterInfo(self, **kwargs):
         try:
             jsonInput = kwargs.get('json', "{}").strip()
-            allProps = json.loads(jsonInput) if jsonInput else {}
+            allProps = loadJSON(jsonInput) if jsonInput else {}
         except ValueError as e:
             raise Exception(e.message)
 

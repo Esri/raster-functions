@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/10.3">
-  <Name>NDVI-Colormap</Name>
+  <Name>NDVI-Raw</Name>
   <Description>A raster function template.</Description>
   <Function xsi:type="typens:PythonAdapterFunction">
     <Name>NDVI</Name>
@@ -16,7 +16,7 @@
       <String>method</String>
     </Names>
     <Values xsi:type="typens:ArrayOfAnyType">
-      <AnyType xsi:type="xs:string">../functions/NDVI.py</AnyType>
+      <AnyType xsi:type="xs:string">NDVI.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable">
         <Name>Raster</Name>
         <Description></Description>
@@ -25,7 +25,7 @@
       </AnyType>
       <AnyType xsi:type="xs:double">3</AnyType>
       <AnyType xsi:type="xs:double">4</AnyType>
-      <AnyType xsi:type="xs:string">Colormap</AnyType>
+      <AnyType xsi:type="xs:string">Raw</AnyType>
     </Values>
   </Arguments>
   <Help></Help>

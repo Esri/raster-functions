@@ -41,7 +41,9 @@ class Aggregate():
         return {
             'inheritProperties': 4 | 8,             # inherit everything but the pixel type (1) and NoData (2)
             'invalidateProperties': 2 | 4,          # invalidate histogram and statistics because we are modifying pixel values
-            'inputMask': True                       # need raster mask of all input rasters in .updatePixels().
+            'inputMask': True,                      # need raster mask of all input rasters in .updatePixels().
+            'resampling': False                     # process at native resolution
+
         }
 
     def updateRasterInfo(self, **kwargs):
@@ -52,7 +54,7 @@ class Aggregate():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        # pixelBlocks['rasters_pixels']: tuple of 2-d or 3-d array containing pixel blocks from each input raster
+        # pixelBlocks['rasters_pixels']: tuple of 3-d array containing pixel blocks from each input raster
         # apply the selected operator over each array in the tuple
         outBlock = self.operator(pixelBlocks['rasters_pixels'], axis=0)
         pixelBlocks['output_pixels'] = outBlock.astype(props['pixelType'], copy=False)

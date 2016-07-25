@@ -2,7 +2,8 @@ __all__ = ['isProductVersionOK',
            'computePixelBlockExtents',
            'computeCellSize',
            'Projection',
-           'Trace']
+           'Trace',
+           'ZonalAttributesTable',]
 
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
@@ -41,6 +42,20 @@ def isGeographic(s):
     return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
+def loadJSON(s):
+    if s is None:
+        return None
+
+    json = __import__('json')
+    from os import path
+
+    if path.exists(s):
+        with open(s) as f:
+            return json.load(f)
+    else:
+        return json.loads(s)
+
+
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
 
@@ -63,7 +78,7 @@ class Projection():
         sr = self.arcpy.SpatialReference()
         sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
         return sr
-    
+
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
@@ -80,3 +95,115 @@ class Trace():
         return s
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
+
+# TODO: support early termination (when only one row is needed), like in non-zonal rasterize attributes.
+class ZonalAttributesTable():
+    def __init__(self, tableUri, idField=None, attribList=None):
+        if tableUri is None:
+            raise Exception("TODO");
+
+        self.tableUri = tableUri
+        self.idField, self.idFI = (idField.lower(), 0) if idField else (None, None)
+        self.attribList = attribList or []
+
+        k = 0
+        self.fi, self.queryFields = [], []
+        for a in self.attribList:
+            if a is not None and len(a):
+                self.queryFields.append(a)  
+                self.fi.append(k)
+                k = k + 1
+            else: 
+                self.fi.append(None)
+
+        if self.idField: 
+            self.fi = [k+1 if k is not None else None for k in self.fi]
+
+        self.tupleSize = len(self.fi)
+        self.queryFields = ([self.idField] if self.idField else []) + self.queryFields
+
+        if not len(self.queryFields):
+            raise Exception("TODO")
+         
+        self.fieldCSV = ",".join(self.queryFields)
+
+        self.arcpy = None
+        self.queryUrl = None    # indicator of remote URL vs local table
+        s = tableUri.lower()
+        if s.startswith('http://') or s.startswith('https://'):
+            self.queryUrl = tableUri + ('/query' if tableUri[-1] != '/' else 'query')
+            self.urllib = __import__('urllib')
+            self.json = __import__('json')
+
+    def query(self, idList=[], where=None, extent=None, sr=None):
+        if self.arcpy is None:
+            self.arcpy = __import__('arcpy')
+        w = self._constructWhereClause(idList, where)
+        if not self.queryUrl:
+            return self._queryTable(w)
+        else:
+            return self._queryFeatureService(w, extent, sr)
+
+    def _queryTable(self, where=None):
+        T = {}
+        with self.arcpy.da.SearchCursor(self.tableUri, self.queryFields, where_clause=where) as cursor:
+            for row in cursor:
+                I = []
+                for k in range(self.tupleSize):
+                    I.append(row[self.fi[k]] if self.fi[k] is not None else None)
+                self._addAttributes(T, row[self.idFI] if self.idFI is not None else None, tuple(I))
+        return T
+
+    def _queryFeatureService(self, where=None, extent=None, sr=None):
+        p = {'f': 'json', 'returnGeometry': 'false'}
+        p.update({'outFields': self.fieldCSV})
+        
+        if where and len(where): 
+            p.update({'where': where})
+
+        if extent and len(extent) == 4 and sr:
+            _sr = sr
+            if not isinstance(sr, self.arcpy.SpatialReference) and isinstance(sr, (str, int, long)):
+                _sr = self.arcpy.SpatialReference()
+                _sr.loadFromString(str(sr))
+
+            if _sr.factoryCode > 0:
+                p.update({'inSR': {'latestWkid': _sr.factoryCode}})
+            else:
+                p.update({'inSR': {'wkt': _sr.exportToString()}})
+
+            p.update({'geometryType': 'esriGeometryEnvelope',
+                      'geometry': {'xmin': extent[0], 
+                                   'ymin': extent[1],
+                                   'xmax': extent[2],
+                                   'ymax': extent[3]},
+                      'spatialRel': 'esriSpatialRelEnvelopeIntersects'})
+
+        T = {}
+        r = self.urllib.urlopen(self.queryUrl, self.urllib.urlencode(p)).read()
+
+        responseJO = self.json.loads(r)
+        featuresJA = responseJO.get('features', None)
+        if featuresJA is not None:
+            for featureJO in featuresJA:
+                attrJO = featureJO.get('attributes', None)
+                if attrJO is not None:
+                    A = []
+                    for z in self.attribList:
+                        A = A + [attrJO.get(z, None)]
+                    self._addAttributes(T, attrJO.get(self.idField, None), tuple(A))
+        return T
+
+    def _constructWhereClause(self, idList=[], where=None):
+        w1 = "( " + where + " )" if where and len(where) else None
+        if self.idField and idList is not None and len(idList): 
+            w2 = "( {0} IN ({1}) )".format(self.idField, ",".join(str(z) for z in idList)) 
+        else:
+            w2 = None
+
+        return "{0}{1}{2}".format(w1 if w1 else "", 
+                                  " AND " if w1 and w2 else "", 
+                                  w2 if w2 else "")
+
+    def _addAttributes(self, T, zoneId, attribValues):
+        T[zoneId] = T.get(zoneId, []) + [attribValues]
