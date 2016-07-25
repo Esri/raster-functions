@@ -10,13 +10,13 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 ## Getting Started
 
-1. Install [ArcGIS for Desktop 10.3.1](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.3.1](https://server.arcgis.com/en/server/). 
+1. Install [ArcGIS for Desktop 10.4](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4](https://server.arcgis.com/en/server/). 
 2. Install the [latest release](https://github.com/Esri/raster-functions/releases/latest) of prerequisite *Python extension packages* if you are setting up for the first time:
-   - Download [Python extensions binaries](https://github.com/Esri/raster-functions/releases/download/v0.1-alpha.3/python-extensions-0.1-alpha.3.zip).
+   - Download [Python extensions binaries](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/python-extensions-1.0-beta.1.zip).
    - Unzip the contents to a temporary local folder.
    - Run `<local-folder>/setup.py` with administrator privileges.
 4. Install the **[latest release](https://github.com/Esri/raster-functions/releases/latest)** of *custom raster functions*:
-   - Download all [custom raster functions](https://github.com/Esri/raster-functions/releases/download/v0.1-alpha.3/raster-functions-0.1-alpha.3.zip).
+   - Download all [custom raster functions](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/raster-functions-1.0-beta.1.zip).
    - Unzip the contents locally to a home folder.
    - You'll find ready-to-use `templates` and `functions` in their own subfolders.
 6. Learn more about raster functions, function chains, and templates using the [Resources](#resources) below.
@@ -26,7 +26,7 @@ You can also create custom raster functions in Python that work seamlessly with 
 ## Resources
 
 * ##### Fundamentals
-  * [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
+  * [ArcGIS 10.4 Help](http://resources.arcgis.com/en/help/)
   * [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
   * [What's Python](http://desktop.arcgis.com/en/desktop/latest/analyze/python/what-is-python-.htm)
 

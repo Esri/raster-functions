@@ -42,7 +42,7 @@
     <Compile Include="utils.py" />
     <Compile Include="VineyardAnalysis.py" />
     <Compile Include="Windchill.py" />
-    <Compile Include="ZonalAttributes.py" />
+    <Compile Include="RasterizeAttributes.py" />
     <Compile Include="ZonalRemap.py" />
   </ItemGroup>
   <ItemGroup>

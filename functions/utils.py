@@ -42,6 +42,20 @@ def isGeographic(s):
     return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
+def loadJSON(s):
+    if s is None:
+        return None
+
+    json = __import__('json')
+    from os import path
+
+    if path.exists(s):
+        with open(s) as f:
+            return json.load(f)
+    else:
+        return json.loads(s)
+
+
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
 
@@ -82,7 +96,7 @@ class Trace():
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
-
+# TODO: support early termination (when only one row is needed), like in non-zonal rasterize attributes.
 class ZonalAttributesTable():
     def __init__(self, tableUri, idField=None, attribList=None):
         if tableUri is None:
@@ -90,7 +104,7 @@ class ZonalAttributesTable():
 
         self.tableUri = tableUri
         self.idField, self.idFI = (idField.lower(), 0) if idField else (None, None)
-        self.attribList = attribList if attribList else []
+        self.attribList = attribList or []
 
         k = 0
         self.fi, self.queryFields = [], []
@@ -107,6 +121,10 @@ class ZonalAttributesTable():
 
         self.tupleSize = len(self.fi)
         self.queryFields = ([self.idField] if self.idField else []) + self.queryFields
+
+        if not len(self.queryFields):
+            raise Exception("TODO")
+         
         self.fieldCSV = ",".join(self.queryFields)
 
         self.arcpy = None

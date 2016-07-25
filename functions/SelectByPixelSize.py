@@ -43,7 +43,8 @@ class SelectByPixelSize():
 
     def getConfiguration(self, **scalars):
         return { 
-            'inputMask': True 
+            'inputMask': True,
+            'resampling': True
         }
         
     def updateRasterInfo(self, **kwargs):
@@ -54,7 +55,6 @@ class SelectByPixelSize():
         self.inBands1 = kwargs['r1_info']['bandCount']
         self.inBands2 = kwargs['r2_info']['bandCount']
         kwargs['output_info']['bandCount'] = min(self.inBands1, self.inBands2)
-        kwargs['output_info']['resampling'] = True
         kwargs['output_info']['statistics'] = () 
         kwargs['output_info']['histogram'] = ()
 

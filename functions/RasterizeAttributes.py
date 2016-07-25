@@ -1,17 +1,20 @@
 import numpy as np
 import json
-from utils import ZonalAttributesTable
+from utils import ZonalAttributesTable, loadJSON
 
-class ZonalAttributes():
+class RasterizeAttributes():
 
     def __init__(self):
-        self.name = "Zonal Attributes"
-        self.description = ""
+        self.name = "Rasterize Attributes"
+        self.description = ("Enriches a raster through additional bands derived from values of specified attributes "
+                            "of an external table or a feature service. You can optionally specify a zone raster "
+                            "and the associated zone ID attribute to enable region-based look-up. ")
         self.ztMap = {}                 # zonal thresholds { zoneId:[f1,f2,...,fn], ... }
         self.ztTable = None             # valid only if parameter 'ztable' is not a JSON string (but path or URL)
         self.background = 0
         self.whereClause = None
         self.M = 0                      # number of attribute names == additional bands in the output
+        self.zid = None
 
     def getParameterInfo(self):
         return [
@@ -29,8 +32,10 @@ class ZonalAttributes():
                 'value': None,
                 'required': False,
                 'displayName': "Zone Raster",
-                'description': ("The single-band zone raster where each pixel contains "
-                                "the zone ID associated with the location.")
+                'description': ("An optional single-band zone raster where each pixel contains "
+                                "the zone ID associated with the location. The zone ID is used for "
+                                "looking up rows in the zonal attributes table for zone-specific ingestion. "
+                                "Leave this parameter unspecified to simply import attribute values.")
             },
             {
                 'name': 'ztable',
@@ -82,12 +87,16 @@ class ZonalAttributes():
 
 
     def getConfiguration(self, **scalars):
+        self.zid = (scalars.get('zid', "") or "").strip() or None
+
         return {
           'inheritProperties': 2 | 4 | 8,
           'invalidateProperties': 2 | 4 | 8,        # invalidate statistics & histogram on the parent dataset.
           'inputMask': False                        # Don't need input raster mask in .updatePixels().
         }
 
+    def selectRasters(self, tlc, shape, props):
+        return ('vraster', 'zraster') if self.zid else ('vraster',)
 
     def updateRasterInfo(self, **kwargs):
         self.ztMap = None
@@ -97,7 +106,7 @@ class ZonalAttributes():
         ztStr = ztStr.strip() if ztStr else "{}"
 
         try:
-            self.ztMap = json.loads(ztStr) if ztStr else {}
+            self.ztMap = loadJSON(ztStr) if ztStr else {}
         except ValueError as e:
             self.ztMap = None
 
@@ -108,11 +117,10 @@ class ZonalAttributes():
         if self.ztMap is None:
             self.ztMap = {}
             self.ztTable = ZonalAttributesTable(tableUri=ztStr,
-                                                idField=kwargs.get('zid', None),
+                                                idField=self.zid,
                                                 attribList=attribs)
 
-        self.background = kwargs.get('background', None)
-        self.background = int(self.background) if self.background else 0
+        self.background = int(kwargs.get('background', None) or 0)
         self.whereClause = kwargs.get('where', None)
 
         kwargs['output_info']['bandCount'] = 1 + self.M
@@ -123,12 +131,12 @@ class ZonalAttributes():
 
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        v = pixelBlocks['vraster_pixels'][0]
-
         zoneIds = None
-        z = pixelBlocks.get('zraster_pixels', None)
+        v = pixelBlocks['vraster_pixels'][0]
+        z = pixelBlocks.get('zraster_pixels', None) if self.zid else None
+
         if z is not None:               # zone raster is optional 
-            z = pixelBlocks['zraster_pixels'][0]
+            z = z[0]
             zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
 
         ZT = self.ztTable.query(idList=zoneIds, 
@@ -143,10 +151,9 @@ class ZonalAttributes():
 
         np.copyto(p[0], v, casting='unsafe')
         ones = np.ones(v.shape, dtype=bool)
-        
         # use zonal attributes to update output pixels...
         if ZT is not None and len(ZT.keys()):
-            for k in (zoneIds if zoneIds is not None else [None]):
+            for k in (zoneIds or [None]):
                 T = ZT.get(k, None)                     # k from z might not be in ztMap
                 if not T or not len(T):
                     continue
@@ -158,12 +165,3 @@ class ZonalAttributes():
 
         pixelBlocks['output_pixels'] = p
         return pixelBlocks
-
-
-    def updateKeyMetadata(self, names, bandIndex, **keyMetadata):
-        if bandIndex == -1:
-            keyMetadata['datatype'] = 'Processed'
-        elif bandIndex == 0:
-            keyMetadata['wavelengthmin'] = None     # reset inapplicable band-specific key metadata 
-            keyMetadata['wavelengthmax'] = None
-        return keyMetadata
