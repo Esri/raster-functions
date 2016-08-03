@@ -35,7 +35,7 @@ class RasterizeAttributes():
                 'description': ("An optional single-band zone raster where each pixel contains "
                                 "the zone ID associated with the location. The zone ID is used for "
                                 "looking up rows in the zonal attributes table for zone-specific ingestion. "
-                                "Leave this parameter unspecified to simply import attribute values.")
+                                "Leave this parameter unspecified to simply import attribute")
             },
             {
                 'name': 'ztable',
@@ -64,8 +64,8 @@ class RasterizeAttributes():
                 'dataType': 'string',
                 'value': None,
                 'required': False,
-                'displayName': "Attribute Names",
-                'description': ("")
+                'displayName': "Attribute Field Names",
+                'description': ("List of fields in the zonal attributes table separated by a comma. Values in each field will be represented by a band in the output raster.")
             },
             {
                 'name': 'background',
@@ -87,7 +87,8 @@ class RasterizeAttributes():
 
 
     def getConfiguration(self, **scalars):
-        self.zid = (scalars.get('zid', "") or "").strip() or None
+        self.zid = (scalars.get('zid', "") or "").strip()
+        self.zid = self.zid if len(self.zid) else None
 
         return {
           'inheritProperties': 2 | 4 | 8,
@@ -120,7 +121,8 @@ class RasterizeAttributes():
                                                 idField=self.zid,
                                                 attribList=attribs)
 
-        self.background = int(kwargs.get('background', None) or 0)
+        self.background = kwargs.get('background', None)
+        self.background = int(self.background) if self.background else 0
         self.whereClause = kwargs.get('where', None)
 
         kwargs['output_info']['bandCount'] = 1 + self.M
@@ -153,7 +155,7 @@ class RasterizeAttributes():
         ones = np.ones(v.shape, dtype=bool)
         # use zonal attributes to update output pixels...
         if ZT is not None and len(ZT.keys()):
-            for k in (zoneIds or [None]):
+            for k in (zoneIds if zoneIds is not None else [None]):
                 T = ZT.get(k, None)                     # k from z might not be in ztMap
                 if not T or not len(T):
                     continue

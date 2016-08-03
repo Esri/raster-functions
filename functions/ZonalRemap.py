@@ -47,7 +47,7 @@ class ZonalRemap():
                 'description': ("The threshold map specified as a JSON string, "
                                 "a path to a local feature class or table, or a URL to a feature service layer. "
                                 "In JSON, it's described as a collection of mapping from zone IDs to an "
-                                "array of 3-tuples representing the interval (zmin-zmax) and the corresponding target value (zval), "
+                                "array of 3-tuples representing the interval (zmin-zmax) and the corresponding output value (zval), "
                                 "like this: { zoneId:[[zmin,zmax,zval], ...], ... }.")
             },
             {
@@ -87,10 +87,10 @@ class ZonalRemap():
                 'dataType': 'string',
                 'value': None,
                 'required': False,
-                'displayName': "Target Value Field Name",
-                'description': ("Name of the field containing the target value to which an input pixel gets remapped. "
+                'displayName': "Output Value Field Name",
+                'description': ("Name of the field containing the output value to which an input pixel gets remapped. "
                                 "If left unspecified--or if the field value is null--remapped pixel values are set "
-                                "to the 'Default Target Value'. "
+                                "to the 'Default Output Value'. "
                                 "This is only applicable if the 'Zonal Thresholds Table' parameter contains path to a table "
                                 "or a URL to a feature service.")
             },
@@ -107,10 +107,10 @@ class ZonalRemap():
                 'dataType': 'numeric',
                 'value': 255,
                 'required': False,
-                'displayName': "Default Target Value",
+                'displayName': "Default Output Value",
                 'description': ("The default remap/target value of threshold. "
-                                "This is the value of the output pixel if either the 'Target Value Field Name' "
-                                "parameter is left unspecified or if the target value of the corresponding "
+                                "This is the value of the output pixel if either the 'Output Value Field Name' "
+                                "parameter is left unspecified or if the output value of the corresponding "
                                 "zonal threshold is left unspecified in the Zonal Thresholds Table.")
             },
             {
