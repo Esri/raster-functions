@@ -34,7 +34,7 @@ class ZonalRemap():
                 'displayName': "Zone Raster",
                 'description': ("An optional single-band zone raster where each pixel contains "
                                 "the zone ID associated with the location. The zone ID is used for "
-                                "looking up rows in the zonal threshold table for zone-specific mapping. " 
+                                "looking up rows in the zonal threshold table for zone-specific mapping. "
                                 "Leave this parameter unspecified to perform zone-independent remapping "
                                 "based only on the input pixel value.")
             },
@@ -148,8 +148,8 @@ class ZonalRemap():
             self.ztMap = {}
             self.ztTable = ZonalAttributesTable(tableUri=ztStr,
                                                 idField=kwargs.get('zid', None),
-                                                attribList=[kwargs.get('zmin', None), 
-                                                            kwargs.get('zmax', None), 
+                                                attribList=[kwargs.get('zmin', None),
+                                                            kwargs.get('zmax', None),
                                                             kwargs.get('zval', None)])
 
         self.background = int(kwargs.get('background', None) or 0)
@@ -157,7 +157,7 @@ class ZonalRemap():
         self.whereClause = kwargs.get('where', None)
 
         kwargs['output_info']['bandCount'] = 1
-        kwargs['output_info']['statistics'] = () 
+        kwargs['output_info']['statistics'] = ()
         kwargs['output_info']['histogram'] = ()
         kwargs['output_info']['colormap'] = ()
         return kwargs
@@ -168,13 +168,13 @@ class ZonalRemap():
 
         zoneIds = None
         z = pixelBlocks.get('zraster_pixels', None)
-        if z is not None:               # zone raster is optional 
+        if z is not None:               # zone raster is optional
             z = z[0]
             zoneIds = np.unique(z)      #TODO: handle no-data and mask in zone raster
 
-        ZT = self.ztTable.query(idList=zoneIds, 
-                                where=self.whereClause, 
-                                extent=props['extent'], 
+        ZT = self.ztTable.query(idList=zoneIds,
+                                where=self.whereClause,
+                                extent=props['extent'],
                                 sr=props['spatialReference']) if self.ztTable else self.ztMap
 
         # output pixels initialized to background color
@@ -182,7 +182,7 @@ class ZonalRemap():
 
         # use zonal thresholds to update output pixels...
         if ZT is not None and len(ZT.keys()):
-            for k in (zoneIds or [None]):
+            for k in (zoneIds if zoneIds is not None else [None]):
                 T = ZT.get(k, None)         # k from z might not be in ztMap
                 if not T:
                     continue
@@ -192,9 +192,9 @@ class ZonalRemap():
                     if t[0] and t[1]:       # min and max are both available
                         I = I & (v > t[0]) & (v < t[1])
                     elif t[0]:
-                        I = I & (v > t[0]) 
+                        I = I & (v > t[0])
                     elif t[1]:
-                        I = I & (v < t[1])  
+                        I = I & (v < t[1])
                     p[I] = (t[2] if t[2] is not None else self.defaultTarget)
 
         pixelBlocks['output_pixels'] = p
