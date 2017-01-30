@@ -230,6 +230,12 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   [VineyardAnalysis.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/VineyardAnalysis.rft.xml) accepts the elevation input raster 
   and uses built-in raster functions to compute slope and elevation before feeding the output to the Vineyard Analysis raster function. 
 
+* #### Aspect-Slope
+  [AspectSlope.py] (https://github.com/Esri/raster-functions/blob/master/functions/AspectSlope.py) generates an aspect slope map i.e. simultaneously
+  shows the [aspect] (http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) (direction) and [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm)  in degree (steepness) for a terrain or other continuous surface.
+  
+  [AspectSlope.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/AspectSlope.rft.xml) accepts the elevation input raster and creates aspect slope map raster for visualization. 
+
 
 ## Licensing
 Copyright 2014 Esri
