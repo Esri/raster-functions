@@ -1,6 +1,6 @@
 <RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.5'>
 	<Name>AspectSlope</Name>
-	<Description>A raster function template.</Description>
+	<Description>Create a map that simultaneously displays the aspect (direction) and slope(steepness) of a continuous surface, such as terrain as represented in a digital elevation model (DEM)</Description>
 	<Function xsi:type='typens:PythonAdapterFunction'>
 		<Name>AspectSlope</Name>
 		<Description>A raster function written in Python.</Description>

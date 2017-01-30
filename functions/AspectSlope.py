@@ -5,8 +5,8 @@
 # Name of Company 	: Environmental System Research Institute
 # Author        	: ESRI raster solution team
 # Purpose 	    	: Create a map that simultaneously displays the aspect (direction)
-#                     and slope(steepness) of a contrinuous surface, such as terrain
-#                     as represetned in a digital elevation model (DEM).
+#                     and slope(steepness) of a continuous surface, such as terrain
+#                     as represented in a digital elevation model (DEM).
 # Created	    	: 20160915
 # LastUpdated  		: 20160915
 # Required Argument : Raster.
