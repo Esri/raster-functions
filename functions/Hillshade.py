@@ -1,7 +1,7 @@
-from scipy import ndimage
+﻿from scipy import ndimage
 import numpy as np
 import math
-from utils import computeCellSize, Projection, isGeographic
+from utils import computeCellSize, Projection, isGeographic, projectCellSize
 
 
 class Hillshade():
@@ -59,7 +59,7 @@ class Hillshade():
             'invalidateProperties': 2 | 4 | 8,    # invalidate these aspects because we are modifying pixel values and updating key properties.
             'padding': 1,                         # one extra on each each of the input pixel block
             'inputMask': True,                    # we need the input mask in .updatePixels()
-            'resampling': False                   # Resampling set explicitly to False
+            'resampling': True                   # Resampling set explicitly to False
         }
 
     def updateRasterInfo(self, **kwargs):
@@ -121,9 +121,9 @@ class Hillshade():
 
     def computeGradients(self, pixelBlock, props):
         # pixel size in input raster SR...
-        p = props['cellSize'] if self.sr is None else computeCellSize(props, self.sr, self.proj)
+        p = props['cellSize'] if self.sr is None else projectCellSize(props['cellSize'], props['spatialReference'], self.sr, self.proj)
         if p is not None and len(p) == 2:
-            p = np.multiply(p, 1.11e5 if isGeographic(props['spatialReference']) else 1.)   # conditional degrees to meters conversion
+            p = np.multiply(p, 1.11e5 if isGeographic(self.sr) else 1.)   # conditional degrees to meters conversion
             xs, ys = (self.zf + (np.power(p, self.ce) * self.cf)) / (8*p)
         else:
             xs, ys = 1., 1.         # degenerate case. shouldn't happen.
