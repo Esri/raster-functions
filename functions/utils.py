@@ -1,13 +1,31 @@
+﻿#------------------------------------------------------------------------------
+# Copyright 2016 Esri
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#------------------------------------------------------------------------------
+
 __all__ = ['isProductVersionOK',
            'computePixelBlockExtents',
            'computeCellSize',
            'Projection',
            'Trace',
-           'ZonalAttributesTable',]
+           'ZonalAttributesTable',
+           'projectCellSize',]
 
 
 # ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- ## ----- #
 
+degreeToMeter = 111319.49079327357264771338267056
+pi = 3.14159265358979323846
 
 def isProductVersionOK(productInfo, major, minor, build):
     v = productInfo['major']*1.e+10 + int(0.5+productInfo['minor']*10)*1.e+6 + productInfo['build']
@@ -33,6 +51,37 @@ def computeCellSize(props, sr=None, proj=None):
     (xMin, yMin) = proj.transform(props['spatialReference'], sr, e[0], e[1])
     (xMax, yMax) = proj.transform(props['spatialReference'], sr, e[2], e[3])
     return (xMax-xMin)/w, (yMax-yMin)/h                         # cell size of parent raster
+
+def projectCellSize(cellSize, inSR, outSR, proj=None):
+    inSRS = proj.createSR(inSR)
+    outSRS = proj.createSR(outSR)
+    if isGeographic(inSR) and isGeographic(outSR):
+        x =  cellSize[0] * (inSRS.radiansPerUnit/outSRS.radiansPerUnit)
+        y = cellSize[1] * (inSRS.radiansPerUnit/outSRS.radiansPerUnit)
+
+    elif not isGeographic(inSR) and not isGeographic(outSR):
+        x = cellSize[0] * (inSRS.metersPerUnit/outSRS.metersPerUnit)
+        y = cellSize[1] * (inSRS.metersPerUnit/outSRS.metersPerUnit)
+
+    elif isGeographic(inSR):
+        factor1 = inSRS.radiansPerUnit
+        factor1 = factor1/pi*180
+        factor2 = outSRS.metersPerUnit
+        if factor2 is None:
+            factor2 = 1
+        x = cellSize[0] * (factor1 * degreeToMeter)/factor2
+        y = cellSize[1] * (factor1 * degreeToMeter)/factor2 
+
+    elif isGeographic(outSR):
+        factor2 = outSRS.radiansPerUnit
+        factor2 = pi/180/factor2
+        factor1 = inSRS.metersPerUnit
+        if factor1 is None:
+            factor1 = 1
+        x = cellSize[0] * (factor2/degreeToMeter) * factor1
+        y = cellSize[1] * (factor2/degreeToMeter) * factor1
+
+    return x, y
 
 
 def isGeographic(s):

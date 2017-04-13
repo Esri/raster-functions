@@ -5,8 +5,8 @@
 # Name of Company 	: Environmental System Research Institute
 # Author        	: ESRI raster solution team
 # Purpose 	    	: Create a map that simultaneously displays the aspect (direction)
-#                     and slope(steepness) of a contrinuous surface, such as terrain
-#                     as represetned in a digital elevation model (DEM).
+#                     and slope(steepness) of a continuous surface, such as terrain
+#                     as represented in a digital elevation model (DEM).
 # Created	    	: 20160915
 # LastUpdated  		: 20160915
 # Required Argument : Raster.
@@ -52,7 +52,7 @@ class AspectSlope():
     def getConfiguration(self, **scalars):
         return {
             'compositeRasters': False,
-            'inheritProperties': 1 | 2 | 4 | 8,         # Inherit all but the pixel type and NoData from the input raster dataset.
+            'inheritProperties': 2 | 4 | 8,         # Inherit all but the pixel type and NoData from the input raster dataset.
             'invalidateProperties': 2 | 4 | 8,          # Invalidate the statistics and histogram on the parent dataset because the pixel values are modified.
             'inputMask': True,
             'resampling': False,
@@ -63,7 +63,7 @@ class AspectSlope():
         kwargs['output_info']['bandCount'] = 1
         r = kwargs['raster_info']
         kwargs['output_info']['noData'] = self.assignNoData(r['pixelType']) if not(r['noData']) else r['noData']
-        kwargs['output_info']['pixelType'] = 'f4'
+        kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['histogram'] = ()
         colormap = (np.array([19, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 41, 42, 43, 44, 45, 46, 47, 48], dtype='int32'),
                     np.array([161,152,114,124,140,180,203,197,189,141,61,80,119,192,231,226,214,132,0,0,108,202,255,255,244], dtype='uint8'),
