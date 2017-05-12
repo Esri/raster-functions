@@ -254,5 +254,4 @@ limitations under the License.
 
 A copy of the license is available in the repository's [License.txt](License.txt?raw=true) file.
 
-[](Esri Tags: ArcGIS Raster Function Chain On-the-fly Image Processing Samples)
-[](Esri Language: Python)​
+
