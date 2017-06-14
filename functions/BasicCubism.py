@@ -41,8 +41,10 @@ class BasicCubism():
         # get the input DEM raster pixel block
         inBlock_dem = pixelBlocks['dem_pixels']
 
-        cubism = np.zeros(inBlock_dem.shape)
-        x, y = inBlock_dem.shape
+        z = inBlock_dem.shape
+        x, y = z[1],z[2]
+        cubism = np.zeros(z)
+
         #init_pixel_buffer = 10
         pixel_buffer = 1
         square_size = 5.0
@@ -59,7 +61,7 @@ class BasicCubism():
         for num_x in xrange(0,int(num_squares_x)):
             for num_y in xrange(0,int(num_squares_y)):
             #chuck_close[num_x*square_size:(num_x+1)*square_size, num_y*square_size:(num_y+1)*square_size] = mean #dem[num_x*square_size, num_y*square_size]
-                cubism[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer] = np.mean(inBlock_dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
+                cubism[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer] = np.mean(inBlock_dem[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
 
         # format output pixels
         outBlocks = cubism.astype(props['pixelType'], copy=False)

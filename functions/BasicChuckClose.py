@@ -58,10 +58,13 @@ class BasicChuckClose():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
+        #file = open(r'C:\PROJECTS\raster-functions\test.txt','w')
+        #file.write(str(z))
         # get the input DEM raster pixel block
         inBlock_dem = pixelBlocks['dem_pixels']
-        chuck_close = np.zeros(inBlock_dem.shape)
-        x, y = inBlock_dem.shape
+        z = inBlock_dem.shape
+        x, y = z[1],z[2]
+        chuck_close = np.zeros(z)
         square_size = 13.0
         pixel_buffer = 7
         maximum = np.max(inBlock_dem)
@@ -77,21 +80,21 @@ class BasicChuckClose():
         for num_x in range(1,int(num_squares_x)):
             for num_y in range(1,int(num_squares_y)):
 
-                pix = np.mean(inBlock_dem[num_x*square_size:(num_x+1)*square_size, num_y*square_size:(num_y+1)*square_size])
+                pix = np.mean(inBlock_dem[0,num_x*square_size:(num_x+1)*square_size, num_y*square_size:(num_y+1)*square_size])
                 pixel_buffer = get_size(pix, class_breaks)
 
 ##                chuck_close[num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = 1 #np.mean(dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
                 if self.invert:
                     if self.show_pix:
-                        chuck_close[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer]= pix #1 #np.mean(dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
+                        chuck_close[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer]= pix #1 #np.mean(dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
                     else:
-                        chuck_close[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer]= 1
+                        chuck_close[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer]= 1
 
                 else:
                     if self.show_pix:
-                        chuck_close[num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = pix #1 #np.mean(dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
+                        chuck_close[0,num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = pix #1 #np.mean(dem[num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
                     else:
-                        chuck_close[num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = 1
+                        chuck_close[0,num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = 1
 
         # format output cti pixels
         outBlocks = chuck_close.astype(props['pixelType'], copy=False)
