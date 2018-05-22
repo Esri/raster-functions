@@ -47,7 +47,7 @@ class BasicCubism():
 
         #init_pixel_buffer = 10
         pixel_buffer = 1
-        square_size = 5.0
+        square_size = 5
         maximum = np.max(inBlock_dem)
         minimum = np.min(inBlock_dem)
         spread = maximum-minimum
