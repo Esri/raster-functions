@@ -30,7 +30,7 @@
         <Value xsi:type="xs:string">Mar</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
-      <AnyType xsi:type="xs:string">C:\PROJECTS\DAN_SHUGAR\Landsat_Image_Synthesis.py</AnyType>
+      <AnyType xsi:type="xs:string">Landsat_Image_Synthesis.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable" id="ID9">
         <Name>ClassName</Name>
         <Description></Description>
