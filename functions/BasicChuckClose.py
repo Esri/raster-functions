@@ -99,7 +99,6 @@ class BasicChuckClose():
                     else:
                         chuck_close[0,num_x*square_size-pixel_buffer:num_x*square_size+pixel_buffer, num_y*square_size-pixel_buffer:num_y*square_size+pixel_buffer] = 1
 
-
         # format output cti pixels
         outBlocks = chuck_close.astype(props['pixelType'], copy=False)
         #file.write(outBlocks)
