@@ -58,14 +58,15 @@ class BasicChuckClose():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        #file = open(r'C:\PROJECTS\raster-functions\test.txt','w')
+        #file = open(r'C:\PROJECTS\gbrunner-raster-functions\test.txt','w')
         #file.write(str(z))
         # get the input DEM raster pixel block
         inBlock_dem = pixelBlocks['dem_pixels']
         z = inBlock_dem.shape
+        #file.write(str(z)+'\n')
         x, y = z[1],z[2]
         chuck_close = np.zeros(z)
-        square_size = 13.0
+        square_size = 13
         pixel_buffer = 7
         maximum = np.max(inBlock_dem)
         minimum = np.min(inBlock_dem)
@@ -76,6 +77,8 @@ class BasicChuckClose():
             class_breaks[i] = minimum+i*break_size
         num_squares_x = math.floor(x/square_size)
         num_squares_y = math.floor(y/square_size)
+        #file.write(str(num_squares_x)+'\n')
+        #file.write(str(num_squares_y)+'\n')
 
         for num_x in range(1,int(num_squares_x)):
             for num_y in range(1,int(num_squares_y)):
@@ -98,6 +101,8 @@ class BasicChuckClose():
 
         # format output cti pixels
         outBlocks = chuck_close.astype(props['pixelType'], copy=False)
+        #file.write(outBlocks)
+        #file.close()
         pixelBlocks['output_pixels'] = outBlocks
         return pixelBlocks
 
