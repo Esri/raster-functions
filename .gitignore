@@ -54,3 +54,9 @@ docs/_build/
 
 # Visual Studio files
 *.suo
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/gbrunner-raster-functions.iml
+pickles/
