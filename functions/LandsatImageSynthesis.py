@@ -16,7 +16,7 @@ landsat_5_clear_pix_vals = [672, 676, 680, 684]
 LANDSAT_CLEAR_PIX_VALS = landsat_5_clear_pix_vals #+ landsat_8_clear_pix_vals
 
 
-class Landsat_Image_Synthesis():
+class LandsatImageSynthesis():
 
     def __init__(self):
         self.name = 'Landsat 5 Scene Synthesis'
@@ -125,7 +125,7 @@ class Landsat_Image_Synthesis():
         for idx,t in enumerate(pix_time):
             year = timedelta(days=t)
             date = year+d
-            if date.month == 6:
+            if date.month == self.predict_month:
                 idx_list.append(idx)
                 datetime_list.append(year+d)
 
@@ -136,22 +136,24 @@ class Landsat_Image_Synthesis():
         QA_BAND_IND = QA_BAND_NUM-1
         for num_x in range(0, int(num_squares_x)):
             for num_y in range(0, int(num_squares_y)):
-                for num_b in range(0, int(num_bands)):
-                    clear_indices = [
-                        x for x in range(len(pix_array_within[:, QA_BAND_IND, num_x, num_y]))
-                        if pix_array_within[x, QA_BAND_IND, num_x, num_y]
-                        in LANDSAT_CLEAR_PIX_VALS
-                    ]
 
-                    if len(clear_indices) > 0:
-                        output_pixels[0, num_x, num_y] = np.mean(pix_array_within[clear_indices, 0, num_x, num_y])
-                        output_pixels[1, num_x, num_y] = np.mean(pix_array_within[clear_indices, 1, num_x, num_y])
-                        output_pixels[2, num_x, num_y] = np.mean(pix_array_within[clear_indices, 2, num_x, num_y])
-                        output_pixels[3, num_x, num_y] = np.mean(pix_array_within[clear_indices, 3, num_x, num_y])
-                        output_pixels[4, num_x, num_y] = np.mean(pix_array_within[clear_indices, 4, num_x, num_y])
-                        output_pixels[5, num_x, num_y] = np.mean(pix_array_within[clear_indices, 5, num_x, num_y])
-                    else:
-                        output_pixels[:, num_x, num_y] = -1
+                clear_indices = [
+                    x for x in range(len(pix_array_within[:, QA_BAND_IND, num_x, num_y]))
+                    if pix_array_within[x, QA_BAND_IND, num_x, num_y]
+                       in LANDSAT_CLEAR_PIX_VALS
+                ]
+
+                #for num_b in range(0, int(num_bands)):
+
+                if len(clear_indices) > 0:
+                    output_pixels[0, num_x, num_y] = np.mean(pix_array_within[clear_indices, 0, num_x, num_y])
+                    output_pixels[1, num_x, num_y] = np.mean(pix_array_within[clear_indices, 1, num_x, num_y])
+                    output_pixels[2, num_x, num_y] = np.mean(pix_array_within[clear_indices, 2, num_x, num_y])
+                    output_pixels[3, num_x, num_y] = np.mean(pix_array_within[clear_indices, 3, num_x, num_y])
+                    output_pixels[4, num_x, num_y] = np.mean(pix_array_within[clear_indices, 4, num_x, num_y])
+                    output_pixels[5, num_x, num_y] = np.mean(pix_array_within[clear_indices, 5, num_x, num_y])
+                else:
+                    output_pixels[:, num_x, num_y] = -1
 
         mask = np.ones((out_band_num, num_squares_x, num_squares_y))
         pixelBlocks['output_mask'] = mask.astype('u1', copy = False)

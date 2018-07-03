@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/2.1.0">
+  <Name>Normalized-Difference Water Index (NDWI) for Landsat OLI</Name>
+  <Description>Normalized-Difference Water Index (NDWI) for Landsat OLI</Description>
+  <Function xsi:type="typens:ColormapFunction" id="ID1">
+    <Name>Colormap</Name>
+    <Description>Changes pixel values to display the raster data as either a grayscale or a red, green, blue (RGB) image, based on a colormap or a color ramp.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:ColormapFunctionArguments" id="ID2">
+    <Names xsi:type="typens:ArrayOfString" id="ID3">
+      <String>Raster</String>
+      <String>ColorSchemeType</String>
+      <String>Colormap</String>
+      <String>ColormapName</String>
+      <String>ColorRamp</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType" id="ID4">
+      <AnyType xsi:type="typens:RasterFunctionTemplate" id="ID5">
+        <Name>Raster Function Template</Name>
+        <Description>A raster function template.</Description>
+        <Function xsi:type="typens:StretchFunction" id="ID6">
+          <Name>Stretch</Name>
+          <Description>Enhances an image by adjusting the range of values displayed. This does not alter the underlying pixel values. If a pixel has a value outside of the specified range, it will appear as either the minimum or maximum value.</Description>
+          <PixelType>UNKNOWN</PixelType>
+        </Function>
+        <Arguments xsi:type="typens:StretchFunctionArguments" id="ID7">
+          <Names xsi:type="typens:ArrayOfString" id="ID8">
+            <String>Raster</String>
+            <String>StretchType</String>
+            <String>Min</String>
+            <String>Max</String>
+            <String>MinPercent</String>
+            <String>MaxPercent</String>
+            <String>NumberOfStandardDeviation</String>
+            <String>SigmoidStrengthLevel</String>
+            <String>EstimateStatsHistogram</String>
+            <String>DRA</String>
+            <String>Statistics</String>
+            <String>Histograms</String>
+            <String>ComputeGamma</String>
+            <String>UseGamma</String>
+            <String>Gamma</String>
+          </Names>
+          <Values xsi:type="typens:ArrayOfAnyType" id="ID9">
+            <AnyType xsi:type="typens:RasterFunctionTemplate" id="ID10">
+              <Name>Normalized-Difference Water Index (NDWI) for Landsat OLI</Name>
+              <Description>Normalized-Difference Water Index (NDWI) for Landsat OLI</Description>
+              <Function xsi:type="typens:BandArithmeticFunction" id="ID11">
+                <Name>Band Arithmetic</Name>
+                <Description>Calculates indexes using predefined formulas or a user-defined expression.</Description>
+                <PixelType>F32</PixelType>
+              </Function>
+              <Arguments xsi:type="typens:BandArithmeticFunctionArguments" id="ID12">
+                <Names xsi:type="typens:ArrayOfString" id="ID13">
+                  <String>Raster</String>
+                  <String>Method</String>
+                  <String>BandIndexes</String>
+                </Names>
+                <Values xsi:type="typens:ArrayOfAnyType" id="ID14">
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID15">
+                    <Name>Raster</Name>
+                    <Description></Description>
+                    <Value></Value>
+                    <IsDataset>true</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID16">
+                    <Name>Method</Name>
+                    <Description></Description>
+                    <Value xsi:type="xs:int">0</Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID17">
+                    <Name>BandIndexes</Name>
+                    <Description></Description>
+                    <Value xsi:type="xs:string">(B3-B5)/(B5+B3)</Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                </Values>
+              </Arguments>
+              <Aliases xsi:type="typens:ArrayOfString" id="ID18">
+                <String>__tans__(Raster)</String>
+              </Aliases>
+              <Help></Help>
+              <Type>0</Type>
+              <Thumbnail xsi:type="xs:string"></Thumbnail>
+              <Definition></Definition>
+              <Group></Group>
+              <Tag></Tag>
+              <ThumbnailEx></ThumbnailEx>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID19">
+              <Name>StretchType</Name>
+              <Description></Description>
+              <Value xsi:type="xs:int">5</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID20">
+              <Name>Min</Name>
+              <Description></Description>
+              <Value xsi:type="xs:double">0</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID21">
+              <Name>Max</Name>
+              <Description></Description>
+              <Value xsi:type="xs:double">255</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID22">
+              <Name>MinPercent</Name>
+              <Description></Description>
+              <Value xsi:type="xs:double">0.25</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID23">
+              <Name>MaxPercent</Name>
+              <Description></Description>
+              <Value xsi:type="xs:double">0.5</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID24">
+              <Name>NumberOfStandardDeviation</Name>
+              <Description></Description>
+              <Value xsi:type="xs:double">2</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID25">
+              <Name>SigmoidStrengthLevel</Name>
+              <Description></Description>
+              <Value xsi:type="xs:int">2</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID26">
+              <Name>EstimateStatsHistogram</Name>
+              <Description></Description>
+              <Value xsi:type="xs:boolean">true</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID27">
+              <Name>DRA</Name>
+              <Description></Description>
+              <Value xsi:type="xs:boolean">false</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID28">
+              <Name>Statistics</Name>
+              <Description></Description>
+              <Value></Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID29">
+              <Name>Histograms</Name>
+              <Description></Description>
+              <Value></Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID30">
+              <Name>ComputeGamma</Name>
+              <Description></Description>
+              <Value xsi:type="xs:boolean">false</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID31">
+              <Name>UseGamma</Name>
+              <Description></Description>
+              <Value xsi:type="xs:boolean">false</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID32">
+              <Name>Gamma</Name>
+              <Description></Description>
+              <Value xsi:type="typens:ArrayOfDouble" id="ID33"></Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+          </Values>
+        </Arguments>
+        <Help></Help>
+        <Type>0</Type>
+        <Thumbnail></Thumbnail>
+        <Definition></Definition>
+        <Group></Group>
+        <Tag></Tag>
+        <ThumbnailEx></ThumbnailEx>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID34">
+        <Name>ColorSchemeType</Name>
+        <Description></Description>
+        <Value xsi:type="xs:int">1</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID35">
+        <Name>Colormap</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID36">
+        <Name>ColormapName</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string"></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID37">
+        <Name>ColorRamp</Name>
+        <Description></Description>
+        <Value xsi:type="typens:MultiPartColorRamp" id="ID38">
+          <Name>Multi-part Color Ramp</Name>
+          <NumColorRamps>3</NumColorRamps>
+          <ColorRamps xsi:type="typens:ArrayOfColorRamp" id="ID39">
+            <ColorRamp xsi:type="typens:AlgorithmicColorRamp" id="ID40">
+              <Name>Algorithmic Color Ramp</Name>
+              <Algorithm>esriCIELabAlgorithm</Algorithm>
+              <FromColor xsi:type="typens:HsvColor" id="ID41">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>5</Hue>
+                <Saturation>90</Saturation>
+                <Value>99</Value>
+              </FromColor>
+              <ToColor xsi:type="typens:HsvColor" id="ID42">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>63</Hue>
+                <Saturation>83</Saturation>
+                <Value>99</Value>
+              </ToColor>
+            </ColorRamp>
+            <ColorRamp xsi:type="typens:AlgorithmicColorRamp" id="ID43">
+              <Name>Algorithmic Color Ramp</Name>
+              <Algorithm>esriCIELabAlgorithm</Algorithm>
+              <FromColor xsi:type="typens:HsvColor" id="ID44">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>63</Hue>
+                <Saturation>83</Saturation>
+                <Value>99</Value>
+              </FromColor>
+              <ToColor xsi:type="typens:HsvColor" id="ID45">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>180</Hue>
+                <Saturation>96</Saturation>
+                <Value>99</Value>
+              </ToColor>
+            </ColorRamp>
+            <ColorRamp xsi:type="typens:AlgorithmicColorRamp" id="ID46">
+              <Name>Algorithmic Color Ramp</Name>
+              <Algorithm>esriCIELabAlgorithm</Algorithm>
+              <FromColor xsi:type="typens:HsvColor" id="ID47">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>180</Hue>
+                <Saturation>96</Saturation>
+                <Value>99</Value>
+              </FromColor>
+              <ToColor xsi:type="typens:HsvColor" id="ID48">
+                <UseWindowsDithering>false</UseWindowsDithering>
+                <AlphaValue>255</AlphaValue>
+                <Hue>257</Hue>
+                <Saturation>92</Saturation>
+                <Value>98</Value>
+              </ToColor>
+            </ColorRamp>
+          </ColorRamps>
+        </Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>0</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group></Group>
+  <Tag></Tag>
+  <ThumbnailEx></ThumbnailEx>
+</RasterFunctionTemplate>
