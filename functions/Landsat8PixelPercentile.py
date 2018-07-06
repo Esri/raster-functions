@@ -16,8 +16,8 @@ from datetime import timedelta
 QA_BAND_NUM = 9
 #misc = [0, 1]
 #landsat_4_7_clear_pix_vals = [672, 676, 680, 684]
-landsat_8_clear_pix_vals = [20480, 20484, 20512, 23552]#[2720, 2724, 2728, 2732]
-LANDSAT_CLEAR_PIX_VALS = landsat_8_clear_pix_vals # landsat_4_7_clear_pix_vals +
+LANDSAT_8_CLEAR_PIX_VALS = [20480, 20484, 20512, 23552]#[2720, 2724, 2728, 2732]
+LANDSAT_CLEAR_PIX_VALS = LANDSAT_8_CLEAR_PIX_VALS # landsat_4_7_clear_pix_vals +
 
 
 class Landsat8PixelPercentile():

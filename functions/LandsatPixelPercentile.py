@@ -10,11 +10,11 @@ import sys
 #debug_logs_directory = r'C:\PROJECTS\gbrunner-raster-functions\pickles'
 
 # Based on QA Band - https://landsat.usgs.gov/collectionqualityband
-QA_BAND_NUM = 7
+#QA_BAND_NUM = 7
 #misc = [0, 1]
-landsat_4_7_clear_pix_vals = [672, 676, 680, 684]
-landsat_8_clear_pix_vals = [20480, 20484, 20512, 23552]#[2720, 2724, 2728, 2732]
-LANDSAT_CLEAR_PIX_VALS = landsat_4_7_clear_pix_vals + landsat_8_clear_pix_vals
+LANDSAT_4_7_CLEAR_PIX_VALS = [672, 676, 680, 684]
+LANDSAT_8_CLEAR_PIX_VALS = [20480, 20484, 20512, 23552]#[2720, 2724, 2728, 2732]
+LANDSAT_CLEAR_PIX_VALS = LANDSAT_4_7_CLEAR_PIX_VALS + LANDSAT_8_CLEAR_PIX_VALS
 
 
 class LandsatPixelPercentile():
@@ -38,12 +38,21 @@ class LandsatPixelPercentile():
                 'description': 'The collection of overlapping rasters to aggregate.',
             },
             {
+                'name': 'sensor',
+                'dataType': 'string',
+                'value': 'Landsat TM',
+                'required': True,
+                'domain': ('Landsat TM', 'Landsat ETM', 'Landsat OLI'),
+                'displayName': 'Landsat sensor to use',
+                'description': 'Landsat TM, ETM, or OLI'
+            },
+            {
                 'name': 'percentile',
                 'dataType': 'numeric',
-                'value': 40,
+                'value': 50,
                 'required': True,
                 'displayName': 'Pixel Percentile',
-                'description': 'Pixel Percentile (can range from 0 to 100)'
+                'description': 'Pixel Percentile (integer in range of 0 to 100)'
             },
             {
                 'name': 'start_day',
@@ -56,7 +65,7 @@ class LandsatPixelPercentile():
             {
                 'name': 'start_year',
                 'dataType': 'numeric',
-                'value': 2014,
+                'value': 1985,
                 'required': True,
                 'displayName': 'Start Year',
                 'description': 'Start Year for Pixel Filtering'
@@ -64,7 +73,7 @@ class LandsatPixelPercentile():
             {
                 'name': 'end_day',
                 'dataType': 'numeric',
-                'value': 300,
+                'value': 240,
                 'required': True,
                 'displayName': 'End Day of Year',
                 'description': 'End Day of Year for Pixel Filtering'
@@ -72,7 +81,7 @@ class LandsatPixelPercentile():
             {
                 'name': 'end_year',
                 'dataType': 'numeric',
-                'value': 2015,
+                'value': 2010,
                 'required': True,
                 'displayName': 'End Year',
                 'description': 'End Year for Pixel Filtering'
@@ -103,7 +112,18 @@ class LandsatPixelPercentile():
         self.start_year = int(kwargs['start_year'])
         self.end_day = int(kwargs['end_day'])
         self.end_year =int(kwargs['end_year'])
-        self.percentile = float(kwargs['percentile'])
+        self.percentile = int(kwargs['percentile'])
+        self.sensor = kwargs['sensor']
+
+        if self.sensor == 'Landsat TM' or self.sensor == 'Landsat ETM':
+            self.filter = LANDSAT_4_7_CLEAR_PIX_VALS
+            self.qa_band_num = 7
+        elif self.sensor == 'Landsat OLI':
+            self.filter = LANDSAT_8_CLEAR_PIX_VALS
+            self.qa_band_num = 9
+        else:
+            self.filter = LANDSAT_CLEAR_PIX_VALS
+            self.qa_band_num = 7
 
         return kwargs
 
@@ -151,14 +171,14 @@ class LandsatPixelPercentile():
         num_squares_y = pix_array_dim[3]
         output_pixels = np.zeros((pix_array_dim[1], num_squares_x, num_squares_y))
 
-        QA_BAND_IND = QA_BAND_NUM - 1
+        qa_band_ind = self.qa_band_num - 1
         for num_x in range(0, int(num_squares_x)):
             for num_y in range(0, int(num_squares_y)):
 
                 clear_indices = [
-                    x for x in range(len(pix_array_filtered[:, QA_BAND_IND, num_x, num_y]))
-                    if pix_array_filtered[x, QA_BAND_IND, num_x, num_y]
-                       in LANDSAT_CLEAR_PIX_VALS
+                    x for x in range(len(pix_array_filtered[:, qa_band_ind, num_x, num_y]))
+                    if pix_array_filtered[x, qa_band_ind, num_x, num_y]
+                       in self.filter
                 ]
 
                 for num_b in range(0, int(num_bands)):
