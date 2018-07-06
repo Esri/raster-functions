@@ -60,3 +60,4 @@ docs/_build/
 .idea/misc.xml
 .idea/gbrunner-raster-functions.iml
 pickles/
+functions/Landsat8PixelPercentile.py
