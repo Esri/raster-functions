@@ -114,15 +114,15 @@ class TerrainCorrections():
         sun_el = [j['sunelevation'] for j in self.metadata]
 
         #https://en.wikipedia.org/wiki/Solar_zenith_angle
-        sun_ze = [(90 - az) for az in sun_az]
+        sun_ze = [(90 - el) for el in sun_el]
 
         if len(sun_az) == 1:
-            az = sun_az[0] * pi / 180
-            ze = sun_ze[0] * pi / 180
-            cos_i = np.cos(slope_rads[0, :, :]) * np.cos(ze) + \
-                    (np.sin(slope_rads[0, :, :]) * np.sin(ze) * (np.cos(az - aspect_rads[0, :, :])))
+            sun_az_rad = sun_az[0] * pi / 180
+            sun_ze_rad = sun_ze[0] * pi / 180
+            cos_i = (np.cos(slope_rads[0, :, :]) * np.cos(sun_ze_rad)) + \
+                    (np.sin(slope_rads[0, :, :] * np.sin(sun_ze_rad)) * (np.cos(sun_az_rad - aspect_rads[0, :, :])))
 
-            result = (image_pix_array[0, :, :, :] * np.cos(ze)) / cos_i
+            result = (image_pix_array[0, :, :, :] * np.cos(sun_ze_rad)) / cos_i
 
 
         pickle_filename = os.path.join(debug_logs_directory, fname)
