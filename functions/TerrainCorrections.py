@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import pi
 import datetime
 from datetime import timedelta
 import sys
@@ -35,6 +36,22 @@ class TerrainCorrections():
                 'required': True,
                 'displayName': 'Rasters',
                 'description': 'The collection of overlapping rasters to aggregate.'
+            },
+            {
+                'name': 'slope',
+                'dataType': 'raster',
+                'value': None,
+                'required': True,
+                'displayName': "Slope",
+                'description': "Slope Derived from Digital Elevation Model."
+            },
+            {
+                'name': 'aspect',
+                'dataType': 'raster',
+                'value': None,
+                'required': True,
+                'displayName': "Aspect",
+                'description': "Aspect Derived from Digital Elevation Model."
             }
         ]
 
@@ -55,6 +72,7 @@ class TerrainCorrections():
         kwargs['output_info']['histogram'] = ()             # no statistics/histogram for output raster specified
         kwargs['output_info']['statistics'] = ()            # outStatsTuple
         #kwargs['output_info']['bandCount'] = self.outBandCount   # number of output bands.
+        #self.dem_cellsize = kwargs['dem_info']['cellSize']
 
         self.metadata = kwargs['rasters_keyMetadata']
 
@@ -69,12 +87,42 @@ class TerrainCorrections():
         fname = '{:%Y_%b_%d_%H_%M_%S}_t.txt'.format(datetime.datetime.now())
         filename = os.path.join(debug_logs_directory, fname)
 
+        image_pix_blocks = pixelBlocks['rasters_pixels']
+        image_pix_array = np.asarray(image_pix_blocks)
+        pickle_filename = os.path.join(debug_logs_directory, fname)
+        pickle.dump(image_pix_array, open(pickle_filename[:-4]+'landsat.p',"wb"))
+
+        slope_pix_blocks = pixelBlocks['slope_pixels']
+        slope_pix_array = np.asarray(slope_pix_blocks)
+        slope_rads = slope_pix_array * pi/180
+        pickle_filename = os.path.join(debug_logs_directory, fname)
+        pickle.dump(slope_rads, open(pickle_filename[:-4]+'slope.p',"wb"))
+
+        aspect_pix_blocks = pixelBlocks['aspect_pixels']
+        aspect_pix_array = np.asarray(aspect_pix_blocks)
+        aspect_rads = aspect_pix_array * pi/180
+        pickle_filename = os.path.join(debug_logs_directory, fname)
+        pickle.dump(aspect_rads, open(pickle_filename[:-4]+'aspect.p',"wb"))
+
+
+
         file = open(filename,"w")
         file.write("File Open.\n")
 
         t_vals = [j['acquisitiondate'] for j in self.metadata]
         sun_az = [j['sunazimuth'] for j in self.metadata]
         sun_el = [j['sunelevation'] for j in self.metadata]
+
+        #https://en.wikipedia.org/wiki/Solar_zenith_angle
+        sun_ze = [(90 - az) for az in sun_az]
+
+        if len(sun_az) == 1:
+            az = sun_az[0] * pi / 180
+            ze = sun_ze[0] * pi / 180
+            cos_i = np.cos(slope_rads[0, :, :]) * np.cos(ze) + \
+                    (np.sin(slope_rads[0, :, :]) * np.sin(ze) * (np.cos(az - aspect_rads[0, :, :])))
+
+            result = (image_pix_array[0, :, :, :] * np.cos(ze)) / cos_i
 
 
         pickle_filename = os.path.join(debug_logs_directory, fname)
@@ -93,15 +141,21 @@ class TerrainCorrections():
 
         file.write("Dump 3.\n")
 
-        pix_blocks = pixelBlocks['rasters_pixels']
-        pix_array = np.asarray(pix_blocks)
-
         file.close()
-
 
 
         #mask = np.ones((pix_array_dim[1], num_squares_x, num_squares_y))
         #pixelBlocks['output_mask'] = mask.astype('u1', copy = False)
-        pixelBlocks['output_pixels'] = pix_array.astype(props['pixelType'], copy=False)
+        pixelBlocks['output_pixels'] = result.astype(props['pixelType'], copy=False)
 
         return pixelBlocks
+
+
+def slope_function(dem, cellsize):
+    #Modified from calculation found here:
+    #http://geoexamples.blogspot.com/2014/03/shaded-relief-images-using-gdal-python.html
+
+    x, y = np.gradient(dem, cellsize, cellsize)
+    #slope = np.pi/2.0 - np.arctan(np.sqrt(x*x + y*y))
+    slope = np.arctan(np.sqrt(x*x + y*y))
+    return slope
