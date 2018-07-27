@@ -25,8 +25,7 @@ class TerrainCCorrections():
         self.name = 'Terrain Corrections'
         self.description = 'TBD.'
 
-        #self.metadata = []
-        self.predict_month = None
+        self.metadata = []
 
     def getParameterInfo(self):
         return [
@@ -72,8 +71,6 @@ class TerrainCCorrections():
         kwargs['output_info']['pixelType'] = 'f4'           # output pixels are floating-point values
         kwargs['output_info']['histogram'] = ()             # no statistics/histogram for output raster specified
         kwargs['output_info']['statistics'] = ()            # outStatsTuple
-        #kwargs['output_info']['bandCount'] = self.outBandCount   # number of output bands.
-        #self.dem_cellsize = kwargs['dem_info']['cellSize']
 
         self.metadata = kwargs['rasters_keyMetadata']
 
@@ -123,9 +120,6 @@ class TerrainCCorrections():
         #COrrected Image = Image * (cos(solar zenith angle) + C)/(cos(solar incidence angle) + C)
         #Where C is an empiraicle parameter
         #cos(solar incidence angle) =
-        # cos()*cos()*cos()+sin()*sin()
-        #C =0
-        #C=6 is not bad for landsat?
 
         pix_array_dim = image_pix_array.shape
         num_bands = pix_array_dim[1]
