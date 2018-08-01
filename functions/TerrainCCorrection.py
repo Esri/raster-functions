@@ -117,7 +117,7 @@ class TerrainCCorrections():
 
 
         #Equation
-        #COrrected Image = Image * (cos(solar zenith angle) + C)/(cos(solar incidence angle) + C)
+        #Corrected Image = Image * (cos(solar zenith angle) + C)/(cos(solar incidence angle) + C)
         #Where C is an empiraicle parameter
         #cos(solar incidence angle) =
         pix_array_dim = image_pix_array.shape
@@ -139,6 +139,7 @@ class TerrainCCorrections():
                 image_flattened = image_pix_array[0, k, :, :].ravel()
                 cos_gamma = cos_i.ravel()
 
+                # Adding linear regression from Dr. Mort Canty - https://github.com/mortcanty/CRCPython
                 m, b, r, _, _ = stats.linregress(cos_gamma, image_flattened)
 
                 C = b / m
