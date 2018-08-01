@@ -58,7 +58,7 @@ class BasicChuckClose():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        #file = open(r'C:\PROJECTS\raster-functions\test.txt','w')
+        #file = open(r'C:\PROJECTS\gbrunner-raster-functions\test.txt','w')
         #file.write(str(z))
         # get the input DEM raster pixel block
         inBlock_dem = pixelBlocks['dem_pixels']

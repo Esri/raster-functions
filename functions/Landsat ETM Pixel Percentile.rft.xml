@@ -65,7 +65,7 @@
         <Value xsi:type="xs:double">2012</Value>
         <IsDataset>false</IsDataset>
       </AnyType>
-      <AnyType xsi:type="xs:string">LandsatPixelPercentile.py</AnyType>
+      <AnyType xsi:type="xs:string">C:\PROJECTS\gbrunner-raster-functions\functions\LandsatPixelPercentile.py</AnyType>
       <AnyType xsi:type="typens:RasterFunctionVariable" id="ID14">
         <Name>ClassName</Name>
         <Description></Description>
