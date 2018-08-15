@@ -45,7 +45,7 @@ class BasicCubism():
         x, y = z[1],z[2]
         cubism = np.zeros(z)
 
-        #init_pixel_buffer = 10
+        #init_pixel_buffer = 10 change this
         pixel_buffer = 1
         square_size = 5
         maximum = np.max(inBlock_dem)
