@@ -235,6 +235,10 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   shows the [aspect] (http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) (direction) and [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm)  in degree (steepness) for a terrain or other continuous surface.
   
   [AspectSlope.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/AspectSlope.rft.xml) accepts the elevation input raster and creates aspect slope map raster for visualization. 
+  
+ * #### Topographic C-Correction
+   [Topographic c-correction](https://github.com/Esri/raster-functions/blob/master/functions/TopographicCCorrection.py) is used to remove the effects of hillshade on multispectral images. It reduces the effects of reflectance variability in areas of high or rugged terrain, thus improving the consistency of the multispectral image pixel values and the quality of images as additional processing is applied. There are many different topographic correction algorithms. These algorithms have been compared by [Ion Sola et. al (2016)](https://www.researchgate.net/publication/305469055_Multi-criteria_evaluation_of_topographic_correction_methods) and the c-correction proposed in [Teillet, Guindon, and Goodenough (1982)](https://www.tandfonline.com/doi/abs/10.1080/07038992.1982.10855028)  was ranked as one of the best topographic correction methods. 
+
 
 
 ## Licensing
