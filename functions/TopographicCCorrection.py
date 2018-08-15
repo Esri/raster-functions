@@ -24,11 +24,11 @@ LANDSAT_CLEAR_PIX_VALS = LANDSAT_4_7_CLEAR_PIX_VALS + LANDSAT_8_CLEAR_PIX_VALS
 # 3. Holben et al (1980) https://www.asprs.org/wp-content/uploads/pers/1980journal/sep/1980_sep_1191-1200.pdf
 # 4. Dr. Mort Canty - https://github.com/mortcanty/CRCPython
 
-class TerrainCCorrections():
+class TopographicCCorrection():
 
     def __init__(self):
-        self.name = 'Terrain C Correction'
-        self.description = 'Terrain C-Correction based on the paper from Teillet, Guindon, and Goodenough (1982).'
+        self.name = 'Topographic C Correction'
+        self.description = 'Topographic C-Correction based on the paper from Teillet, Guindon, and Goodenough (1982).'
 
         self.metadata = []
 
