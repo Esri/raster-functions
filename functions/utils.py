@@ -87,7 +87,7 @@ def projectCellSize(cellSize, inSR, outSR, proj=None):
 def isGeographic(s):
     arcpy = __import__('arcpy')
     sr = arcpy.SpatialReference()
-    sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
+    sr.loadFromString(str(s) if isinstance(s, (str, int)) else s.exportToString())
     return bool(sr.type == 'Geographic' and sr.angularUnitName)
 
 
@@ -125,7 +125,7 @@ class Projection():
 
     def createSR(self, s):
         sr = self.arcpy.SpatialReference()
-        sr.loadFromString(str(s) if isinstance(s, (str, int, long)) else s.exportToString())
+        sr.loadFromString(str(s) if isinstance(s, (str, int)) else s.exportToString())
         return sr
 
 
@@ -212,7 +212,7 @@ class ZonalAttributesTable():
 
         if extent and len(extent) == 4 and sr:
             _sr = sr
-            if not isinstance(sr, self.arcpy.SpatialReference) and isinstance(sr, (str, int, long)):
+            if not isinstance(sr, self.arcpy.SpatialReference) and isinstance(sr, (str, int)):
                 _sr = self.arcpy.SpatialReference()
                 _sr.loadFromString(str(sr))
 

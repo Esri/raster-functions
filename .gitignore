@@ -61,3 +61,5 @@ docs/_build/
 .idea/gbrunner-raster-functions.iml
 pickles/
 functions/Landsat8PixelPercentile.py
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
