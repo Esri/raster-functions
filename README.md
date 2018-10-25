@@ -17,6 +17,8 @@ You can also create custom raster functions in Python that work seamlessly with 
    - Run `<local-folder>/setup.py` with administrator privileges.
 4. Install the **[latest release](https://github.com/Esri/raster-functions/releases/latest)** of *custom raster functions*:
    - Download all [custom raster functions](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/raster-functions-1.0-beta.1.zip).
+   If you are using pro you can use the [master branch](https://github.com/Esri/raster-functions)
+   If you are using arcmap you can use the [arcmap107 branch](https://github.com/Esri/raster-functions/tree/arcmap107) 
    - Unzip the contents locally to a home folder.
    - You'll find ready-to-use `templates` and `functions` in their own subfolders.
 6. Learn more about raster functions, function chains, and templates using the [Resources](#resources) below.
