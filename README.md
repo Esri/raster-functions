@@ -10,7 +10,7 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 ## Getting Started
 
-1. Install [ArcGIS for Desktop 10.4](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4](https://server.arcgis.com/en/server/). 
+1. Install [ArcGIS for Desktop 10.4 or higher or pro 1.2 or higher](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4 or higher](https://server.arcgis.com/en/server/). 
 2. Install the [latest release](https://github.com/Esri/raster-functions/releases/latest) of prerequisite *Python extension packages* if you are setting up for the first time:
    - Download [Python extensions binaries](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/python-extensions-1.0-beta.1.zip).
    - Unzip the contents to a temporary local folder.
