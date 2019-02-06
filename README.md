@@ -10,13 +10,15 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 ## Getting Started
 
-1. Install [ArcGIS for Desktop 10.4](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4](https://server.arcgis.com/en/server/). 
+1. Install [ArcGIS for Desktop 10.4 or higher or pro 1.2 or higher](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4 or higher](https://server.arcgis.com/en/server/). 
 2. Install the [latest release](https://github.com/Esri/raster-functions/releases/latest) of prerequisite *Python extension packages* if you are setting up for the first time:
    - Download [Python extensions binaries](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/python-extensions-1.0-beta.1.zip).
    - Unzip the contents to a temporary local folder.
    - Run `<local-folder>/setup.py` with administrator privileges.
 4. Install the **[latest release](https://github.com/Esri/raster-functions/releases/latest)** of *custom raster functions*:
    - Download all [custom raster functions](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/raster-functions-1.0-beta.1.zip).
+   If you are using pro use the [master branch](https://github.com/Esri/raster-functions)
+   If you are using arcmap use the [arcmap107 branch](https://github.com/Esri/raster-functions/tree/arcmap107) 
    - Unzip the contents locally to a home folder.
    - You'll find ready-to-use `templates` and `functions` in their own subfolders.
 6. Learn more about raster functions, function chains, and templates using the [Resources](#resources) below.
@@ -231,10 +233,14 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   and uses built-in raster functions to compute slope and elevation before feeding the output to the Vineyard Analysis raster function. 
 
 * #### Aspect-Slope
-  [AspectSlope.py] (https://github.com/Esri/raster-functions/blob/master/functions/AspectSlope.py) generates an aspect slope map i.e. simultaneously
-  shows the [aspect] (http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) (direction) and [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm)  in degree (steepness) for a terrain or other continuous surface.
+  [AspectSlope.py](https://github.com/Esri/raster-functions/blob/master/functions/AspectSlope.py) generates an aspect slope map i.e. simultaneously
+  shows the [aspect](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) (direction) and [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm)  in degree (steepness) for a terrain or other continuous surface.
   
   [AspectSlope.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/AspectSlope.rft.xml) accepts the elevation input raster and creates aspect slope map raster for visualization. 
+  
+ * #### Topographic C-Correction
+   [Topographic c-correction](https://github.com/Esri/raster-functions/blob/master/functions/TopographicCCorrection.py) is used to remove the effects of hillshade on multispectral images. It reduces the effects of reflectance variability in areas of high or rugged terrain, thus improving the consistency of the multispectral image pixel values and the quality of images as additional processing is applied. There are many different topographic correction algorithms. These algorithms have been compared by [Ion Sola et. al (2016)](https://www.researchgate.net/publication/305469055_Multi-criteria_evaluation_of_topographic_correction_methods) and the c-correction proposed in [Teillet, Guindon, and Goodenough (1982)](https://www.tandfonline.com/doi/abs/10.1080/07038992.1982.10855028)  was ranked as one of the best topographic correction methods. 
+
 
 
 ## Licensing
