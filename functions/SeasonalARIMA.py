@@ -173,6 +173,7 @@ class SeasonalARIMA():
         num_squares_y = pix_array_dim[3]
         new_stack = np.zeros((1, num_squares_x, num_squares_y))
 
+        my_order = (1,0,0)
         my_seasonal_order = (self.p, self.d, self.q, self.s)
 
         now = datetime.datetime.now()
@@ -196,6 +197,7 @@ class SeasonalARIMA():
                 try:
                     # define model
                     model = sm.tsa.statespace.SARIMAX(sorted_data[train_data_start_index:train_data_end_index],
+                                                      order=my_order,
                                                       seasonal_order=my_seasonal_order, trend='c',
                                                       enforce_invertibility=False, enforce_stationarity=False)
 
