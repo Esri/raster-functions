@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/2.3.0">
+  <Name>ReplaceNulls</Name>
+  <Description>Replace Nulls</Description>
+  <Function xsi:type="typens:PythonAdapterFunction" id="ID1">
+    <Name>Replace Nulls</Name>
+    <Description>Replace NULL values in a raster with a user defined value.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:PythonAdapterFunctionArguments" id="ID2">
+    <Names xsi:type="typens:ArrayOfString" id="ID3">
+      <String>raster</String>
+      <String>fill_val</String>
+      <String>PythonModule</String>
+      <String>ClassName</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType" id="ID4">
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID5">
+        <Name>Raster</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string">Multiband Raster</Value>
+        <IsDataset>true</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID6">
+        <Name>fill_val</Name>
+        <Description></Description>
+        <Value xsi:type="xs:double">1</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="xs:string">C:\PROJECTS\gbrunner-raster-functions\functions\ReplaceNulls.py</AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID7">
+        <Name>ClassName</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string">ReplaceNulls</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Aliases xsi:type="typens:ArrayOfString" id="ID8">
+    <String>__tans__(raster,fill_val)</String>
+  </Aliases>
+  <Help>Replace Nulls</Help>
+  <Type>0</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group></Group>
+  <Tag></Tag>
+  <ThumbnailEx></ThumbnailEx>
+</RasterFunctionTemplate>
