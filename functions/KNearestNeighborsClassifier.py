@@ -52,7 +52,7 @@ class KNNClassifier():
                 'required': True,
                 'displayName': 'Training data CSV filepath',
                 'description': 'Full filepath directory to training data CSV. '
-                               'Internally this will load from disk and be converted to a numpy array.'
+                               'Internally this will load from disk and be converted to a pandas dataframe.'
             }
         ]
 
