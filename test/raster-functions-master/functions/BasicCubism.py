@@ -58,8 +58,8 @@ class BasicCubism():
         num_squares_x = math.floor(x/square_size)
         num_squares_y = math.floor(y/square_size)
 
-        for num_x in range(0,int(num_squares_x)):
-            for num_y in range(0,int(num_squares_y)):
+        for num_x in xrange(0,int(num_squares_x)):
+            for num_y in xrange(0,int(num_squares_y)):
             #chuck_close[num_x*square_size:(num_x+1)*square_size, num_y*square_size:(num_y+1)*square_size] = mean #dem[num_x*square_size, num_y*square_size]
                 cubism[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer] = np.mean(inBlock_dem[0,num_x*square_size+pixel_buffer:(num_x+1)*square_size-pixel_buffer, num_y*square_size+pixel_buffer:(num_y+1)*square_size-pixel_buffer])#dem[num_x*square_size, num_y*square_size]#-1*dem[num_x*square_size, num_y*square_size]+maximum
 

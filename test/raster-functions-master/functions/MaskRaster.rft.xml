@@ -1,0 +1,39 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.3'>
+  <Name>MaskRaster</Name>
+  <Description>Apply a raster as the NoData mask of an input raster.</Description>
+  <Function xsi:type='typens:PythonAdapterFunction'>
+    <Name>Mask Raster Function</Name>
+    <Description>Apply a raster as the NoData mask of an input raster.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type='typens:PythonAdapterFunctionArguments'>
+    <Names xsi:type='typens:ArrayOfString'>
+      <String>PythonModule</String>
+      <String>ClassName</String>
+      <String>r</String>
+      <String>m</String>
+    </Names>
+    <Values xsi:type='typens:ArrayOfAnyType'>
+      <AnyType xsi:type='xs:string'>MaskRaster.py</AnyType>
+      <AnyType xsi:type='xs:string'>MaskRaster</AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster1</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>true</IsDataset>
+      </AnyType>
+      <AnyType xsi:type='typens:RasterFunctionVariable'>
+        <Name>Raster2</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>true</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail></Thumbnail>
+  <Definition></Definition>
+  <Group>GroupName</Group>
+  <Tag>Tag</Tag>
+</RasterFunctionTemplate>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/2.1.0">
+  <Name>Landsat Image Synthesis</Name>
+  <Description>Landsat Scene Generation Raster Function</Description>
+  <Function xsi:type="typens:PythonAdapterFunction" id="ID1">
+    <Name>Landsat 5 Scene Synthesis</Name>
+    <Description>Landsat 5 Scene Synthesis</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:PythonAdapterFunctionArguments" id="ID2">
+    <Names xsi:type="typens:ArrayOfString" id="ID3">
+      <String>rasters</String>
+      <String>predict_month</String>
+      <String>PythonModule</String>
+      <String>ClassName</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType" id="ID4">
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID5">
+        <Name>rasters</Name>
+        <Description></Description>
+        <Value xsi:type="typens:ArrayOfArgument" id="ID6"></Value>
+        <Aliases xsi:type="typens:ArrayOfString" id="ID7">
+          <String>__IsRasterArray__</String>
+        </Aliases>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID8">
+        <Name>predict_month</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string">Mar</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="xs:string">Landsat_Image_Synthesis.py</AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID9">
+        <Name>ClassName</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string">Landsat_Image_Synthesis</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Aliases xsi:type="typens:ArrayOfString" id="ID10">
+    <String>__tans__(rasters,predict_month)</String>
+  </Aliases>
+  <Help></Help>
+  <Type>2</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group>Tag</Group>
+  <Tag>Name</Tag>
+  <ThumbnailEx></ThumbnailEx>
+</RasterFunctionTemplate>
