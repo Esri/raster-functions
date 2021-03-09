@@ -59,6 +59,7 @@ docs/_build/
 .idea/modules.xml
 .idea/misc.xml
 .idea/gbrunner-raster-functions.iml
+.idea
 pickles/
 functions/Landsat8PixelPercentile.py
 /.vs/ProjectSettings.json
