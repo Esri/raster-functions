@@ -64,4 +64,4 @@ pickles/
 functions/Landsat8PixelPercentile.py
 .vs/ProjectSettings.json
 .vs/slnx.sqlite
-.vs
+.vs/*
