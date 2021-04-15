@@ -44,10 +44,10 @@ class CompoundTopographicIndex_64bitScipy():
         inBlock_dem = pixelBlocks['dem_pixels']
         cellSize = self.dem_cellsize
 
-        slope = calc_slope(inBlock_dem, cellSize[0])
+        slope = calc_slope(inBlock_dem[0,:,:], cellSize[0])
         DX = cellSize[0]
         DY = cellSize[1]
-        flow_direction = calc_flow_direction_d8(DX, DY, inBlock_dem)
+        flow_direction = calc_flow_direction_d8(DX, DY, inBlock_dem[0,:,:])
         flow_accumulation = calc_flow_accumulation(flow_direction, inBlock_dem.shape)
         cti = calc_cti(slope, flow_accumulation, cellSize[0])
 
