@@ -10,14 +10,14 @@ You can also create custom raster functions in Python that work seamlessly with 
 
 ## Getting Started
 
-1. Install [ArcGIS for Desktop 10.4 or higher or pro 1.2 or higher](http://desktop.arcgis.com/en/desktop/), or [ArcGIS for Server 10.4 or higher](https://server.arcgis.com/en/server/). 
+1. Install [ArcGIS for Desktop 10.4 or higher or pro 1.2 or higher](https://www.esri.com/en-us/store/overview), or [ArcGIS for Server 10.4 or higher](https://enterprise.arcgis.com/en/server/). 
 2. Install the [latest release](https://github.com/Esri/raster-functions/releases/latest) of prerequisite *Python extension packages* if you are setting up for the first time:
    - Download [Python extensions binaries](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/python-extensions-1.0-beta.1.zip).
    - Unzip the contents to a temporary local folder.
    - Run `<local-folder>/setup.py` with administrator privileges.
 4. Install the **[latest release](https://github.com/Esri/raster-functions/releases/latest)** of *custom raster functions*:
-   - Download all [custom raster functions](https://github.com/Esri/raster-functions/releases/download/v1.0-beta.1/raster-functions-1.0-beta.1.zip).
-   If you are using pro use the [master branch](https://github.com/Esri/raster-functions)
+   - Download all custom raster functions.
+   If you are using pro use the [master branch](https://github.com/Esri/raster-functions).
    If you are using arcmap use the [arcmap107 branch](https://github.com/Esri/raster-functions/tree/arcmap107) 
    - Unzip the contents locally to a home folder.
    - You'll find ready-to-use `templates` and `functions` in their own subfolders.
@@ -28,26 +28,23 @@ You can also create custom raster functions in Python that work seamlessly with 
 ## Resources
 
 * ##### Fundamentals
-  * [ArcGIS 10.4 Help](http://resources.arcgis.com/en/help/)
+  * [ArcGIS Pro Help](https://pro.arcgis.com/en/pro-app/latest/help/main/welcome-to-the-arcgis-pro-app-help.htm)
   * [The raster functions **Wiki**](https://github.com/Esri/raster-functions/wiki)
-  * [What's Python](http://desktop.arcgis.com/en/desktop/latest/analyze/python/what-is-python-.htm)
+  * [Python in ArcGIS Pro](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/installing-python-for-arcgis-pro.htm)
 
 * ##### Raster Functions
-  * [What are raster functions?](http://blogs.esri.com/esri/arcgis/2010/08/10/raster-functions/)
-  * [Rasters with functions](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/rasters-with-functions.htm)
-  * [Editing functions on a raster dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-functions-on-a-raster-dataset.htm)
-  * [Editing function chains in a mosaic dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chains-in-md.htm)
-  * [Image Analysis window: Processing section](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/image-analysis-window-processing-section.htm)
-  * [*ArcGIS Pro*: Using raster functions](http://pro.arcgis.com/en/pro-app/help/data/imagery/apply-functions-to-a-dataset.htm)
+  * [What are raster functions?](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/raster-functions.htm)
+  * [List of raster functions in ArcGIS Pro](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/list-of-raster-functions.htm)
+  * [Editing functions on a raster dataset](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/overview-of-the-function-editor.htm)
+  * [Creating custom raster functions](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/custom-raster-functions.htm)
+  * [Using raster functions on Portal for ArcGIS](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/raster-analysis-with-portal.htm)
 
 * ##### Raster Function Templates
-  * [Creating new raster function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/accessing-the-raster-function-template-editor.htm)
-  * [Saving a function chain as a raster function template](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm#ESRI_SECTION1_0A062EDFA12B4F07BA04F567C7132C18)
-  * [Applying function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/applying-a-function-template.htm)
-  * [Editing function templates](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/editing-function-chain-templates.htm)
-  * [Resolving template variables using attribute table](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/wkflw-populating-functions-with-values-from-attrib-table.htm)
-  * [Adding a processing template to a mosaic dataset](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/adding-a-processing-template-to-a-mosaic-dataset.htm)
-  * [Configuring an image service to use a raster function template](http://server.arcgis.com/en/server/latest/publish-services/windows/server-side-raster-functions.htm#ESRI_SECTION1_8E7C2EADF7504674B168453B71F400F2)
+  * [Applying raster function template for image analysis](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/raster-function-template.htm)
+  * [Understanding raster function template properties](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/raster-function-template-properties.htm)
+  * [Editing raster function templates in a mosaic dataset](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/using-mosaic-dataset-items-in-raster-function-templates.htm)
+  * [Applying raster function templates](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/processing-template-manager.htm)
+  * [Deploying custom python raster functions and templates](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/python-raster-function-deployment.htm)
 
 * ##### Scientific Computing in Python
   * [Scientific Computing Tools for Python](http://www.scipy.org/about.html)
@@ -64,46 +61,6 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 
 ## Featured Raster Functions and Templates
-
-
-* #### Normalized Difference Vegetation Index
-  [NDVI.py](https://github.com/Esri/raster-functions/blob/master/functions/NDVI.py) serves as a reference 
-  Python rendition of the [stock NDVI raster function](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm).
-  It accepts one multi-band raster as input, and one-based indices corresponding to the Red and Infrared bands of 
-  the input raster. An additional `method` parameter controls whether the output NDVI raster contains
-  raw, scaled, or color-mapped values.
-  
-  Supporting templates:
-  - [NDVI-Raw](https://github.com/Esri/raster-functions/blob/master/templates/NDVI.rft.xml):
-    Returns raw NDVI values in the range [-1.0, +1.0] as a one-band, floating-point raster.
-  - [NDVI-Grayscale](https://github.com/Esri/raster-functions/blob/master/templates/NDVI-Grayscale.rft.xml):
-    Returns NDVI values scaled to the range [0, 200] as one-band, 8-bit raster.
-  - [NDVI-Colormap](https://github.com/Esri/raster-functions/blob/master/templates/NDVI-Colormap.rft.xml):
-    Returns *scaled* NDVI values as color-mapped raster.
-
-  Learn more about NDVI on [Wikipedia](http://en.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index) 
-  or in the [Documentation for ArcGIS](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/ndvi-function.htm). 
-
-* #### Wind Chill
-
-  [WindChill.py](https://github.com/Esri/raster-functions/blob/TintedHillshade/functions/Windchill.py) computes 
-  wind chill given two rasters representing wind speed in miles-per-hour and ambient air temperature in Fahrenheit.
-  
-  [Windchill.rft.xml](https://github.com/Esri/raster-functions/blob/LinearUnmixing/templates/Windchill.rft.xml) is a *grouping* 
-  raster function template.
-
-  Learn more about Wind Chill on [Wikipedia](http://en.wikipedia.org/wiki/Wind_chill).
-  
-* #### Heat Index
-
-  [HeatIndex.py](https://github.com/Esri/raster-functions/blob/LinearUnmixing/functions/HeatIndex.py) computes 
-  apparent temperature (as perceived by us) given two rasters corresponding to ambient air temperature and relative humidity. 
-  An additional string parameter `units` controls whether the air temperature values are assumed to be in Celsius or Fahrenheit.
-  
-  [HeatIndex.rft.xml](https://github.com/Esri/raster-functions/blob/LinearUnmixing/templates/HeatIndex.rft.xml) is a *grouping* 
-  raster function template. The `units` parameter remains unmodified by the template and defaults to `Fahrenheit`. 
-  
-  Learn more about Heat Index on [Wikipedia](http://en.wikipedia.org/wiki/Heat_index).
 
 * #### Key Metadata
 
@@ -128,36 +85,6 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   [MaskRaster.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/MaskRaster.rft.xml) is a *grouping* 
   raster function template where the inputs are the primary raster and the mask raster (in that order).
 
-* #### Arithmetic
-
-  [Arithmetic.py](https://github.com/Esri/raster-functions/blob/master/functions/Arithmetic.py) demonstrates the application 
-  of simple arithmetic operations on two rasters. It's not meant to replace the functionality provided by the built-in 
-  [Local Function](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/local-function.htm)
-  or the [Math toolset](http://desktop.arcgis.com/en/desktop/latest/tools/spatial-analyst-toolbox/an-overview-of-the-math-tools.htm). 
-  You can, however, use it as a springboard to building custom mathematical or analytical operations. 
-
-* #### Aggregate
-
-  [Aggregate.py](https://github.com/Esri/raster-functions/blob/master/functions/Aggregate.py) serves to demonstrates the application 
-  of simple aggregation along each pixel over a collection of overlapping rasters. The primary input to the function is of type 
-  `rasters` representing an array of rasters. The `method` string parameter enables a user or template to choose the specific operation 
-  (from `Sum`, `Average`, `Standard Deviation`, `Minimum`, and `Maximum`) to perform. The parameter defaults to `Sum`. 
-  The output is a raster containing values corresponding to the chosen statistic. 
-
-  [Aggregate.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/Aggregate.rft.xml) is a sample *grouping* 
-  raster function template with only one input: the collection of rasters to aggregate. The template leaves the `method` parameter unmodified. 
-  
-* #### Deviation from Mean
-
-  [DeviationFromMean.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/DeviationFromMean.rft.xml) helps 
-  with anomaly detection by calculating the deviation of the primary raster from the mean computed over a collection of 
-  overlapping rasters. This *grouping* raster function template demonstrates how complex operations can be constructed by 
-  *chaining* simple functions. The template computes the mean over a collection of rasters using the [Aggregate](#aggregate) 
-  function and then subtracts that result from the pixels values of the primary raster. 
-  
-  It's interesting to note that this template could be rewritten as a single Python raster function that accepts a raster array
-  and compute deviation from the group mean of the first (or some user-specified) raster in that group. 
-
 * #### Select By Pixel Size
 
   [SelectByPixelSize.py](https://github.com/Esri/raster-functions/blob/master/functions/SelectByPixelSize.py) accepts two 
@@ -167,39 +94,6 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   
   [SelectByPixelSize.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/SelectByPixelSize.rft.xml) is a *grouping* 
   raster function template that accepts two rasters as input and leaves `threshold` unspecified. 
-
-* #### Convert Per Second to Per Month
-
-  [ConvertPerSecondToPerMonth.py](https://github.com/Esri/raster-functions/blob/master/functions/ConvertPerSecondToPerMonth.py)
-  accepts a raster containing pixels values representing observations in some units per-second, and converts it to a raster 
-  representing the observation in units per-month. For this conversion to be a accurate, the function needs to know the month associated with 
-  acquisition of the input raster. This function demonstrates effective use of [*key metadata*](https://github.com/Esri/raster-functions/wiki/EffectiveFunctions) 
-  in processing and analysis. 
-
-* #### Composite Bands
-
-  [CompositeBands.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/CompositeBands.rft.xml) and 
-  [CompositeBands-4Bands-Ordered.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/CompositeBands-4Bands-Ordered.rft.xml) 
-  are raster function templates that demonstrate *grouping* with `rasters` (an array of raster objects) and with four individual 
-  rasters, respectively. The output is a single raster generated by compositing all bands of all overlapping input rasters. The template uses 
-  the built-in [composite bands raster function](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/composite-bands-function.htm). 
-  
-* #### Hillshade
-
-  [Hillshade.py](https://github.com/Esri/raster-functions/blob/master/functions/Hillshade.py) is reference Python implementation 
-  designed to emulate the built-in 
-  [Hillshade raster function](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/hillshade-function.htm) 
-  while serving to demonstrate effective use of [SciPy](http://www.scipy.org/about.html), 
-  [NumPy](http://www.numpy.org/#), and the helper functions implemented in the 
-  [`utils` module](https://github.com/Esri/raster-functions/blob/master/functions/utils.py). This is an example of a 
-  [neighborhood](http://en.wikipedia.org/wiki/Neighborhood_operation) or 
-  [focal](http://desktop.arcgis.com/en/desktop/latest/guide-books/extensions/spatial-analyst/performing-analysis/the-types-of-operations-in-spatial-analyst.htm#GUID-6776230A-E6CD-477B-8C77-E8B14CA052E1) 
-  operation. 
-  
-  The [Scale-adjusted Hillshade](https://github.com/Esri/raster-functions/blob/master/templates/Hillshade-ScaleAdjusted-Py.rft.xml) raster 
-  function template applies hillshading on the input elevation raster with a non-linearly adjusted z-factor. 
-  
-  Learn more about how the hillshade algorithm works [here](http://desktop.arcgis.com/en/desktop/latest/tools/spatial-analyst-toolbox/how-hillshade-works.htm).
 
 * #### Multidirectional Hillshade
 
@@ -232,14 +126,8 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   [VineyardAnalysis.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/VineyardAnalysis.rft.xml) accepts the elevation input raster 
   and uses built-in raster functions to compute slope and elevation before feeding the output to the Vineyard Analysis raster function. 
 
-* #### Aspect-Slope
-  [AspectSlope.py](https://github.com/Esri/raster-functions/blob/master/functions/AspectSlope.py) generates an aspect slope map i.e. simultaneously
-  shows the [aspect](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) (direction) and [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm)  in degree (steepness) for a terrain or other continuous surface.
-  
-  [AspectSlope.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/AspectSlope.rft.xml) accepts the elevation input raster and creates aspect slope map raster for visualization. 
-  
- * #### Topographic C-Correction
-   [Topographic c-correction](https://github.com/Esri/raster-functions/blob/master/functions/TopographicCCorrection.py) is used to remove the effects of hillshade on multispectral images. It reduces the effects of reflectance variability in areas of high or rugged terrain, thus improving the consistency of the multispectral image pixel values and the quality of images as additional processing is applied. There are many different topographic correction algorithms. These algorithms have been compared by [Ion Sola et. al (2016)](https://www.researchgate.net/publication/305469055_Multi-criteria_evaluation_of_topographic_correction_methods) and the c-correction proposed in [Teillet, Guindon, and Goodenough (1982)](https://www.tandfonline.com/doi/abs/10.1080/07038992.1982.10855028)  was ranked as one of the best topographic correction methods. 
+* #### Topographic C-Correction
+  [Topographic c-correction](https://github.com/Esri/raster-functions/blob/master/functions/TopographicCCorrection.py) is used to remove the effects of hillshade on multispectral images. It reduces the effects of reflectance variability in areas of high or rugged terrain, thus improving the consistency of the multispectral image pixel values and the quality of images as additional processing is applied. There are many different topographic correction algorithms. These algorithms have been compared by [Ion Sola et. al (2016)](https://www.researchgate.net/publication/305469055_Multi-criteria_evaluation_of_topographic_correction_methods) and the c-correction proposed in [Teillet, Guindon, and Goodenough (1982)](https://www.tandfonline.com/doi/abs/10.1080/07038992.1982.10855028)  was ranked as one of the best topographic correction methods. 
 
 
 
