@@ -48,7 +48,7 @@ class SelectByPixelSize():
         }
         
     def updateRasterInfo(self, **kwargs):
-        self.threshold = kwargs.get('threshold', 0.0)
+        self.threshold = float(kwargs.get('threshold', 0.0))
         if self.threshold <= 0.0:
             self.threshold = np.mean((np.mean(kwargs['r1_info']['cellSize']), np.mean(kwargs['r2_info']['cellSize'])))
 
