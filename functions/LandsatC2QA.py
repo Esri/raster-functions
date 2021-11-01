@@ -1,10 +1,10 @@
 import numpy as np
 
-class Landsat8QA():
+class LandsatC2QA():
 
     def __init__(self):
-        self.name = "Landsat 8 Collection 2 QA Mask"
-        self.description = "This function creates masks based on Landsat 8 Collection 2 QA band."
+        self.name = "Landsat Collection 2 QA Mask"
+        self.description = "This function creates masks based on Landsat Collection 2 QA band. QA bit index is taken from https://docs.digitalearthafrica.org/en/latest/data_specs/Landsat_C2_SR_specs.html#Quality-assessment-bands"
         self.bit_index = {'fill': 0, 'diluted': 1, 'cirrus': 2, 'cloud': 3, 'shadow': 4, 'snow': 5, 'clear': 6, 'water': 7}
 
     def getParameterInfo(self):
@@ -14,7 +14,7 @@ class Landsat8QA():
                 'dataType': 'raster',
                 'value': None,
                 'required': True,
-                'displayName': "Input Landsat 8 QA band",
+                'displayName': "Input Landsat QA band",
                 'description': "The input QA raster."
             },
             {
