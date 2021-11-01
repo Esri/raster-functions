@@ -97,14 +97,14 @@ class Landsat8QA():
         kwargs['output_info']['pixelType'] = 'u1'
         kwargs['output_info']['statistics'] = ({'minimum': 0, 'maximum': 1.0}, )
 
-        fill = kwargs.get('fill')
-        diluted = kwargs.get('diluted')
-        cirrus = kwargs.get('cirrus')
-        cloud = kwargs.get('cloud')
-        shadow = kwargs.get('shadow')
-        snow = kwargs.get('snow')
-        clear = kwargs.get('clear')
-        water = kwargs.get('water')
+        fill = int(kwargs.get('fill'))
+        diluted = int(kwargs.get('diluted'))
+        cirrus = int(kwargs.get('cirrus'))
+        cloud = int(kwargs.get('cloud'))
+        shadow = int(kwargs.get('shadow'))
+        snow = int(kwargs.get('snow'))
+        clear = int(kwargs.get('clear'))
+        water = int(kwargs.get('water'))
 
         self.bit_mask = (fill << self.bit_index['fill']) + (diluted << self.bit_index['diluted']) + (cirrus << self.bit_index['cirrus']) + (cloud << self.bit_index['cloud']) + (shadow << self.bit_index['shadow']) + (snow << self.bit_index['snow']) + (clear << self.bit_index['clear']) + (water << self.bit_index['water'])
 
