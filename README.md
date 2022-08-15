@@ -82,7 +82,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   the input mask raster as the [NoData mask](https://github.com/Esri/raster-functions/wiki/EffectiveFunctions#nodata) 
   on the primary input raster.
   
-  [MaskRaster.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/MaskRaster.rft.xml) is a *grouping* 
+  [MaskRaster.rft.xml](https://github.com/Esri/raster-functions/blob/master/functions/MaskRaster.rft.xml) is a *grouping* 
   raster function template where the inputs are the primary raster and the mask raster (in that order).
 
 * #### Select By Pixel Size
@@ -92,15 +92,8 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   the first raster to returning the second raster as output. If unspecified, the `threshold` parameter defaults to the 
   average cell size of the two input rasters.
   
-  [SelectByPixelSize.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/SelectByPixelSize.rft.xml) is a *grouping* 
+  [SelectByPixelSize.rft.xml](https://github.com/Esri/raster-functions/blob/master/functions/SelectByPixelSize.rft.xml) is a *grouping* 
   raster function template that accepts two rasters as input and leaves `threshold` unspecified. 
-
-* #### Multidirectional Hillshade
-
-  [MultidirectionalHillshade.pyd](https://github.com/Esri/raster-functions/blob/master/functions/MultidirectionalHillshade.pyd)
-  and the accompanying [MultidirectionalHillshade.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/MultidirectionalHillshade.rft.xml)
-  raster function template applies Hillshading from multiple directions for improved visualization. 
-  Learn more [here](http://blogs.esri.com/esri/arcgis/2014/07/14/introducing-esris-next-generation-hillshade/).
 
 * #### Fish Habitat Suitability
 
@@ -108,12 +101,12 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   of fish habitat at a user-specified ocean depth given two rasters representing water temperature and salinity.  This function demonstrates 
   how raster functions can be exploited in analytic workflows.
   
-  [FishHabitatSuitability.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/FishHabitatSuitability.rft.xml) is a *grouping* 
+  [FishHabitatSuitability.rft.xml](https://github.com/Esri/raster-functions/blob/master/functions/FishHabitatSuitability.rft.xml) is a *grouping* 
   raster function template that accepts the temperature and salinity rasters (in that order). This template&#8212;when used in the 
   [Add Rasters to Mosaic Dataset tool](http://desktop.arcgis.com/en/desktop/latest/tools/data-management-toolbox/add-rasters-to-mosaic-dataset.htm) 
   with the [Table raster type](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/files-tables-and-web-services-raster-types.htm#ESRI_SECTION1_D8E60C757CA04174BED580F2101443BD)
   or as a [processing template](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/adding-a-processing-template-to-a-mosaic-dataset.htm) 
-  on a mosaic dataset&#8212;is capable of obtaining the value of the `depth` parameter from a [specific field](https://github.com/Esri/raster-functions/blob/master/templates/FishHabitatSuitability.rft.xml#L38-L44)
+  on a mosaic dataset&#8212;is capable of obtaining the value of the `depth` parameter from a [specific field](https://github.com/Esri/raster-functions/blob/master/functions/FishHabitatSuitability.rft.xml#L38-L44)
   (`StdZ`, if available) in the table.
 
 * #### Vineyard Analysis
@@ -123,7 +116,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
   [slope](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/slope-function.htm), 
   and [aspect](http://desktop.arcgis.com/en/desktop/latest/manage-data/raster-and-images/aspect-function.htm) of the region. 
   
-  [VineyardAnalysis.rft.xml](https://github.com/Esri/raster-functions/blob/master/templates/VineyardAnalysis.rft.xml) accepts the elevation input raster 
+  [VineyardAnalysis.rft.xml](https://github.com/Esri/raster-functions/blob/master/functions/VineyardAnalysis.rft.xml) accepts the elevation input raster 
   and uses built-in raster functions to compute slope and elevation before feeding the output to the Vineyard Analysis raster function. 
 
 * #### Topographic C-Correction
