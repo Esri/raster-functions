@@ -2,7 +2,14 @@ import numpy as np
 import datetime
 from datetime import timedelta
 import sys
-
+import os
+import arcpy
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["BLIS_NUM_THREADS"] = "1"
 
 import os
 import pickle
@@ -14,6 +21,9 @@ LANDSAT_4_7_CLEAR_PIX_VALS = [672, 676, 680, 684]
 LANDSAT_8_CLEAR_PIX_VALS = [20480, 20484, 20512, 23552]#[2720, 2724, 2728, 2732]
 LANDSAT_CLEAR_PIX_VALS = LANDSAT_4_7_CLEAR_PIX_VALS + LANDSAT_8_CLEAR_PIX_VALS
 
+def apply_mask(tct_stack, bqa_stack, clear_code):
+    tct_stack[~np.isin(bqa_stack, clear_code)] = -3001
+    return tct_stack.astype('float')
 
 class LandsatImageSynthesis():
 
