@@ -56,8 +56,8 @@ class Arithmetic():
         return kwargs
 
     def updatePixels(self, tlc, shape, props, **pixelBlocks):
-        r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4', copy=False)
-        r2 = np.array(pixelBlocks['r2_pixels'], dtype='f4', copy=False)
+        r1 = np.array(pixelBlocks['r1_pixels'], dtype='f4', copy=None)
+        r2 = np.array(pixelBlocks['r2_pixels'], dtype='f4', copy=None)
 
         np.seterr(divide='ignore')
         pixelBlocks['output_pixels'] = self.op(r1, r2).astype(props['pixelType'], copy=False)
